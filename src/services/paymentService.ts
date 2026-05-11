@@ -1,13 +1,21 @@
 import axios from "axios";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2023-10-16" as any,
-});
+let stripeInstance: Stripe | null = null;
+
+const getStripe = () => {
+  if (!stripeInstance) {
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY || "dummy_key", {
+      apiVersion: "2023-10-16" as any,
+    });
+  }
+  return stripeInstance;
+};
 
 export const paymentService = {
   // Stripe Checkout Session
   createStripeSession: async (orderData: any) => {
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: orderData.products.map((item: any) => ({
