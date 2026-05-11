@@ -18,7 +18,7 @@ export async function DELETE(
     await connectDB();
     
     // Prevent self-deletion
-    if (session.user.id === id) {
+    if ((session.user as any).id === id) {
         return NextResponse.json({ error: "Cannot delete yourself" }, { status: 400 });
     }
 
