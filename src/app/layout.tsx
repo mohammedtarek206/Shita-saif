@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   title: "الشتاء والصيف | Winter & Summer - الأجهزة المنزلية المميزة",
   description: "معرض الشتاء والصيف للأجهزة الكهربائية والمنزلية. جودة عالية وأفضل الأسعار.",
   keywords: ["أجهزة منزلية", "أدوات كهربائية", "تكييفات", "غسالات", "ثلاجات", "Winter Summer"],
+  icons: {
+    icon: "/Logo-removebg-preview.png",
+    apple: "/Logo-removebg-preview.png",
+  },
 };
 
 export default function RootLayout({
