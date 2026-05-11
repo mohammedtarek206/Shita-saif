@@ -65,13 +65,13 @@ export default function ProductsPage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
               <div key={n} className="h-[400px] bg-gray-100 dark:bg-white/5 rounded-3xl animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <ProductCard key={product._id} product={product} />

@@ -65,10 +65,10 @@ const Hero = () => {
                     <span className="inline-block px-5 py-1.5 rounded-full bg-primary/20 text-primary border border-primary/30 text-sm font-bold mb-8 backdrop-blur-sm">
                       {language === "ar" ? "وصل حديثاً 2024" : "New Arrival 2024"}
                     </span>
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-[1.1] drop-shadow-2xl">
+                    <h1 className="text-3xl md:text-7xl lg:text-8xl font-black text-white mb-6 md:mb-8 leading-[1.1] drop-shadow-2xl">
                       {language === "ar" ? slide.title.ar : slide.title.en}
                     </h1>
-                    <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-xl leading-relaxed drop-shadow-lg">
+                    <p className="text-lg md:text-2xl text-gray-300 mb-8 md:mb-12 max-w-xl leading-relaxed drop-shadow-lg">
                       {language === "ar" ? slide.subtitle.ar : slide.subtitle.en}
                     </p>
                     <div className="flex flex-wrap gap-5">
