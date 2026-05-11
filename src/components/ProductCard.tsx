@@ -88,29 +88,32 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       {/* Content */}
-      <div className="p-3 md:p-6 relative z-10">
-        <h3 className="text-sm md:text-lg font-bold mb-1 md:mb-2 line-clamp-1 group-hover:text-primary transition-colors">
-          {language === "ar" ? product.title.ar : product.title.en}
-        </h3>
+      <div className="p-2.5 md:p-6 relative z-10">
+        <Link href={`/products/${product._id}`}>
+          <h3 className="text-[12px] md:text-lg font-bold mb-1 md:mb-2 line-clamp-1 group-hover:text-primary transition-colors">
+            {language === "ar" ? product.title.ar : product.title.en}
+          </h3>
+        </Link>
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 md:mt-4 gap-2">
-          <div className="flex flex-col">
+        <div className="flex flex-col mt-1 md:mt-4 gap-1 md:gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 md:gap-3">
+            <span className="text-sm md:text-xl font-black text-primary">
+              {discountedPrice.toFixed(0)} <span className="text-[8px] md:text-sm">{language === "ar" ? "ج.م" : "EGP"}</span>
+            </span>
             {hasDiscount && (
-              <span className="text-gray-400 text-[10px] md:text-xs line-through">
-                {product.price} {language === "ar" ? "ج.م" : "EGP"}
+              <span className="text-gray-400 text-[8px] md:text-xs line-through">
+                {product.price}
               </span>
             )}
-            <span className="text-base md:text-xl font-black text-primary">
-              {discountedPrice.toFixed(0)} <span className="text-[10px] md:text-sm">{language === "ar" ? "ج.م" : "EGP"}</span>
-            </span>
           </div>
           
           <button 
             type="button"
             onClick={handleAddToCart}
-            className="w-full sm:w-auto p-2 md:p-3 bg-secondary text-white rounded-lg md:rounded-xl hover:bg-primary transition-colors shadow-lg shadow-secondary/20 cursor-pointer relative z-30 flex items-center justify-center"
+            className="w-full mt-1 p-2 md:p-3 bg-secondary text-white rounded-lg md:rounded-xl hover:bg-primary transition-colors shadow-lg shadow-secondary/20 cursor-pointer relative z-30 flex items-center justify-center gap-2"
           >
-            <FiShoppingCart className="text-sm md:text-base" />
+            <FiShoppingCart className="text-[10px] md:text-base" />
+            <span className="text-[10px] md:text-xs font-bold sm:hidden">{language === 'ar' ? 'إضافة' : 'Add'}</span>
           </button>
         </div>
       </div>
