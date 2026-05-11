@@ -273,32 +273,68 @@ const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: 300 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 300 }}
-            className="fixed inset-0 z-40 bg-background lg:hidden pt-24 px-6"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-[100] bg-white/95 dark:bg-black/95 backdrop-blur-2xl lg:hidden flex flex-col items-center justify-center text-center p-6"
           >
-            <div className="flex flex-col gap-6">
-              {navLinks.map((link) => (
-                <Link
+            {/* Close button inside the menu */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="absolute top-8 right-8 p-3 bg-gray-100 dark:bg-white/10 rounded-full text-gray-700 dark:text-gray-200"
+            >
+              <FiX className="text-2xl" />
+            </button>
+
+            <div className="flex flex-col gap-8 w-full max-w-xs">
+              {navLinks.map((link, i) => (
+                <motion.div
                   key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-2xl font-bold hover:text-primary transition-colors"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
                 >
-                  {language === "ar" ? link.name.ar : link.name.en}
-                </Link>
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "text-3xl font-black transition-all block py-2",
+                      pathname === link.href ? "text-primary scale-110" : "text-gray-800 dark:text-white"
+                    )}
+                  >
+                    {language === "ar" ? link.name.ar : link.name.en}
+                  </Link>
+                </motion.div>
               ))}
-              <div className="h-[1px] bg-foreground/10 my-4" />
-              <div className="flex items-center gap-4">
+
+              <div className="h-[1px] bg-gray-200 dark:bg-white/10 my-4" />
+              
+              <div className="grid grid-cols-2 gap-4">
                 <button 
                   onClick={toggleTheme}
-                  className="p-3 bg-foreground/5 rounded-xl flex-1 flex items-center justify-center gap-2"
+                  className="p-4 bg-gray-100 dark:bg-white/10 rounded-2xl flex flex-col items-center gap-2 font-bold text-xs"
                 >
-                  {theme === "light" ? <FiMoon /> : <FiSun />}
+                  {theme === "light" ? <FiMoon className="text-xl" /> : <FiSun className="text-xl" />}
                   <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
                 </button>
+                <button 
+                  onClick={toggleLanguage}
+                  className="p-4 bg-gray-100 dark:bg-white/10 rounded-2xl flex flex-col items-center gap-2 font-bold text-xs"
+                >
+                  <FiGlobe className="text-xl" />
+                  <span>{language === "ar" ? "English" : "العربية"}</span>
+                </button>
               </div>
+
+              {status === "unauthenticated" && (
+                <Link 
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full py-4 bg-primary text-white rounded-2xl font-black text-lg shadow-xl shadow-primary/20"
+                >
+                  {language === "ar" ? "تسجيل الدخول" : "Sign In"}
+                </Link>
+              )}
             </div>
           </motion.div>
         )}
