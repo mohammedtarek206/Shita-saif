@@ -9,7 +9,7 @@ import {
 import { motion } from "framer-motion";
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
