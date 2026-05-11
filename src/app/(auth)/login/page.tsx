@@ -73,7 +73,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between ml-2">
                 <label className="text-sm font-bold">{language === "ar" ? "كلمة المرور" : "Password"}</label>
-                <Link href="/forgot-password" size="sm" className="text-xs text-primary hover:underline">
+                <Link href="/forgot-password" className="text-xs text-primary hover:underline">
                   {language === "ar" ? "نسيت كلمة المرور؟" : "Forgot password?"}
                 </Link>
               </div>
