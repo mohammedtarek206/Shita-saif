@@ -119,7 +119,7 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
               />
             </motion.div>
             <div className="flex gap-4 overflow-x-auto pb-2">
-              {product.images.map((img, i) => (
+              {product.images.map((img: string, i: number) => (
                 <button 
                   key={i}
                   onClick={() => setSelectedImage(i)}
@@ -139,7 +139,7 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
               <h1 className="text-3xl md:text-5xl font-black mb-2 leading-tight">
                 {language === "ar" ? product.title.ar : product.title.en}
               </h1>
-              <p className="text-gray-400 font-bold mb-6">{product.brand} - {product.id}</p>
+              <p className="text-gray-400 font-bold mb-6">{product.brand} - {product._id}</p>
               
               <div className="flex flex-col gap-2 mb-8">
                 <div className="flex items-center gap-4">
@@ -158,18 +158,20 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
               </div>
 
               {/* Specs Table */}
-              <div className="border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden mb-8">
-                <table className="w-full text-right rtl:text-right ltr:text-left">
-                  <tbody className="divide-y divide-gray-200 dark:divide-white/10">
-                    {(language === "ar" ? product.specs.ar : product.specs.en).map((spec, i) => (
-                      <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                        <td className="px-6 py-4 font-bold bg-gray-50/50 dark:bg-white/2 w-1/3">{spec.key}</td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{spec.value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {product.specs && (
+                <div className="border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden mb-8">
+                  <table className="w-full text-right rtl:text-right ltr:text-left">
+                    <tbody className="divide-y divide-gray-200 dark:divide-white/10">
+                      {(language === "ar" ? product.specs.ar : product.specs.en)?.map((spec: any, i: number) => (
+                        <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                          <td className="px-6 py-4 font-bold bg-gray-50/50 dark:bg-white/2 w-1/3">{spec.key}</td>
+                          <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{spec.value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
 
             {/* Actions */}
@@ -220,10 +222,8 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
             <h2 className="text-3xl font-black">{language === "ar" ? "منتجات مشابهة" : "Related Products"}</h2>
             <div className="h-[2px] flex-1 bg-gray-100 dark:bg-white/10 mx-8 hidden md:block" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {relatedProducts.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+            {/* You can fetch related products here later */}
           </div>
         </section>
       </div>
