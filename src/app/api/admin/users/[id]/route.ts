@@ -6,9 +6,10 @@ import { authOptions } from "@/lib/auth";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "superadmin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,11 +18,11 @@ export async function DELETE(
     await connectDB();
     
     // Prevent self-deletion
-    if (session.user.id === params.id) {
+    if (session.user.id === id) {
         return NextResponse.json({ error: "Cannot delete yourself" }, { status: 400 });
     }
 
-    await User.findByIdAndDelete(params.id);
+    await User.findByIdAndDelete(id);
     return NextResponse.json({ message: "User deleted" });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -30,9 +31,10 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "superadmin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -40,7 +42,7 @@ export async function PATCH(
 
     const body = await req.json();
     await connectDB();
-    const user = await User.findByIdAndUpdate(params.id, body, { new: true });
+    const user = await User.findByIdAndUpdate(id, body, { new: true });
     return NextResponse.json(user);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

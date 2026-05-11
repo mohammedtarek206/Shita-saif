@@ -11,72 +11,10 @@ import { useCart } from "@/context/CartContext";
 
 import ProductCard from "@/components/ProductCard";
 
-const product = {
-  id: "65f1a2b3c4d5e6f7a8b9c0d1",
-  title: { ar: "ثلاجة سامسونج 500 لتر - موديل RT50", en: "Samsung Refrigerator 500L - RT50 Model" },
-  price: 4500,
-  discount: 15,
-  images: [
-    "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=2070&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1571175432270-ef02d9bcc08d?q=80&w=2070&auto=format&fit=crop"
-  ],
-  category: "Refrigerators",
-  brand: "Samsung",
-  stock: 12,
-  description: {
-    ar: "تتميز ثلاجة سامسونج بتقنية التبريد المزدوج التي تحافظ على نضارة الطعام لفترة أطول. تصميم عصري وأنيق يناسب مطبخك.",
-    en: "Samsung refrigerator features Twin Cooling technology that keeps food fresh for longer. Sleek modern design that fits your kitchen."
-  },
-  specs: {
-    ar: [
-      { key: "الماركة", value: "سامسونج" },
-      { key: "سنوات الضمان", value: "10 سنوات" },
-      { key: "اسم الموديل", value: "RT50" },
-      { key: "النوع", value: "ثلاجة" },
-      { key: "اللون", value: "فضي" },
-      { key: "القدرة الكهربائية", value: "220V" },
-      { key: "مادة القاعدة", value: "ستانلس ستيل" }
-    ],
-    en: [
-      { key: "Brand", value: "Samsung" },
-      { key: "Warranty Years", value: "10 Years" },
-      { key: "Model Name", value: "RT50" },
-      { key: "Type", value: "Refrigerator" },
-      { key: "Color", value: "Silver" },
-      { key: "Power", value: "220V" },
-      { key: "Base Material", value: "Stainless Steel" }
-    ]
-  }
-};
-
-const relatedProducts = [
-  {
-    _id: "65f1a2b3c4d5e6f7a8b9c0d2",
-    title: { ar: "غسالة إل جي 9 كيلو", en: "LG Washing Machine 9KG" },
-    price: 3200,
-    discount: 10,
-    images: ["https://images.unsplash.com/photo-1545173168-9f1947eebb7f?q=80&w=2071&auto=format&fit=crop"],
-    category: "Washers"
-  },
-  {
-    _id: "65f1a2b3c4d5e6f7a8b9c0d3",
-    title: { ar: "مكيف سبليت جري 24 وحدة", en: "Gree Split AC 24 Unit" },
-    price: 2800,
-    discount: 0,
-    images: ["https://images.unsplash.com/photo-1631542171261-267866385732?q=80&w=2070&auto=format&fit=crop"],
-    category: "Air Conditioners"
-  },
-  {
-    _id: "65f1a2b3c4d5e6f7a8b9c0d4",
-    title: { ar: "شاشة سوني 65 بوصة 4K", en: "Sony 65 Inch 4K TV" },
-    price: 5500,
-    discount: 20,
-    images: ["https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=2070&auto=format&fit=crop"],
-    category: "TV & Home Cinema"
-  }
-];
-
-export default function ProductDetails() {
+export default function ProductDetails({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [inWishlist, setInWishlist] = useState(false);
@@ -85,12 +23,44 @@ export default function ProductDetails() {
   const { addToCart } = useCart();
   const router = useRouter();
 
-  const discountedPrice = product.price - (product.price * product.discount / 100);
+  React.useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`/api/admin/products/${id}`);
+        const data = await res.json();
+        if (data && !data.error) {
+          setProduct(data);
+        }
+      } catch (err) {
+        console.error("Error fetching product:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
+  if (!product) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+      <h1 className="text-2xl font-bold">{language === "ar" ? "المنتج غير موجود" : "Product not found"}</h1>
+      <button onClick={() => router.push("/products")} className="text-primary font-bold">
+        {language === "ar" ? "العودة للمنتجات" : "Back to products"}
+      </button>
+    </div>
+  );
+
+  const discountedPrice = product.discount ? product.price - (product.price * product.discount / 100) : product.price;
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        _id: product.id,
+        _id: product._id,
         title: product.title,
         price: product.price,
         discount: product.discount,

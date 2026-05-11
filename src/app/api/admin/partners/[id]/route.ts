@@ -6,9 +6,10 @@ import { authOptions } from "@/lib/auth";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "superadmin" && (session.user as any).role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,7 +17,7 @@ export async function PATCH(
 
     const body = await req.json();
     await connectDB();
-    const partner = await Partner.findByIdAndUpdate(params.id, body, { new: true });
+    const partner = await Partner.findByIdAndUpdate(id, body, { new: true });
     return NextResponse.json(partner);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -25,16 +26,17 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "superadmin" && (session.user as any).role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await connectDB();
-    await Partner.findByIdAndDelete(params.id);
+    await Partner.findByIdAndDelete(id);
     return NextResponse.json({ message: "Partner deleted" });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
