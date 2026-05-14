@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   FiSearch, FiShoppingCart, FiHeart, FiUser, 
-  FiMenu, FiX, FiMoon, FiSun, FiGlobe, FiLogOut, FiShoppingBag 
+  FiMenu, FiX, FiMoon, FiSun, FiGlobe, FiLogOut, FiShoppingBag, FiGrid 
 } from "react-icons/fi";
 import { useTheme } from "@/context/ThemeContext";
 import { useLanguage } from "@/context/LanguageContext";
