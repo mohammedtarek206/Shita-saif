@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { FiSearch, FiFilter } from "react-icons/fi";
+import { FiSearch, FiFilter, FiTrendingUp, FiGrid, FiList } from "react-icons/fi";
 import { useLanguage } from "@/context/LanguageContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductsPage() {
   const { language } = useLanguage();
@@ -13,14 +14,12 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await fetch("/api/admin/products");
         const data = await res.json();
-        if (Array.isArray(data)) {
-          setProducts(data);
-        }
+        if (Array.isArray(data)) setProducts(data);
       } catch (err) {
         console.error("Error fetching products:", err);
       } finally {
@@ -36,56 +35,109 @@ export default function ProductsPage() {
   );
 
   const t = {
-    title: language === "ar" ? "جميع المنتجات" : "All Products",
-    searchPlaceholder: language === "ar" ? "ابحث عن منتج..." : "Search for a product...",
+    title: language === "ar" ? "كتالوج المنتجات" : "Product Catalog",
+    subtitle: language === "ar" ? "اكتشف أفضل الأجهزة الكهربائية المنزلية" : "Discover the finest home appliances",
+    searchPlaceholder: language === "ar" ? "ابحث عن التميز..." : "Search for excellence...",
     filter: language === "ar" ? "تصفية" : "Filter",
+    results: language === "ar" ? "نتيجة" : "Results",
   };
 
   return (
-    <main className="min-h-screen pt-28">
+    <main className="min-h-screen bg-gray-50 dark:bg-[#0A0A0A] transition-colors duration-500">
       <Navbar />
-      <div className="container mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <h1 className="text-4xl font-black">{t.title}</h1>
-          <div className="flex items-center gap-4 flex-1 max-w-xl">
-            <div className="relative flex-1">
-              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder={t.searchPlaceholder}
-                className="w-full pl-12 pr-4 py-3 bg-gray-100 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <button className="flex items-center gap-2 px-6 py-3 glass rounded-2xl font-bold border-white/20">
-              <FiFilter /> {t.filter}
-            </button>
+      
+      {/* Premium Header */}
+      <div className="pt-32 pb-12 bg-white dark:bg-white/[0.02] border-b border-gray-100 dark:border-white/5">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+              <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-2 block italic">Winter & Summer Collection</span>
+              <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-2">{t.title}</h1>
+              <p className="text-gray-500 font-bold text-sm md:text-base">{t.subtitle}</p>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-3 bg-gray-50 dark:bg-white/5 p-2 rounded-2xl border border-gray-100 dark:border-white/5"
+            >
+              <button className="p-3 bg-white dark:bg-white/10 rounded-xl shadow-lg text-primary"><FiGrid /></button>
+              <button className="p-3 text-gray-400 hover:text-primary transition-colors"><FiList /></button>
+            </motion.div>
           </div>
         </div>
+      </div>
 
+      <div className="container mx-auto px-4 md:px-8 py-12">
+        {/* Search and Filters Bar */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row items-center gap-6 mb-16"
+        >
+          <div className="relative flex-1 w-full group">
+            <FiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors text-xl" />
+            <input 
+              type="text" 
+              placeholder={t.searchPlaceholder}
+              className="w-full pl-16 pr-8 py-5 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 focus:border-primary rounded-[2rem] outline-none font-bold shadow-xl transition-all"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <button className="flex-1 md:flex-none flex items-center justify-center gap-3 px-10 py-5 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl">
+              <FiFilter /> {t.filter}
+            </button>
+            <div className="hidden lg:flex items-center gap-2 px-6 py-5 bg-primary/10 text-primary rounded-[2rem] font-black text-xs uppercase tracking-widest">
+              <FiTrendingUp /> {filteredProducts.length} {t.results}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Products Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-              <div key={n} className="h-[400px] bg-gray-100 dark:bg-white/5 rounded-3xl animate-pulse" />
+              <div key={n} className="aspect-[3/4] bg-white dark:bg-white/5 rounded-[2.5rem] animate-pulse border border-gray-100 dark:border-white/5" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-20 bg-gray-50 dark:bg-white/5 rounded-[3rem] border border-dashed border-gray-200">
-                <p className="text-gray-500 font-bold text-xl">
-                  {language === "ar" ? "لم يتم العثور على منتجات تطابق بحثك" : "No products found matching your search"}
-                </p>
-              </div>
-            )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 md:gap-10">
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product, i) => (
+                  <motion.div 
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ delay: i * 0.05 }}
+                    key={product._id}
+                  >
+                    <ProductCard product={product} />
+                  </motion.div>
+                ))
+              ) : (
+                <motion.div 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  className="col-span-full text-center py-32 bg-white dark:bg-white/2 rounded-[4rem] border-2 border-dashed border-gray-100 dark:border-white/5"
+                >
+                  <div className="w-24 h-24 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl text-gray-300">
+                    <FiSearch />
+                  </div>
+                  <h3 className="text-2xl font-black italic uppercase tracking-tight mb-2">
+                    {language === "ar" ? "لا توجد نتائج" : "No results found"}
+                  </h3>
+                  <p className="text-gray-500 font-bold">
+                    {language === "ar" ? "جرب البحث بكلمات أخرى أو تصفح الأقسام" : "Try different keywords or browse categories"}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </div>
+      
       <Footer />
     </main>
   );

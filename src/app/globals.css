@@ -4,7 +4,7 @@
   --color-primary: #E91E63;
   --color-secondary: #1E4FA3;
   --color-accent: #4F86D9;
-  --color-dark: #1A1A1A;
+  --color-dark: #0A0A0A;
   
   --font-cairo: var(--font-cairo);
   --font-poppins: var(--font-poppins);
@@ -12,34 +12,35 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #1A1A1A;
+  --foreground: #0A0A0A;
   --primary: #E91E63;
   --secondary: #1E4FA3;
   --accent: #4F86D9;
 }
 
 [data-theme='dark'] {
-  --background: #0F172A;
+  --background: #0A0A0A;
   --foreground: #F8FAFC;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  @apply antialiased overflow-x-hidden;
 }
 
 /* Glassmorphism */
 .glass {
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
 }
 
 .dark .glass {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(10, 10, 10, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -48,11 +49,11 @@ body {
   background: linear-gradient(135deg, #1E4FA3 0%, #E91E63 100%);
 }
 
-.gradient-glow {
-  box-shadow: 0 0 20px rgba(233, 30, 99, 0.3);
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
 }
 
-/* RTL Support for Cairo */
+/* RTL & Typography */
 [dir='rtl'] {
   font-family: var(--font-cairo), sans-serif;
 }
@@ -61,8 +62,46 @@ body {
   font-family: var(--font-poppins), sans-serif;
 }
 
-/* Smooth Transitions */
-* {
-  @apply transition-all duration-300;
+h1, h2, h3, h4, h5, h6 {
+  @apply tracking-tight font-black;
+}
+
+/* Responsive Font Sizes */
+@layer base {
+  html {
+    @apply text-[14px] sm:text-[15px] md:text-[16px];
+  }
+}
+
+/* Hide scrollbar but allow scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-white/10 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/50;
+}
+
+/* Animations */
+.hover-scale {
+  @apply transition-transform duration-300 hover:scale-105 active:scale-95;
+}
+
+.mask-fade-bottom {
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
 

@@ -37,13 +37,13 @@ export default function PartnersPage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((n) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8">
+            {[1, 2, 3, 4, 5].map((n) => (
               <div key={n} className="h-[300px] bg-gray-100 dark:bg-white/5 rounded-[3rem] animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8">
             {partners.length > 0 ? (
               partners.map((partner, i) => (
                 <div key={i} className="glass p-8 rounded-[3rem] text-center border-white/20 hover:scale-105 transition-transform">

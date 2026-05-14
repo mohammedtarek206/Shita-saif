@@ -31,9 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
     addToCart(product);
-    alert(language === "ar" ? "تمت الإضافة إلى السلة بنجاح!" : "Added to cart successfully!");
   };
-
 
   const handleAddToWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -47,73 +45,85 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
-      className="group bg-white dark:bg-white/5 rounded-3xl overflow-hidden border border-gray-100 dark:border-white/10 hover:shadow-2xl transition-all duration-500 relative z-10"
+      className="group bg-white dark:bg-white/[0.03] rounded-[2rem] overflow-hidden border border-gray-100 dark:border-white/10 hover:shadow-2xl transition-all duration-500 flex flex-col h-full"
     >
       {/* Image Container */}
-      <div className="relative h-48 md:h-64 overflow-hidden z-0">
-        <img
-          src={product.images[0]}
-          alt={language === "ar" ? product.title.ar : product.title.en}
-          className="w-full h-full object-contain p-2 md:p-4 group-hover:scale-110 transition-transform duration-500"
-        />
+      <div className="relative aspect-square overflow-hidden bg-gray-50/50 dark:bg-white/[0.02]">
+        <Link href={`/products/${product._id}`} className="block w-full h-full">
+          <img
+            src={product.images[0]}
+            alt={language === "ar" ? product.title.ar : product.title.en}
+            className="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700 ease-out"
+            loading="lazy"
+          />
+        </Link>
         
         {/* Badges */}
-        <div className={`absolute top-2 md:top-4 ${language === 'ar' ? 'right-2 md:right-4' : 'left-2 md:left-4'} flex flex-col gap-1 md:gap-2 z-10`}>
+        <div className={cn(
+          "absolute top-4 flex flex-col gap-2 z-10",
+          language === 'ar' ? 'right-4' : 'left-4'
+        )}>
           {hasDiscount && (
-            <span className="bg-primary text-white text-[8px] md:text-[10px] font-bold px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-center">
+            <span className="bg-primary text-white text-[10px] md:text-xs font-black px-3 py-1 rounded-full shadow-lg">
               -{product.discount}%
             </span>
           )}
-          <span className="bg-secondary text-white text-[8px] md:text-[10px] font-bold px-1.5 md:px-2 py-0.5 md:py-1 rounded-full uppercase text-center">
+          <span className="bg-white/80 dark:bg-black/80 backdrop-blur-md text-gray-800 dark:text-gray-200 text-[10px] font-black px-3 py-1 rounded-full border border-gray-200 dark:border-white/10 uppercase">
             {product.category}
           </span>
         </div>
 
-        {/* Quick Actions Overlay - Hidden on touch devices unless tapped, or just simplified */}
-        <div className="absolute inset-0 bg-dark/20 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 md:gap-3 z-20">
+        {/* Action Buttons - Always visible on mobile, hover on desktop */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-300 z-20">
           <button 
-            type="button"
             onClick={handleAddToWishlist}
-            className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer relative z-30 ${isFavorite ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-primary hover:text-white'}`}
+            className={cn(
+              "w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-xl backdrop-blur-md",
+              isFavorite 
+                ? "bg-primary text-white" 
+                : "bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white hover:bg-primary hover:text-white"
+            )}
           >
-            <FiHeart className={isFavorite ? 'fill-current' : ''} size={14} />
+            <FiHeart className={isFavorite ? 'fill-current' : ''} size={18} />
           </button>
-          <Link href={`/products/${product._id}`} className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white text-dark flex items-center justify-center hover:bg-secondary hover:text-white transition-colors relative z-30">
-            <FiEye size={14} />
+          <Link 
+            href={`/products/${product._id}`}
+            className="w-10 h-10 rounded-xl bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white flex items-center justify-center hover:bg-secondary hover:text-white transition-all shadow-xl backdrop-blur-md"
+          >
+            <FiEye size={18} />
           </Link>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-2.5 md:p-6 relative z-10">
-        <Link href={`/products/${product._id}`}>
-          <h3 className="text-[12px] md:text-lg font-bold mb-1 md:mb-2 line-clamp-1 group-hover:text-primary transition-colors">
+      <div className="p-4 md:p-6 flex flex-col flex-1">
+        <Link href={`/products/${product._id}`} className="mb-2">
+          <h3 className="text-sm md:text-lg font-black line-clamp-2 hover:text-primary transition-colors leading-tight min-h-[2.5rem] md:min-h-[3.5rem]">
             {language === "ar" ? product.title.ar : product.title.en}
           </h3>
         </Link>
         
-        <div className="flex flex-col mt-1 md:mt-4 gap-1 md:gap-2">
-          <div className="flex flex-wrap items-center gap-1.5 md:gap-3">
-            <span className="text-sm md:text-xl font-black text-primary">
-              {discountedPrice.toFixed(0)} <span className="text-[8px] md:text-sm">{language === "ar" ? "ج.م" : "EGP"}</span>
+        <div className="mt-auto flex flex-col gap-4">
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg md:text-2xl font-black text-primary">
+              {discountedPrice.toLocaleString()} <span className="text-[10px] md:text-xs">{language === "ar" ? "ج.م" : "EGP"}</span>
             </span>
             {hasDiscount && (
-              <span className="text-gray-400 text-[8px] md:text-xs line-through">
-                {product.price}
+              <span className="text-gray-400 text-xs md:text-sm line-through decoration-primary/50">
+                {product.price.toLocaleString()}
               </span>
             )}
           </div>
           
           <button 
-            type="button"
             onClick={handleAddToCart}
-            className="w-full mt-1 p-2 md:p-3 bg-secondary text-white rounded-lg md:rounded-xl hover:bg-primary transition-colors shadow-lg shadow-secondary/20 cursor-pointer relative z-30 flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-secondary text-white rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-primary transition-all shadow-lg shadow-secondary/20 hover:shadow-primary/40 active:scale-95 group/btn"
           >
-            <FiShoppingCart className="text-[10px] md:text-base" />
-            <span className="text-[10px] md:text-xs font-bold sm:hidden">{language === 'ar' ? 'إضافة' : 'Add'}</span>
+            <FiShoppingCart className="group-hover/btn:rotate-12 transition-transform" />
+            <span className="text-xs md:text-sm">{language === 'ar' ? 'أضف للسلة' : 'Add to Cart'}</span>
           </button>
         </div>
       </div>
@@ -121,6 +131,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   );
 };
 
+function cn(...inputs: any[]) {
+  return inputs.filter(Boolean).join(" ");
+}
 
 export default ProductCard;
 

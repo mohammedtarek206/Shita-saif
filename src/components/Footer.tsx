@@ -9,98 +9,127 @@ const Footer = () => {
   const { language } = useLanguage();
 
   return (
-    <footer className="bg-dark text-white pt-20 pb-10">
+    <footer className="bg-[#0A0A0A] text-white pt-20 pb-10 border-t border-white/5">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="flex flex-col gap-6">
-            <Link href="/" className="flex items-center gap-4">
-              <img 
-                src="/Logo-removebg-preview.png" 
-                alt="Logo" 
-                className="w-32 h-32 object-contain"
-              />
-              {language === "ar" ? (
-                <span className="text-3xl font-black tracking-tighter bg-gradient-to-r from-[#E91E63] to-[#1E4FA3] bg-clip-text text-transparent">
-                  الشتاء والصيف
-                </span>
-              ) : (
-                <span className="text-3xl font-black tracking-tighter bg-gradient-to-r from-[#E91E63] to-[#1E4FA3] bg-clip-text text-transparent">
-                  SHETA - & - SAIF
-                </span>
-              )}
+            <Link href="/" className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <img 
+                  src="/Logo-removebg-preview.png" 
+                  alt="Logo" 
+                  className="w-16 h-16 object-contain"
+                />
+                <div className="flex flex-col">
+                  <span className="text-2xl font-black tracking-tighter bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent uppercase">
+                    SHETA-SAIF
+                  </span>
+                  <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
+                    {language === "ar" ? "للأجهزة المنزلية الفاخرة" : "Premium Appliances"}
+                  </span>
+                </div>
+              </div>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="text-gray-500 text-sm leading-relaxed max-w-xs font-medium">
               {language === "ar" 
-                ? "وجهتكم الأولى لأفضل الأجهزة المنزلية والكهربائية في المنطقة. جودة، ثقة، وخدمة متميزة."
-                : "Your first destination for the best home and electrical appliances in the region. Quality, trust, and excellent service."}
+                ? "وجهتكم الأولى لأفضل الأجهزة المنزلية والكهربائية. جودة، ثقة، وخدمة متميزة تليق بكم."
+                : "Your first destination for the best home appliances. Quality, trust, and premium service."}
             </p>
-            <div className="flex items-center gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-colors">
-                <FiFacebook />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-colors">
-                <FiTwitter />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-colors">
-                <FiInstagram />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-colors">
-                <FiYoutube />
-              </a>
+            <div className="flex items-center gap-3">
+              {[FiFacebook, FiTwitter, FiInstagram, FiYoutube].map((Icon, i) => (
+                <a key={i} href="#" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary transition-all hover:scale-110 active:scale-95">
+                  <Icon size={18} />
+                </a>
+              ))}
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-bold mb-6">{language === "ar" ? "روابط سريعة" : "Quick Links"}</h4>
+          <div className="lg:pl-12">
+            <h4 className="text-sm font-black uppercase tracking-widest mb-8 text-primary">{language === "ar" ? "روابط سريعة" : "Quick Links"}</h4>
             <ul className="flex flex-col gap-4">
-              <li><Link href="/products" className="text-gray-400 hover:text-white transition-colors">{language === "ar" ? "كل المنتجات" : "All Products"}</Link></li>
-              <li><Link href="/offers" className="text-gray-400 hover:text-white transition-colors">{language === "ar" ? "العروض الخاصة" : "Special Offers"}</Link></li>
-              <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">{language === "ar" ? "من نحن" : "About Us"}</Link></li>
-              <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">{language === "ar" ? "تواصل معنا" : "Contact Us"}</Link></li>
+              {[
+                { name: language === "ar" ? "كل المنتجات" : "All Products", href: "/products" },
+                { name: language === "ar" ? "العروض الخاصة" : "Special Offers", href: "/offers" },
+                { name: language === "ar" ? "من نحن" : "About Us", href: "/about" },
+                { name: language === "ar" ? "تواصل معنا" : "Contact Us", href: "/contact" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-gray-500 hover:text-white transition-colors font-bold text-sm flex items-center gap-2 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Categories */}
           <div>
-            <h4 className="text-lg font-bold mb-6">{language === "ar" ? "الأقسام" : "Categories"}</h4>
+            <h4 className="text-sm font-black uppercase tracking-widest mb-8 text-primary">{language === "ar" ? "الأقسام" : "Categories"}</h4>
             <ul className="flex flex-col gap-4">
-              <li><Link href="/category/air-conditioners" className="text-gray-400 hover:text-white transition-colors">{language === "ar" ? "التكييفات" : "Air Conditioners"}</Link></li>
-              <li><Link href="/category/washers" className="text-gray-400 hover:text-white transition-colors">{language === "ar" ? "الغسالات" : "Washing Machines"}</Link></li>
-              <li><Link href="/category/refrigerators" className="text-gray-400 hover:text-white transition-colors">{language === "ar" ? "الثلاجات" : "Refrigerators"}</Link></li>
-              <li><Link href="/category/kitchen" className="text-gray-400 hover:text-white transition-colors">{language === "ar" ? "أجهزة المطبخ" : "Kitchen Appliances"}</Link></li>
+              {[
+                { name: language === "ar" ? "التكييفات" : "Air Conditioners", href: "/category/air-conditioners" },
+                { name: language === "ar" ? "الغسالات" : "Washing Machines", href: "/category/washers" },
+                { name: language === "ar" ? "الثلاجات" : "Refrigerators", href: "/category/refrigerators" },
+                { name: language === "ar" ? "أجهزة المطبخ" : "Kitchen Appliances", href: "/category/kitchen" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-gray-500 hover:text-white transition-colors font-bold text-sm flex items-center gap-2 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-bold mb-6">{language === "ar" ? "اتصل بنا" : "Contact Info"}</h4>
-            <ul className="flex flex-col gap-4">
-              <li className="flex items-center gap-3 text-gray-400">
-                <FiPhone className="text-primary" />
-                <span>01223366046</span>
+            <h4 className="text-sm font-black uppercase tracking-widest mb-8 text-primary">{language === "ar" ? "اتصل بنا" : "Contact Info"}</h4>
+            <ul className="flex flex-col gap-6">
+              <li className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                  <FiPhone />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-gray-500 mb-1">{language === 'ar' ? 'رقم الهاتف' : 'Phone'}</p>
+                  <p className="text-sm font-bold">01223366046</p>
+                </div>
               </li>
-              <li className="flex items-center gap-3 text-gray-400">
-                <FiMail className="text-primary" />
-                <span>whaba78@gmail.com</span>
+              <li className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                  <FiMail />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-gray-500 mb-1">{language === 'ar' ? 'البريد الإلكتروني' : 'Email'}</p>
+                  <p className="text-sm font-bold">whaba78@gmail.com</p>
+                </div>
               </li>
-              <li className="flex items-center gap-3 text-gray-400">
-                <FiMapPin className="text-primary" />
-                <span>{language === "ar" ? "المدخل الاول تزمنت الشرقية بني سويف , Egypt" : "The first entrance, Tazmant Al-Sharqiya, Beni Suef, Egypt"}</span>
+              <li className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                  <FiMapPin />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-gray-500 mb-1">{language === 'ar' ? 'الموقع' : 'Location'}</p>
+                  <p className="text-sm font-bold leading-relaxed">
+                    {language === "ar" ? "تزمنت الشرقية، بني سويف، مصر" : "Tazmant Al-Sharqiya, Beni Suef, Egypt"}
+                  </p>
+                </div>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-20 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-gray-500 text-sm">
+        <div className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-gray-500 text-xs font-bold tracking-widest uppercase">
             © {new Date().getFullYear()} {language === "ar" ? "الشتاء والصيف. جميع الحقوق محفوظة." : "Winter & Summer. All rights reserved."}
           </p>
-          <div className="flex items-center gap-6">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4 opacity-50 grayscale hover:grayscale-0 transition-all cursor-pointer" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4 opacity-50 grayscale hover:grayscale-0 transition-all cursor-pointer" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all cursor-pointer" />
+          <div className="flex items-center gap-8 opacity-40 hover:opacity-100 transition-opacity duration-500 grayscale">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6" />
           </div>
         </div>
       </div>

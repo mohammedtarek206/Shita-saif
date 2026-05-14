@@ -1,14 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter, FiX, FiLink } from "react-icons/fi";
-
-const initialProducts = [
-  { id: 1, nameAr: "ثلاجة سامسونج", nameEn: "Samsung Fridge", category: "Refrigerators", price: 4500, discount: 10, stock: 12 },
-  { id: 2, nameAr: "غسالة إل جي", nameEn: "LG Washer", category: "Washers", price: 3200, discount: 0, stock: 5 },
-  { id: 3, nameAr: "مكيف جري", nameEn: "Gree AC", category: "Air Conditioners", price: 2800, discount: 15, stock: 20 },
-  { id: 4, nameAr: "فرن كهربائي", nameEn: "Electric Oven", category: "Kitchen", price: 1500, discount: 5, stock: 8 },
-];
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter, FiX, FiLink, FiPackage, FiActivity } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductsAdmin() {
   const [products, setProducts] = useState<any[]>([]);
@@ -19,6 +13,8 @@ export default function ProductsAdmin() {
     nameAr: "", nameEn: "", category: "", price: "", discount: "", stock: "", imageUrl: "",
     specs: [{ key: "", value: "" }]
   });
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const convertDriveLink = (url: string) => {
     if (url.includes("drive.google.com")) {
@@ -48,8 +44,6 @@ export default function ProductsAdmin() {
     fetchProducts();
   }, []);
 
-  const [editingProduct, setEditingProduct] = useState<any>(null);
-
   const handleAddProduct = async () => {
     const finalImageUrl = convertDriveLink(newProduct.imageUrl);
     try {
@@ -71,13 +65,17 @@ export default function ProductsAdmin() {
       });
       if (res.ok) {
         fetchProducts();
-        setShowAddModal(false);
-        setEditingProduct(null);
-        setNewProduct({ nameAr: "", nameEn: "", category: "", price: "", discount: "", stock: "", imageUrl: "", specs: [{ key: "", value: "" }] });
+        closeModal();
       }
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const closeModal = () => {
+    setShowAddModal(false);
+    setEditingProduct(null);
+    setNewProduct({ nameAr: "", nameEn: "", category: "", price: "", discount: "", stock: "", imageUrl: "", specs: [{ key: "", value: "" }] });
   };
 
   const startEdit = (product: any) => {
@@ -96,7 +94,7 @@ export default function ProductsAdmin() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure?")) return;
+    if (!confirm("Are you sure you want to delete this product?")) return;
     try {
       await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
       fetchProducts();
@@ -104,22 +102,6 @@ export default function ProductsAdmin() {
       console.error(err);
     }
   };
-
-  const addSpecField = () => {
-    setNewProduct({ ...newProduct, specs: [...newProduct.specs, { key: "", value: "" }] });
-  };
-
-  const updateSpecField = (index: number, field: 'key' | 'value', val: string) => {
-    const updatedSpecs = [...newProduct.specs];
-    updatedSpecs[index][field] = val;
-    setNewProduct({ ...newProduct, specs: updatedSpecs });
-  };
-
-  const removeSpecField = (index: number) => {
-    setNewProduct({ ...newProduct, specs: newProduct.specs.filter((_, i) => i !== index) });
-  };
-
-  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const categories = ["All", ...new Set(products.map(p => p.category))];
 
@@ -131,7 +113,27 @@ export default function ProductsAdmin() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Total Products", value: products.length, icon: <FiPackage />, color: "from-blue-500 to-blue-600" },
+          { label: "Active Items", value: products.filter(p => p.stock > 0).length, icon: <FiActivity />, color: "from-emerald-500 to-emerald-600" },
+          { label: "Low Stock", value: products.filter(p => p.stock > 0 && p.stock < 5).length, icon: <FiFilter />, color: "from-amber-500 to-amber-600" },
+          { label: "Out of Stock", value: products.filter(p => p.stock === 0).length, icon: <FiX />, color: "from-rose-500 to-rose-600" },
+        ].map((stat, i) => (
+          <div key={i} className="glass p-6 rounded-[2rem] border-white/5 flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white text-xl shadow-lg`}>
+              {stat.icon}
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{stat.label}</p>
+              <p className="text-2xl font-black">{stat.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Header Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
@@ -139,236 +141,223 @@ export default function ProductsAdmin() {
           <input 
             type="text" 
             placeholder="Search products..." 
-            className="w-full pl-12 pr-4 py-3 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-primary outline-none transition-all"
+            className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-primary outline-none transition-all font-bold"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <FiFilter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select 
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="pl-12 pr-8 py-3 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-primary appearance-none cursor-pointer min-w-[150px]"
-            >
-              {categories.map(cat => (
-                <option key={cat} value={cat} className="bg-white dark:bg-[#1A1A1A]">
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
+          <select 
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="px-6 py-3.5 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl font-black outline-none focus:ring-2 focus:ring-primary cursor-pointer text-sm"
+          >
+            {categories.map(cat => (
+              <option key={cat} value={cat} className="bg-white dark:bg-black font-bold">
+                {cat}
+              </option>
+            ))}
+          </select>
           <button 
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
+            className="flex items-center gap-2 px-8 py-3.5 bg-primary text-white rounded-2xl font-black shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all text-sm"
           >
-            <FiPlus /> Add Product
+            <FiPlus /> Add
           </button>
         </div>
       </div>
 
-      {/* Products Table */}
-      <div className="bg-white dark:bg-white/5 rounded-[2rem] border border-gray-100 dark:border-white/10 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-gray-500 border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/2">
-                <th className="px-8 py-5 font-medium">Product</th>
-                <th className="px-8 py-5 font-medium">Category</th>
-                <th className="px-8 py-5 font-medium">Price</th>
-                <th className="px-8 py-5 font-medium">Stock</th>
-                <th className="px-8 py-5 font-medium text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-              {filteredProducts.map((product) => (
-                <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
-                  <td className="px-8 py-5">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center font-bold text-gray-400 overflow-hidden">
-                        {product.images?.[0] ? <img src={product.images[0]} className="w-full h-full object-cover" /> : product.title?.en?.charAt(0)}
-                      </div>
-                      <div>
-                        <div className="font-bold">{product.title?.en}</div>
-                        <div className="text-xs text-gray-500">{product.title?.ar}</div>
-                      </div>
+      {/* Desktop Table View */}
+      <div className="hidden lg:block bg-white dark:bg-white/2 rounded-[2.5rem] border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm">
+        <table className="w-full text-left rtl:text-right">
+          <thead>
+            <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 border-b border-gray-100 dark:border-white/5">
+              <th className="px-8 py-6">Product Information</th>
+              <th className="px-8 py-6">Category</th>
+              <th className="px-8 py-6">Pricing</th>
+              <th className="px-8 py-6">Inventory</th>
+              <th className="px-8 py-6 text-right rtl:text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+            {filteredProducts.map((product) => (
+              <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+                <td className="px-8 py-5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 p-2 flex items-center justify-center overflow-hidden">
+                      <img 
+                        src={product.images?.[0] || "/placeholder.png"} 
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" 
+                        alt=""
+                      />
                     </div>
-                  </td>
-                  <td className="px-8 py-5">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-[10px] font-bold uppercase">
-                      {product.category}
-                    </span>
-                  </td>
-                  <td className="px-8 py-5 font-black text-primary">
-                    <div className="flex flex-col">
-                      {product.discount > 0 && (
-                        <span className="text-[10px] text-gray-400 line-through">
-                          {product.price} EGP
-                        </span>
-                      )}
-                      <span>
-                        {product.discount > 0 ? (product.price * (1 - product.discount / 100)).toFixed(0) : product.price} EGP
+                    <div>
+                      <div className="font-black text-sm">{product.title?.en}</div>
+                      <div className="text-[10px] font-bold text-gray-500">{product.title?.ar}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-8 py-5">
+                  <span className="px-4 py-1.5 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                    {product.category}
+                  </span>
+                </td>
+                <td className="px-8 py-5 font-black text-primary">
+                  <div className="flex flex-col">
+                    {product.discount > 0 && (
+                      <span className="text-[10px] text-gray-400 line-through opacity-50">
+                        {product.price.toLocaleString()} EGP
                       </span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-5">
+                    )}
+                    <span className="text-lg">
+                      {(product.discount > 0 ? product.price * (1 - product.discount / 100) : product.price).toLocaleString()} <span className="text-[10px]">EGP</span>
+                    </span>
+                  </div>
+                </td>
+                <td className="px-8 py-5">
+                  <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${product.stock > 10 ? 'bg-green-500' : 'bg-yellow-500'}`} />
-                      <span className="font-medium">{product.stock} units</span>
+                      <div className={`w-2 h-2 rounded-full ${product.stock > 10 ? 'bg-emerald-500' : product.stock > 0 ? 'bg-amber-500' : 'bg-rose-500'} shadow-sm`} />
+                      <span className="font-black text-sm">{product.stock} Units</span>
                     </div>
-                  </td>
-                  <td className="px-8 py-5 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button 
-                        onClick={() => startEdit(product)}
-                        className="p-2 hover:bg-blue-50 dark:hover:bg-blue-500/10 text-blue-500 rounded-lg transition-colors"
-                      >
-                        <FiEdit2 />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(product._id)}
-                        className="p-2 hover:bg-red-50 dark:hover:bg-red-500/10 text-red-500 rounded-lg transition-colors"
-                      >
-                        <FiTrash2 />
-                      </button>
+                    <div className="w-24 h-1 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full ${product.stock > 10 ? 'bg-emerald-500' : 'bg-amber-500'}`} 
+                        style={{ width: `${Math.min(product.stock * 5, 100)}%` }}
+                      />
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </td>
+                <td className="px-8 py-5 text-right rtl:text-left">
+                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+                    <button onClick={() => startEdit(product)} className="w-10 h-10 flex items-center justify-center bg-blue-500/10 text-blue-500 rounded-xl hover:bg-blue-500 hover:text-white transition-all shadow-lg shadow-blue-500/10">
+                      <FiEdit2 size={16} />
+                    </button>
+                    <button onClick={() => handleDelete(product._id)} className="w-10 h-10 flex items-center justify-center bg-rose-500/10 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-lg shadow-rose-500/10">
+                      <FiTrash2 size={16} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Add Product Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl space-y-8 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
-            <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-black tracking-tight">
-                {editingProduct ? "Edit Product" : "Add New Product"}
-              </h2>
-              <button 
-                onClick={() => {
-                  setShowAddModal(false);
-                  setEditingProduct(null);
-                  setNewProduct({ nameAr: "", nameEn: "", category: "", price: "", discount: "", stock: "", imageUrl: "", specs: [{ key: "", value: "" }] });
-                }} 
-                className="p-3 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors"
-              >
-                <FiX className="text-2xl" />
+      {/* Mobile Card View */}
+      <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {filteredProducts.map((product) => (
+          <div key={product._id} className="glass p-6 rounded-[2rem] border-white/5 space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-white dark:bg-white/5 p-2 shrink-0">
+                <img src={product.images?.[0]} className="w-full h-full object-contain" alt="" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-black text-sm truncate">{product.title?.en}</h3>
+                <p className="text-[10px] font-bold text-gray-500 truncate">{product.title?.ar}</p>
+                <span className="mt-1 inline-block px-2 py-0.5 bg-blue-500/10 text-blue-500 rounded-lg text-[8px] font-black uppercase tracking-widest">
+                  {product.category}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+              <div>
+                <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Price</p>
+                <p className="font-black text-primary">{(product.discount > 0 ? product.price * (1 - product.discount / 100) : product.price).toLocaleString()} EGP</p>
+              </div>
+              <div>
+                <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Stock</p>
+                <div className="flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${product.stock > 10 ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  <p className="font-black">{product.stock} Units</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button onClick={() => startEdit(product)} className="flex-1 py-3 bg-blue-500/10 text-blue-500 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-2">
+                <FiEdit2 size={14} /> Edit
+              </button>
+              <button onClick={() => handleDelete(product._id)} className="flex-1 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-2">
+                <FiTrash2 size={14} /> Delete
               </button>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-3">
-                <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-2">Product Name (Arabic)</label>
-                <input 
-                  type="text" 
-                  className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 font-bold transition-all"
-                  value={newProduct.nameAr}
-                  onChange={(e) => setNewProduct({...newProduct, nameAr: e.target.value})}
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-2">Product Name (English)</label>
-                <input 
-                  type="text" 
-                  className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 font-bold transition-all"
-                  value={newProduct.nameEn}
-                  onChange={(e) => setNewProduct({...newProduct, nameEn: e.target.value})}
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-2">Category</label>
-                <input 
-                  type="text" 
-                  className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 font-bold transition-all"
-                  value={newProduct.category}
-                  onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-2">Price (EGP)</label>
-                <input 
-                  type="number" 
-                  className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 font-bold transition-all"
-                  value={newProduct.price}
-                  onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-2">Discount (%)</label>
-                <input 
-                  type="number" 
-                  placeholder="0"
-                  className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 font-bold transition-all"
-                  value={newProduct.discount}
-                  onChange={(e) => setNewProduct({...newProduct, discount: e.target.value})}
-                />
-              </div>
-              <div className="md:col-span-2 space-y-3">
-                <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-2">Specifications</label>
-                <div className="space-y-4">
-                  {newProduct.specs.map((spec, index) => (
-                    <div key={index} className="flex gap-4 items-center">
-                      <input 
-                        type="text" 
-                        placeholder="Key (e.g. Color)"
-                        className="flex-1 px-6 py-3 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 font-bold transition-all"
-                        value={spec.key}
-                        onChange={(e) => updateSpecField(index, 'key', e.target.value)}
-                      />
-                      <input 
-                        type="text" 
-                        placeholder="Value (e.g. Blue)"
-                        className="flex-1 px-6 py-3 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 font-bold transition-all"
-                        value={spec.value}
-                        onChange={(e) => updateSpecField(index, 'value', e.target.value)}
-                      />
-                      <button 
-                        onClick={() => removeSpecField(index)}
-                        className="p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
-                      >
-                        <FiTrash2 />
-                      </button>
-                    </div>
-                  ))}
-                  <button 
-                    onClick={addSpecField}
-                    className="flex items-center gap-2 text-primary font-bold hover:underline py-2 px-4"
-                  >
-                    <FiPlus /> Add Specification
-                  </button>
-                </div>
-              </div>
-
-              <div className="md:col-span-2 space-y-3">
-                <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-2">Image Link (Supports Google Drive)</label>
-                <div className="relative">
-                  <FiLink className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
-                  <input 
-                    type="text" 
-                    placeholder="Paste link here..."
-                    className="w-full pl-14 pr-6 py-5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 font-bold transition-all"
-                    value={newProduct.imageUrl}
-                    onChange={(e) => setNewProduct({...newProduct, imageUrl: e.target.value})}
-                  />
-                </div>
-                <p className="text-[10px] text-gray-500 font-bold ml-2 italic">Note: Google Drive links will be automatically optimized for web display.</p>
-              </div>
-            </div>
-
-            <button 
-              onClick={handleAddProduct}
-              className="w-full py-4 bg-primary text-white rounded-2xl font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all"
-            >
-              {editingProduct ? "Save Changes" : "Confirm and Add"}
-            </button>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+
+      {/* Add/Edit Modal */}
+      <AnimatePresence>
+        {showAddModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={closeModal}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md" 
+            />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative bg-white dark:bg-[#0F0F0F] w-full max-w-2xl rounded-[3rem] p-6 md:p-10 shadow-2xl space-y-8 border border-gray-100 dark:border-white/10 overflow-y-auto max-h-[90vh] custom-scrollbar"
+            >
+              <div className="flex items-center justify-between sticky top-0 bg-white dark:bg-[#0F0F0F] pb-4 z-10">
+                <h2 className="text-2xl md:text-3xl font-black tracking-tight uppercase italic">
+                  {editingProduct ? "Edit Product" : "New Product"}
+                </h2>
+                <button onClick={closeModal} className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors">
+                  <FiX className="text-2xl" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Name (Arabic)</label>
+                  <input type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all"
+                    value={newProduct.nameAr} onChange={(e) => setNewProduct({...newProduct, nameAr: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Name (English)</label>
+                  <input type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all"
+                    value={newProduct.nameEn} onChange={(e) => setNewProduct({...newProduct, nameEn: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Category</label>
+                  <input type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all"
+                    value={newProduct.category} onChange={(e) => setNewProduct({...newProduct, category: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Price (EGP)</label>
+                  <input type="number" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all"
+                    value={newProduct.price} onChange={(e) => setNewProduct({...newProduct, price: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Discount (%)</label>
+                  <input type="number" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all"
+                    value={newProduct.discount} onChange={(e) => setNewProduct({...newProduct, discount: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Stock Inventory</label>
+                  <input type="number" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all"
+                    value={newProduct.stock} onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})} />
+                </div>
+
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Image Link (Supports Google Drive)</label>
+                  <div className="relative group">
+                    <FiLink className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl group-focus-within:text-primary transition-colors" />
+                    <input type="text" placeholder="Paste image URL here..." className="w-full pl-14 pr-6 py-5 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-3xl outline-none font-bold transition-all"
+                      value={newProduct.imageUrl} onChange={(e) => setNewProduct({...newProduct, imageUrl: e.target.value})} />
+                  </div>
+                </div>
+              </div>
+
+              <button onClick={handleAddProduct} className="w-full py-5 bg-primary text-white rounded-[1.5rem] font-black shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all text-lg uppercase tracking-widest italic">
+                {editingProduct ? "Save Changes" : "Create Product"}
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
