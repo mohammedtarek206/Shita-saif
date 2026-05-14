@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
 import Footer from "@/components/Footer";
-import { FiZap, FiShield, FiTruck, FiSmile, FiExternalLink, FiArrowRight } from "react-icons/fi";
+import { FiZap, FiShield, FiTruck, FiSmile, FiExternalLink, FiArrowRight, FiMail } from "react-icons/fi";
 import { useLanguage } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
 
