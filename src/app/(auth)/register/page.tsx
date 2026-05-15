@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { FiMail, FiLock, FiUser, FiArrowRight, FiShieldCheck } from "react-icons/fi";
+import { FiMail, FiLock, FiUser, FiArrowRight, FiShield } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { useLanguage } from "@/context/LanguageContext";
 import { signIn } from "next-auth/react";
@@ -161,7 +161,7 @@ export default function RegisterPage() {
                 <div className="w-7 h-7 border-4 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <FiShieldCheck className="text-xl" />
+                  <FiShield className="text-xl" />
                   {t.register}
                   <FiArrowRight className={language === "ar" ? "rotate-180" : ""} />
                 </>
