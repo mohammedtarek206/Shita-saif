@@ -11,8 +11,9 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
-export default function ProductDetails({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
+export default function ProductDetails({ params }: { params: any }) {
+  const resolvedParams: any = React.use(params);
+  const id = resolvedParams?.id;
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -115,21 +116,23 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
               initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
               className="aspect-square relative bg-gray-50 dark:bg-white/[0.03] rounded-[4rem] overflow-hidden group border border-gray-100 dark:border-white/5"
             >
-              <img 
-                src={product.images[selectedImage]} 
-                alt="Product" 
-                className="w-full h-full object-contain p-12 transition-transform duration-700 group-hover:scale-110"
-              />
+              {product?.images?.[selectedImage] && (
+                <img 
+                  src={product.images[selectedImage]} 
+                  alt="Product" 
+                  className="w-full h-full object-contain p-12 transition-transform duration-700 group-hover:scale-110"
+                />
+              )}
               
               {/* Floating Badges */}
               <div className="absolute top-10 left-10 flex flex-col gap-3">
-                {product.discount > 0 && (
+                {product?.discount > 0 && (
                   <div className="px-5 py-2 bg-primary text-white rounded-full font-black text-sm italic shadow-2xl">
                     -{product.discount}%
                   </div>
                 )}
                 <div className="px-5 py-2 bg-white dark:bg-black rounded-full font-black text-[10px] uppercase tracking-widest shadow-xl">
-                  {product.category}
+                  {product?.category}
                 </div>
               </div>
               
@@ -145,7 +148,7 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
             </motion.div>
             
             <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-              {product.images.map((img: string, i: number) => (
+              {product?.images?.map((img: string, i: number) => (
                 <button 
                   key={i}
                   onClick={() => setSelectedImage(i)}
@@ -167,37 +170,37 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
                 Verified Premium Appliance
               </motion.span>
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-4xl md:text-6xl font-black mb-4 italic uppercase tracking-tighter leading-tight">
-                {language === "ar" ? product.title.ar : product.title.en}
+                {language === "ar" ? product?.title?.ar : product?.title?.en}
               </motion.h1>
               <div className="flex items-center gap-4 mb-10">
                 <div className="flex items-center gap-1 text-yellow-400">
                   {[1, 2, 3, 4, 5].map(s => <FiStar key={s} className="fill-current" />)}
                 </div>
-                <span className="text-gray-400 font-bold text-sm uppercase tracking-widest">5.0 | {product.brand}</span>
+                <span className="text-gray-400 font-bold text-sm uppercase tracking-widest">5.0 | {product?.brand}</span>
               </div>
               
               <div className="flex flex-col gap-2 mb-10">
                 <div className="flex items-end gap-6">
                   <span className="text-5xl md:text-7xl font-black tracking-tighter text-gray-900 dark:text-white">
-                    {discountedPrice.toLocaleString()} <span className="text-2xl italic font-bold text-primary">{language === "ar" ? "ج.م" : "EGP"}</span>
+                    {discountedPrice?.toLocaleString()} <span className="text-2xl italic font-bold text-primary">{language === "ar" ? "ج.م" : "EGP"}</span>
                   </span>
-                  {product.discount > 0 && (
+                  {product?.discount > 0 && (
                     <span className="text-2xl md:text-3xl text-gray-400 line-through font-bold italic mb-2">
-                      {product.price.toLocaleString()}
+                      {product.price?.toLocaleString()}
                     </span>
                   )}
                 </div>
               </div>
 
               {/* Technical Specifications */}
-              {product.specs && (
+              {product?.specifications && (
                 <div className="bg-gray-50 dark:bg-white/[0.02] rounded-[3rem] p-8 border border-gray-100 dark:border-white/5">
                   <div className="flex items-center gap-3 mb-6">
                     <FiZap className="text-primary text-xl" />
                     <h3 className="font-black uppercase tracking-widest text-xs italic">Technical Highlights</h3>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {(language === "ar" ? product.specs.ar : product.specs.en)?.slice(0, 4).map((spec: any, i: number) => (
+                    {Array.isArray(language === "ar" ? product.specifications?.ar : product.specifications?.en) && (language === "ar" ? product.specifications?.ar : product.specifications?.en)?.slice(0, 4).map((spec: any, i: number) => (
                       <div key={i} className="flex flex-col gap-1">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{spec.key}</span>
                         <span className="font-bold text-sm">{spec.value}</span>
@@ -265,7 +268,7 @@ export default function ProductDetails({ params }: { params: Promise<{ id: strin
             <div className="flex-1 h-px bg-gray-100 dark:bg-white/10" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {(language === "ar" ? product.specs.ar : product.specs.en)?.map((spec: any, i: number) => (
+            {Array.isArray(language === "ar" ? product.specifications?.ar : product.specifications?.en) && (language === "ar" ? product.specifications?.ar : product.specifications?.en)?.map((spec: any, i: number) => (
               <div key={i} className="group border-b border-gray-50 dark:border-white/5 pb-4">
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 block italic">{spec.key}</span>
                 <span className="text-lg font-bold group-hover:translate-x-2 transition-transform inline-block">{spec.value}</span>
