@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import connectDB from "@/lib/db";
 import Order from "@/models/Order";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { unstable_noStore as noStore } from "next/cache";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-
 
 export async function POST(req: Request) {
   try {
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
 
     try {
       const order = await Order.create({
-        user: session.user.id,
+        user: (session.user.id && mongoose.Types.ObjectId.isValid(session.user.id)) ? session.user.id : undefined,
         userEmail: session.user.email?.toLowerCase(),
         products,
         subtotal,
@@ -86,6 +87,7 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+  noStore();
   try {
     await connectDB();
     const session = await getServerSession(authOptions) as any;
@@ -100,12 +102,12 @@ export async function GET(req: Request) {
     const userEmail = session.user.email?.toLowerCase();
     
     const isAdmin = session.user.role === "admin" || session.user.role === "superadmin";
-    
+
     let query: any = {};
     if (!isAdmin) {
       const orConditions: any[] = [];
       
-      if (session.user.id) {
+      if (session.user.id && mongoose.Types.ObjectId.isValid(session.user.id)) {
         orConditions.push({ user: session.user.id });
       }
       
