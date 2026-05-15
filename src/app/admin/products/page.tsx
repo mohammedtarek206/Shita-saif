@@ -20,7 +20,8 @@ export default function ProductsAdmin() {
     if (url.includes("drive.google.com")) {
       const match = url.match(/\/d\/(.+?)\/(view|edit)/) || url.match(/id=(.+?)(&|$)/);
       if (match && match[1]) {
-        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+        // Using thumbnail endpoint bypasses Google's recent hotlinking blocks
+        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
       }
     }
     return url;
