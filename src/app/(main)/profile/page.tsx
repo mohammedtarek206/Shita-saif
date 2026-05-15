@@ -235,16 +235,32 @@ export default function ProfilePage() {
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                           {order.products.map((item: any, i: number) => (
                             <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/2 rounded-2xl border border-transparent hover:border-white/10 transition-all">
-                              <img src={item.product?.images?.[0] || "https://placehold.co/100"} className="w-14 h-14 rounded-xl object-cover shadow-lg" alt="" />
+                              <img src={item.product?.images?.[0] || item.image || "https://placehold.co/100"} className="w-14 h-14 rounded-xl object-cover shadow-lg" alt="" />
                               <div className="min-w-0">
-                                <h4 className="font-black text-xs truncate group-hover:text-primary transition-colors">{item.product?.title?.[language]}</h4>
-                                <p className="text-[10px] font-bold text-gray-500 uppercase mt-1">Qty: {item.quantity} × {item.price} EGP</p>
+                                <h4 className="font-black text-xs truncate group-hover:text-primary transition-colors">{language === "ar" ? (item.product?.title?.ar || item.title?.ar) : (item.product?.title?.en || item.title?.en)}</h4>
+                                <p className="text-[10px] font-bold text-gray-500 uppercase mt-1">Qty: {item.quantity} × {item.price.toLocaleString()} EGP</p>
                               </div>
                             </div>
                           ))}
+                        </div>
+
+                        {/* Order Actions */}
+                        <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-gray-100 dark:border-white/5">
+                          <Link 
+                            href={`/track-order?id=${order.orderNumber}`}
+                            className="flex-1 md:flex-none text-center px-6 py-3 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+                          >
+                            {language === "ar" ? "تتبع الطلب" : "Track Order"}
+                          </Link>
+                          <Link 
+                            href={`/orders/${order.orderNumber || order._id}/invoice`}
+                            className="flex-1 md:flex-none text-center px-6 py-3 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/10 transition-all"
+                          >
+                            {language === "ar" ? "عرض الفاتورة" : "View Invoice"}
+                          </Link>
                         </div>
                       </div>
                     </motion.div>

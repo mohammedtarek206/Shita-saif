@@ -3,6 +3,7 @@ import connectDB from "@/lib/db";
 import Order from "@/models/Order";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { sendOrderNotification } from "@/services/notificationService";
 
 export async function PATCH(
   req: Request,
@@ -11,18 +12,38 @@ export async function PATCH(
   try {
     const { id } = await params;
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== "superadmin" && (session.user as any).role !== "admin") {
+    if (!session || ((session.user as any).role !== "superadmin" && (session.user as any).role !== "admin")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
     await connectDB();
-    const order = await Order.findByIdAndUpdate(id, body, { new: true });
+    
+    // Check if status is being updated to push to tracking history
+    const updateData: any = { ...body };
+    
+    if (body.status) {
+      updateData.$push = {
+        trackingHistory: {
+          status: body.status,
+          timestamp: new Date(),
+          note: body.deliveryNotes || "Status updated by admin"
+        }
+      };
+    }
+
+    const order = await Order.findByIdAndUpdate(id, updateData, { new: true });
+    
+    if (order && body.status) {
+      await sendOrderNotification(order, body.status === "delivered" ? "delivered" : "status_update");
+    }
+
     return NextResponse.json(order);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
 
 export async function DELETE(
   req: Request,

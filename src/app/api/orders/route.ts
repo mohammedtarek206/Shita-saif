@@ -30,8 +30,17 @@ export async function POST(req: Request) {
       paymentDetails 
     } = body;
 
-    // Generate unique invoice number
+    // Generate unique numbers
     const invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const orderNumber = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const trackingSteps = [
+      { label: { ar: "قيد الانتظار", en: "Pending" }, completed: true, active: true, date: new Date() },
+      { label: { ar: "تم التأكيد", en: "Confirmed" }, completed: false, active: false },
+      { label: { ar: "جاري التجهيز", en: "Preparing" }, completed: false, active: false },
+      { label: { ar: "تم الشحن", en: "Shipped" }, completed: false, active: false },
+      { label: { ar: "تم التوصيل", en: "Delivered" }, completed: false, active: false },
+    ];
 
     try {
       const order = await Order.create({
@@ -48,8 +57,11 @@ export async function POST(req: Request) {
         shippingAddress,
         paymentDetails,
         invoiceNumber,
+        orderNumber,
         status: "pending",
-        paymentStatus: "pending"
+        paymentStatus: "pending",
+        trackingSteps,
+        trackingHistory: [{ status: "pending", timestamp: new Date(), note: "Order placed successfully" }]
       });
       return NextResponse.json(order, { status: 201 });
     } catch (dbError: any) {
