@@ -8,7 +8,7 @@ import { FiSearch, FiPackage, FiTruck, FiCheckCircle, FiClock, FiMapPin, FiCalen
 import { useLanguage } from "@/context/LanguageContext";
 import { useSearchParams } from "next/navigation";
 
-export default function TrackOrderPage() {
+function TrackOrderContent() {
   const { language } = useLanguage();
   const searchParams = useSearchParams();
   const initialId = searchParams?.get("id") || "";
@@ -312,6 +312,18 @@ export default function TrackOrderPage() {
 
       <Footer />
     </main>
+  );
+}
+
+export default function TrackOrderPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0A0A0A]">
+        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      </div>
+    }>
+      <TrackOrderContent />
+    </React.Suspense>
   );
 }
 
