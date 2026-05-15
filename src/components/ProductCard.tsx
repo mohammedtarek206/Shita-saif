@@ -8,6 +8,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
+import { useRouter } from "next/navigation";
+
 interface ProductCardProps {
   product: {
     _id: string;
@@ -23,6 +25,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { language } = useLanguage();
   const { addToCart } = useCart();
   const { addToWishlist, isInWishlist, removeFromWishlist } = useWishlist();
+  const router = useRouter();
   const hasDiscount = product.discount && product.discount > 0;
   const discountedPrice = hasDiscount ? product.price - (product.price * product.discount! / 100) : product.price;
   const isFavorite = isInWishlist(product._id);
@@ -43,12 +46,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }
   };
 
+  const handleViewDetails = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/products/${product._id}`);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
-      className="group bg-white dark:bg-white/[0.03] rounded-[2rem] overflow-hidden border border-gray-100 dark:border-white/10 hover:shadow-2xl transition-all duration-500 flex flex-col h-full"
+      className="group bg-white dark:bg-white/[0.03] rounded-[2rem] overflow-hidden border border-gray-100 dark:border-white/10 hover:shadow-2xl transition-all duration-500 flex flex-col h-full relative"
     >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-50/50 dark:bg-white/[0.02]">
@@ -76,8 +85,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </span>
         </div>
 
-        {/* Action Buttons - Always visible on mobile, hover on desktop */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-300 z-20">
+        {/* Action Buttons */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-300 z-30">
           <button 
             onClick={handleAddToWishlist}
             className={cn(
@@ -89,12 +98,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           >
             <FiHeart className={isFavorite ? 'fill-current' : ''} size={18} />
           </button>
-          <Link 
-            href={`/products/${product._id}`}
+          <button 
+            onClick={handleViewDetails}
             className="w-10 h-10 rounded-xl bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white flex items-center justify-center hover:bg-secondary hover:text-white transition-all shadow-xl backdrop-blur-md"
           >
             <FiEye size={18} />
-          </Link>
+          </button>
         </div>
       </div>
 
