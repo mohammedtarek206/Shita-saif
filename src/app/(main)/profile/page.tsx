@@ -33,7 +33,12 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch("/api/orders");
+        const response = await fetch("/api/orders", {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache"
+          }
+        });
         const data = await response.json();
         if (Array.isArray(data)) setOrders(data);
       } catch (error) {
