@@ -59,7 +59,8 @@ const Hero = () => {
                   className={`absolute inset-0 bg-cover bg-center transition-transform duration-[12000ms] ease-out ${isActive ? 'scale-110' : 'scale-100'}`}
                   style={{ backgroundImage: `url(${slide.image})` }}
                 >
-                  <div className={`absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent ${slide.color}`} />
+                  <div className={`absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent ${slide.color}`} />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent opacity-80" />
                 </div>
 
                 {/* Content Overlay */}

@@ -51,7 +51,6 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
@@ -69,52 +68,63 @@ const Navbar = () => {
     <>
       <nav
         className={cn(
-          "fixed top-0 w-full z-[100] transition-all duration-500",
+          "fixed top-0 w-full z-[100] transition-all duration-700",
           isScrolled 
-            ? "h-16 md:h-20 bg-white/80 dark:bg-black/80 backdrop-blur-xl shadow-lg border-b border-gray-200/50 dark:border-white/5" 
-            : "h-20 md:h-24 bg-transparent"
+            ? "h-16 md:h-20 bg-white/90 dark:bg-black/90 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border-b border-gray-200/50 dark:border-white/5" 
+            : "h-20 md:h-28 bg-transparent"
         )}
       >
-        <div className="container mx-auto h-full px-4 flex items-center justify-between">
+        {/* Subtle top gradient for readability when transparent */}
+        {!isScrolled && (
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-transparent h-40 -z-10 pointer-events-none" />
+        )}
+
+        <div className="container mx-auto h-full px-4 md:px-8 flex items-center justify-between">
           {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-2 md:gap-4 group shrink-0">
+          <Link href="/" className="flex items-center gap-4 md:gap-6 group shrink-0">
             <div className="relative">
-              <div className="absolute -inset-2 bg-primary/20 rounded-full blur opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute -inset-4 bg-primary/25 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <img 
                 src="/Logo-removebg-preview.png" 
                 alt="Logo" 
                 className={cn(
-                  "object-contain relative transition-all duration-500 group-hover:scale-110",
-                  isScrolled ? "w-10 h-10 md:w-14 md:h-14" : "w-14 h-14 md:w-20 md:h-20"
+                  "object-contain relative transition-all duration-700 group-hover:scale-110 group-hover:rotate-12",
+                  isScrolled ? "w-12 h-12 md:w-16 md:h-16" : "w-16 h-16 md:w-28 md:h-28"
                 )}
               />
             </div>
-            <div className={cn("flex flex-col transition-all duration-500", isScrolled ? "scale-90 origin-left" : "scale-100")}>
-              <span className="text-lg md:text-2xl font-black tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <div className={cn("flex flex-col transition-all duration-700", isScrolled ? "scale-90 origin-left" : "scale-100")}>
+              <span className={cn(
+                "text-xl md:text-4xl font-black tracking-tighter italic uppercase transition-all duration-500",
+                !isScrolled ? "text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.5)]" : "bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+              )}>
                 {language === "ar" ? "الشتاء والصيف" : "SHETA - SAIF"}
               </span>
-              <span className="text-[8px] md:text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest hidden sm:block">
+              <span className={cn(
+                "text-[9px] md:text-[11px] font-black uppercase tracking-[0.4em] hidden sm:block transition-all duration-500 mt-1",
+                !isScrolled ? "text-white/80 drop-shadow-md" : "text-gray-500 dark:text-gray-400"
+              )}>
                 {language === "ar" ? "للأجهزة المنزلية الفاخرة" : "Premium Home Appliances"}
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-10">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm font-bold transition-all hover:text-primary relative group/link py-2",
+                  "text-xs md:text-sm font-black uppercase tracking-widest transition-all hover:text-primary relative group/link py-2 italic",
                   pathname === link.href 
                     ? "text-primary" 
-                    : "text-gray-700 dark:text-gray-300"
+                    : (!isScrolled ? "text-white drop-shadow-md" : "text-gray-800 dark:text-gray-200")
                 )}
               >
                 {language === "ar" ? link.name.ar : link.name.en}
                 <span className={cn(
-                  "absolute bottom-0 left-0 w-full h-0.5 bg-primary transition-transform duration-300 origin-right scale-x-0 group-hover/link:scale-x-100",
+                  "absolute bottom-0 left-0 w-full h-0.5 bg-primary transition-transform duration-500 origin-right scale-x-0 group-hover/link:scale-x-100",
                   pathname === link.href && "scale-x-100"
                 )} />
               </Link>
@@ -122,59 +132,88 @@ const Navbar = () => {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-1 md:gap-4">
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-2">
+          <div className="flex items-center gap-2 md:gap-5">
+            <div className="hidden md:flex items-center gap-3">
+              {[
+                { icon: <FiSearch />, onClick: () => setIsSearchOpen(true), title: "Search" },
+                { icon: <FiHeart />, href: "/wishlist", badge: wishlistCount },
+                { icon: theme === "light" ? <FiMoon /> : <FiSun />, onClick: toggleTheme },
+              ].map((action, i) => (
+                action.href ? (
+                  <Link 
+                    key={i} href={action.href} 
+                    className={cn(
+                      "p-3 rounded-2xl transition-all relative hover:scale-110",
+                      !isScrolled ? "text-white bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
+                    )}
+                  >
+                    <span className="text-xl">{action.icon}</span>
+                    {action.badge > 0 && (
+                      <span className="absolute top-0 right-0 w-5 h-5 bg-primary text-white text-[10px] flex items-center justify-center rounded-full font-black animate-bounce shadow-lg">
+                        {action.badge}
+                      </span>
+                    )}
+                  </Link>
+                ) : (
+                  <button 
+                    key={i} onClick={action.onClick}
+                    className={cn(
+                      "p-3 rounded-2xl transition-all hover:scale-110",
+                      !isScrolled ? "text-white bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
+                    )}
+                  >
+                    <span className="text-xl">{action.icon}</span>
+                  </button>
+                )
+              ))}
+
               <button 
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors"
-                title="Search"
-              >
-                <FiSearch className="text-xl" />
-              </button>
-              
-              <Link href="/wishlist" className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors relative">
-                <FiHeart className="text-xl" />
-                {wishlistCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-white text-[10px] flex items-center justify-center rounded-full animate-pulse">
-                    {wishlistCount}
-                  </span>
+                onClick={toggleLanguage} 
+                className={cn(
+                  "px-4 py-2.5 rounded-2xl transition-all flex items-center gap-2 font-black text-xs uppercase tracking-tighter hover:scale-105",
+                  !isScrolled ? "text-white bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
                 )}
-              </Link>
-
-              <button onClick={toggleTheme} className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors">
-                {theme === "light" ? <FiMoon className="text-xl" /> : <FiSun className="text-xl" />}
-              </button>
-
-              <button onClick={toggleLanguage} className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors flex items-center gap-1">
-                <FiGlobe className="text-xl" />
-                <span className="text-[10px] font-black">{language === "ar" ? "EN" : "AR"}</span>
+              >
+                <FiGlobe className="text-lg" />
+                <span>{language === "ar" ? "EN" : "AR"}</span>
               </button>
             </div>
 
             {/* Cart Always Visible */}
-            <Link href="/cart" className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors relative">
-              <FiShoppingCart className="text-xl md:text-2xl" />
+            <Link 
+              href="/cart" 
+              className={cn(
+                "p-3 md:p-4 rounded-2xl transition-all relative hover:scale-110 group/cart shadow-xl",
+                !isScrolled ? "bg-primary text-white" : "bg-primary text-white"
+              )}
+            >
+              <FiShoppingCart className="text-xl md:text-2xl group-hover:rotate-12 transition-transform" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-primary text-white text-[10px] md:text-xs flex items-center justify-center rounded-full shadow-lg">
+                <span className="absolute -top-2 -right-2 w-6 h-6 bg-white text-primary text-xs flex items-center justify-center rounded-full font-black shadow-2xl border-2 border-primary">
                   {totalItems}
                 </span>
               )}
             </Link>
 
-            {/* User Dropdown / Login */}
+            {/* User Profile */}
             <div className="relative" ref={dropdownRef}>
               {status === "authenticated" ? (
                 <button 
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2 p-1 bg-gray-100 dark:bg-white/5 rounded-full border border-transparent hover:border-primary/30 transition-all"
+                  className="flex items-center gap-2 p-1 bg-gradient-to-tr from-primary to-secondary rounded-2xl border-2 border-white/20 shadow-2xl hover:scale-110 transition-all"
                 >
-                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-white font-bold text-sm shadow-inner">
-                    {session.user?.name?.charAt(0)}
+                  <div className="w-9 h-9 md:w-11 md:h-11 rounded-xl flex items-center justify-center text-white font-black text-lg">
+                    {session.user?.name?.charAt(0).toUpperCase()}
                   </div>
                 </button>
               ) : (
-                <Link href="/login" className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors">
+                <Link 
+                  href="/login" 
+                  className={cn(
+                    "p-3 md:p-4 rounded-2xl transition-all hover:scale-110",
+                    !isScrolled ? "text-white bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
+                  )}
+                >
                   <FiUser className="text-xl md:text-2xl" />
                 </Link>
               )}
@@ -182,33 +221,37 @@ const Navbar = () => {
               <AnimatePresence>
                 {isDropdownOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-3 w-56 bg-white dark:bg-black rounded-2xl shadow-2xl border border-gray-100 dark:border-white/10 overflow-hidden z-[110]"
+                    exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                    className="absolute right-0 mt-5 w-64 bg-white dark:bg-[#0A0A0A] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-white/10 overflow-hidden z-[110]"
                   >
-                    <div className="p-4 border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/5">
-                      <p className="text-xs text-gray-500">{language === "ar" ? "مرحباً بك" : "Welcome back"}</p>
-                      <p className="font-black text-sm truncate">{session?.user?.name}</p>
+                    <div className="p-6 bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-white/5 dark:to-transparent border-b border-gray-100 dark:border-white/5">
+                      <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1 italic">Identity Verified</p>
+                      <p className="font-black text-lg truncate uppercase italic tracking-tight">{session?.user?.name}</p>
                     </div>
-                    <div className="p-2">
-                      {((session?.user as any)?.role === "admin" || (session?.user as any)?.role === "superadmin") && (
-                        <Link href="/admin" className="flex items-center gap-3 px-4 py-2.5 hover:bg-primary/10 hover:text-primary rounded-xl transition-all text-sm font-bold">
-                          <FiGrid className="text-lg" />
-                          {language === "ar" ? "لوحة التحكم" : "Admin Panel"}
-                        </Link>
-                      )}
-                      <Link href="/profile" className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all text-sm font-bold">
-                        <FiUser className="text-lg" />
-                        {language === "ar" ? "الملف الشخصي" : "Profile"}
-                      </Link>
-                      <Link href="/profile?tab=orders" className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all text-sm font-bold">
-                        <FiShoppingBag className="text-lg" />
-                        {language === "ar" ? "طلباتي" : "My Orders"}
-                      </Link>
-                      <button onClick={() => signOut()} className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-red-50 dark:hover:bg-red-500/10 text-red-500 rounded-xl transition-all text-sm font-bold mt-1">
-                        <FiLogOut className="text-lg" />
-                        {language === "ar" ? "خروج" : "Logout"}
+                    <div className="p-3">
+                      {[
+                        { icon: <FiGrid />, label: language === "ar" ? "لوحة التحكم" : "Admin Panel", href: "/admin", adminOnly: true },
+                        { icon: <FiUser />, label: language === "ar" ? "الملف الشخصي" : "Profile Settings", href: "/profile" },
+                        { icon: <FiShoppingBag />, label: language === "ar" ? "طلباتي" : "Order History", href: "/profile?tab=orders" },
+                      ].map((item, i) => (
+                        (!item.adminOnly || (session?.user as any)?.role === "admin" || (session?.user as any)?.role === "superadmin") && (
+                          <Link 
+                            key={i} href={item.href} 
+                            className="flex items-center gap-4 px-5 py-3.5 hover:bg-primary/5 hover:text-primary rounded-2xl transition-all text-xs font-black uppercase tracking-widest group"
+                          >
+                            <span className="text-xl group-hover:scale-110 transition-transform">{item.icon}</span>
+                            {item.label}
+                          </Link>
+                        )
+                      ))}
+                      <button 
+                        onClick={() => signOut()} 
+                        className="flex items-center gap-4 w-full px-5 py-3.5 hover:bg-rose-500/10 text-rose-500 rounded-2xl transition-all text-xs font-black uppercase tracking-widest mt-2"
+                      >
+                        <FiLogOut className="text-xl" />
+                        {language === "ar" ? "تسجيل خروج" : "Terminate Session"}
                       </button>
                     </div>
                   </motion.div>
@@ -218,7 +261,10 @@ const Navbar = () => {
 
             {/* Mobile Menu Toggle */}
             <button 
-              className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors relative z-[120]"
+              className={cn(
+                "lg:hidden p-3 rounded-2xl transition-all relative z-[120]",
+                !isScrolled ? "text-white bg-white/10 backdrop-blur-md border border-white/10" : "text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-white/5"
+              )}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <FiX className="text-2xl" /> : <FiMenu className="text-2xl" />}
