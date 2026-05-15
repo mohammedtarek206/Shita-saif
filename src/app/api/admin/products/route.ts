@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       price: Number(body.price),
       discount: Number(body.discount || 0),
       stock: Number(body.stock || 0),
-      images: [body.imageUrl],
+      images: body.images && body.images.length > 0 ? body.images : (body.imageUrl ? [body.imageUrl] : []),
       specifications: {
         ar: body.specs || [],
         en: body.specs || []

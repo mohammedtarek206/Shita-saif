@@ -10,7 +10,7 @@ export default function ProductsAdmin() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [newProduct, setNewProduct] = useState({
-    nameAr: "", nameEn: "", category: "", price: "", discount: "", stock: "", imageUrl: "",
+    nameAr: "", nameEn: "", category: "", price: "", discount: "", stock: "", images: [""],
     specs: [{ key: "", value: "" }]
   });
   const [editingProduct, setEditingProduct] = useState<any>(null);
@@ -45,7 +45,7 @@ export default function ProductsAdmin() {
   }, []);
 
   const handleAddProduct = async () => {
-    const finalImageUrl = convertDriveLink(newProduct.imageUrl);
+    const finalImages = newProduct.images.map(convertDriveLink).filter(url => url.trim() !== "");
     try {
       const url = editingProduct ? `/api/admin/products/${editingProduct._id}` : "/api/admin/products";
       const method = editingProduct ? "PATCH" : "POST";
@@ -54,12 +54,11 @@ export default function ProductsAdmin() {
         method,
         body: JSON.stringify({ 
           ...newProduct, 
-          imageUrl: finalImageUrl,
           title: { ar: newProduct.nameAr, en: newProduct.nameEn },
           price: Number(newProduct.price),
           discount: Number(newProduct.discount),
           stock: Number(newProduct.stock),
-          images: [finalImageUrl]
+          images: finalImages
         }),
         headers: { "Content-Type": "application/json" },
       });
@@ -75,7 +74,7 @@ export default function ProductsAdmin() {
   const closeModal = () => {
     setShowAddModal(false);
     setEditingProduct(null);
-    setNewProduct({ nameAr: "", nameEn: "", category: "", price: "", discount: "", stock: "", imageUrl: "", specs: [{ key: "", value: "" }] });
+    setNewProduct({ nameAr: "", nameEn: "", category: "", price: "", discount: "", stock: "", images: [""], specs: [{ key: "", value: "" }] });
   };
 
   const startEdit = (product: any) => {
@@ -87,7 +86,7 @@ export default function ProductsAdmin() {
       price: product.price || "",
       discount: product.discount || "",
       stock: product.stock || "",
-      imageUrl: product.images?.[0] || "",
+      images: product.images?.length ? product.images : [""],
       specs: product.specifications?.en || [{ key: "", value: "" }]
     });
     setShowAddModal(true);
@@ -341,13 +340,43 @@ export default function ProductsAdmin() {
                     value={newProduct.stock} onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})} />
                 </div>
 
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Image Link (Supports Google Drive)</label>
-                  <div className="relative group">
-                    <FiLink className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl group-focus-within:text-primary transition-colors" />
-                    <input type="text" placeholder="Paste image URL here..." className="w-full pl-14 pr-6 py-5 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-3xl outline-none font-bold transition-all"
-                      value={newProduct.imageUrl} onChange={(e) => setNewProduct({...newProduct, imageUrl: e.target.value})} />
+                <div className="md:col-span-2 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Image Links (Supports Google Drive)</label>
+                    <button 
+                      type="button"
+                      onClick={() => setNewProduct({...newProduct, images: [...newProduct.images, ""]})}
+                      className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1 hover:text-primary/80 transition-colors"
+                    >
+                      <FiPlus /> Add Image
+                    </button>
                   </div>
+                  {newProduct.images.map((img, index) => (
+                    <div key={index} className="relative group flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <FiLink className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl group-focus-within:text-primary transition-colors" />
+                        <input type="text" placeholder="Paste image URL here..." className="w-full pl-14 pr-6 py-5 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-3xl outline-none font-bold transition-all"
+                          value={img} onChange={(e) => {
+                            const newImages = [...newProduct.images];
+                            newImages[index] = e.target.value;
+                            setNewProduct({...newProduct, images: newImages});
+                          }} />
+                      </div>
+                      {newProduct.images.length > 1 && (
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const newImages = [...newProduct.images];
+                            newImages.splice(index, 1);
+                            setNewProduct({...newProduct, images: newImages});
+                          }}
+                          className="w-14 h-14 bg-rose-500/10 text-rose-500 rounded-3xl flex items-center justify-center shrink-0 hover:bg-rose-500 hover:text-white transition-all"
+                        >
+                          <FiTrash2 />
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
 

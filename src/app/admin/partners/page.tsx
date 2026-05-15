@@ -9,6 +9,16 @@ export default function PartnersAdmin() {
   const [showModal, setShowModal] = useState(false);
   const [newPartner, setNewPartner] = useState({ name: "", category: "", logo: "" });
 
+  const convertDriveLink = (url: string) => {
+    if (url.includes("drive.google.com")) {
+      const match = url.match(/\/d\/(.+?)\/(view|edit)/) || url.match(/id=(.+?)(&|$)/);
+      if (match && match[1]) {
+        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+      }
+    }
+    return url;
+  };
+
   const fetchPartners = async () => {
     try {
       const res = await fetch("/api/admin/partners");
@@ -27,10 +37,11 @@ export default function PartnersAdmin() {
 
   const handleAddPartner = async (e: React.FormEvent) => {
     e.preventDefault();
+    const finalLogo = convertDriveLink(newPartner.logo);
     try {
       const res = await fetch("/api/admin/partners", {
         method: "POST",
-        body: JSON.stringify(newPartner),
+        body: JSON.stringify({ ...newPartner, logo: finalLogo }),
         headers: { "Content-Type": "application/json" },
       });
       if (res.ok) {
