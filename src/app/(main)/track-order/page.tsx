@@ -11,24 +11,23 @@ import { useSearchParams } from "next/navigation";
 function TrackOrderContent() {
   const { language } = useLanguage();
   const searchParams = useSearchParams();
-  const initialId = searchParams?.get("id") || "";
+  const initialPhone = searchParams?.get("phone") || "";
   
-  const [identifier, setIdentifier] = useState("");
-  const [orderId, setOrderId] = useState(initialId);
+  const [phone, setPhone] = useState(initialPhone);
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchTracking = async (searchId: string, searchIdent: string, isPolling = false) => {
+  const fetchTracking = async (searchPhone: string, isPolling = false) => {
     if (!isPolling) setLoading(true);
     setError("");
 
     try {
-      const res = await fetch(`/api/orders/track?identifier=${searchIdent || searchId}&orderId=${searchId}`);
+      const res = await fetch(`/api/orders/track?phone=${encodeURIComponent(searchPhone)}`);
       const data = await res.json();
 
       if (data.error) {
-        if (!isPolling) setError(language === "ar" ? "تعذر العثور على الطلب. يرجى التأكد من البيانات." : "Order not found. Please check your details.");
+        if (!isPolling) setError(language === "ar" ? "تعذر العثور على طلب مسجل بهذا الرقم." : "No orders found for this phone number.");
       } else {
         setOrder(data);
       }
@@ -41,22 +40,21 @@ function TrackOrderContent() {
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
-    fetchTracking(orderId, identifier);
+    fetchTracking(phone);
   };
 
   useEffect(() => {
-    if (initialId) {
-      // Auto fetch if id is in URL (assume user is logged in, so their email is linked, we just search with ID as identifier fallback in the API)
-      fetchTracking(initialId, initialId);
+    if (initialPhone) {
+      fetchTracking(initialPhone);
     }
-  }, [initialId]);
+  }, [initialPhone]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (order && !["delivered", "cancelled"].includes(order.status)) {
       // Poll every 30 seconds for live updates
       interval = setInterval(() => {
-        fetchTracking(order.orderNumber || order._id, order.userEmail || order.shippingAddress.email, true);
+        fetchTracking(order.shippingAddress.phone, true);
       }, 30000);
     }
     return () => clearInterval(interval);
@@ -64,9 +62,8 @@ function TrackOrderContent() {
 
   const t = {
     title: language === "ar" ? "تتبع طلبك" : "Track Your Order",
-    subtitle: language === "ar" ? "تابع حالة شحنتك لحظة بلحظة" : "Follow your shipment status in real-time",
-    idLabel: language === "ar" ? "رقم الطلب" : "Order ID",
-    contactLabel: language === "ar" ? "البريد الإلكتروني أو الهاتف" : "Email or Phone Number",
+    subtitle: language === "ar" ? "تابع حالة شحنتك لحظة بلحظة برقم الهاتف" : "Follow your shipment status in real-time by phone",
+    contactLabel: language === "ar" ? "رقم الهاتف المسجل بالطلب" : "Phone Number",
     btn: language === "ar" ? "تتبع الآن" : "Track Now",
     details: language === "ar" ? "تفاصيل الطلب" : "Order Details",
     status: language === "ar" ? "الحالة الحالية" : "Current Status",
@@ -102,7 +99,7 @@ function TrackOrderContent() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-xs font-black uppercase tracking-widest mb-6"
             >
-              <FiTruck className="animate-bounce" /> {language === "ar" ? "نظام تتبع ذكي" : "Smart Tracking System"}
+              <FiTruck className="animate-bounce" /> {language === "ar" ? "نظام تتبع برقم الهاتف" : "Phone Number Tracking"}
             </motion.div>
             <motion.h1 
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
@@ -121,34 +118,23 @@ function TrackOrderContent() {
           {/* Search Card */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-white/[0.03] rounded-[3rem] p-8 md:p-12 border border-gray-100 dark:border-white/5 shadow-2xl backdrop-blur-3xl mb-12"
+            className="bg-white dark:bg-white/[0.03] rounded-[3rem] p-8 md:p-12 border border-gray-100 dark:border-white/5 shadow-2xl backdrop-blur-3xl mb-12 max-w-3xl mx-auto"
           >
-            <form onSubmit={handleTrack} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
-              <div className="space-y-3">
+            <form onSubmit={handleTrack} className="flex flex-col md:flex-row gap-6 items-end">
+              <div className="space-y-3 flex-1 w-full">
                 <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-2">{t.contactLabel}</label>
                 <div className="relative group">
                   <FiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                   <input 
-                    type="text" required value={identifier} onChange={(e) => setIdentifier(e.target.value)}
+                    type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl px-14 py-4 font-bold outline-none transition-all"
-                    placeholder="example@mail.com"
-                  />
-                </div>
-              </div>
-              <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-2">{t.idLabel}</label>
-                <div className="relative group">
-                  <FiPackage className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-                  <input 
-                    type="text" required value={orderId} onChange={(e) => setOrderId(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl px-14 py-4 font-bold outline-none transition-all"
-                    placeholder="ORD-XXXXXX"
+                    placeholder="01234567890"
                   />
                 </div>
               </div>
               <button 
                 disabled={loading}
-                className="w-full h-[60px] bg-primary text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+                className="w-full md:w-48 h-[60px] bg-primary text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 shrink-0"
               >
                 {loading ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><FiSearch /> {t.btn}</>}
               </button>

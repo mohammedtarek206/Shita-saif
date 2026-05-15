@@ -75,7 +75,7 @@ export default function InvoicePage() {
               </div>
               <div className="hidden md:block p-2 bg-white rounded-xl shadow-lg border border-gray-100 print:shadow-none print:border-black">
                 <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/track-order?id=${order.orderNumber}` : order.orderNumber)}`} 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/track-order?phone=${order.shippingAddress?.phone}` : order.shippingAddress?.phone)}`} 
                   alt="QR Code" 
                   className="w-20 h-20"
                 />

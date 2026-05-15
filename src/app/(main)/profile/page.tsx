@@ -250,7 +250,7 @@ export default function ProfilePage() {
                         {/* Order Actions */}
                         <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-gray-100 dark:border-white/5">
                           <Link 
-                            href={`/track-order?id=${order.orderNumber}`}
+                            href={`/track-order?phone=${order.shippingAddress?.phone}`}
                             className="flex-1 md:flex-none text-center px-6 py-3 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 transition-all"
                           >
                             {language === "ar" ? "تتبع الطلب" : "Track Order"}
