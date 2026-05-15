@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Order from "@/models/Order";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const phone = searchParams.get("phone");
+    const phone = searchParams.get("phone")?.trim();
 
     if (!phone) {
       return NextResponse.json({ error: "Missing phone number" }, { status: 400 });

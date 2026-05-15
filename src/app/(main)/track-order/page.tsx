@@ -23,7 +23,10 @@ function TrackOrderContent() {
     setError("");
 
     try {
-      const res = await fetch(`/api/orders/track?phone=${encodeURIComponent(searchPhone)}`);
+      const res = await fetch(`/api/orders/track?phone=${encodeURIComponent(searchPhone.trim())}`, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" }
+      });
       const data = await res.json();
 
       if (data.error) {

@@ -100,14 +100,23 @@ export async function GET(req: Request) {
     const userEmail = session.user.email?.toLowerCase();
     
     const isAdmin = session.user.role === "admin" || session.user.role === "superadmin";
-    const emailRegex = new RegExp(`^${session.user.email}$`, "i");
-    const query = isAdmin ? {} : { 
-      $or: [
-        { user: session.user.id }, 
-        { userEmail: emailRegex },
-        { "shippingAddress.email": emailRegex } 
-      ] 
-    };
+    
+    let query: any = {};
+    if (!isAdmin) {
+      const orConditions: any[] = [];
+      
+      if (session.user.id) {
+        orConditions.push({ user: session.user.id });
+      }
+      
+      if (session.user.email) {
+        const emailRegex = new RegExp(`^${session.user.email}$`, "i");
+        orConditions.push({ userEmail: emailRegex });
+        orConditions.push({ "shippingAddress.email": emailRegex });
+      }
+
+      query = orConditions.length > 0 ? { $or: orConditions } : { _id: null }; // _id: null to return empty if no user info
+    }
     
     console.log("--- DEBUG ORDERS ---");
     console.log("Session User:", session.user);
