@@ -6,6 +6,7 @@ import {
   FiBarChart2, FiCheckCircle, FiActivity, FiTag, FiFileText, FiTrendingUp 
 } from "react-icons/fi";
 import { useLanguage } from "@/context/LanguageContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function SEOBlogManager() {
   const { language } = useLanguage();
