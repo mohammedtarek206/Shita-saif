@@ -511,7 +511,7 @@ export default function AdminOrders() {
                 
                 {/* Developer Credit Signature block (SEO Optimized) */}
                 <div style={{ border: "1px dashed #6366f1", padding: "12px 20px", borderRadius: "15px", backgroundColor: "#f5f3ff", textAlign: "right" }}>
-                  <p style={{ margin: 0, fontSize: "9px", fontWeight: "900", color: "#6b7280", uppercase: true }}>
+                  <p style={{ margin: 0, fontSize: "9px", fontWeight: "900", color: "#6b7280", textTransform: "uppercase" }}>
                     DEVELOPER SIGNATURE & SYSTEMS INFRASTRUCTURE
                   </p>
                   <p style={{ margin: "4px 0 0 0", fontSize: "11px", fontWeight: "900", color: "#4f46e5" }}>
