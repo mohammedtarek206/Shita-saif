@@ -3,10 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FiShoppingCart, FiHeart, FiEye } from "react-icons/fi";
+import { FiShoppingCart, FiHeart, FiEye, FiRepeat } from "react-icons/fi";
 import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useCompare } from "@/context/CompareContext";
 
 import { useRouter } from "next/navigation";
 
@@ -25,10 +26,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { language } = useLanguage();
   const { addToCart } = useCart();
   const { addToWishlist, isInWishlist, removeFromWishlist } = useWishlist();
+  const { addToCompare, removeFromCompare, isInCompare, compareList } = useCompare();
   const router = useRouter();
   const hasDiscount = product.discount && product.discount > 0;
   const discountedPrice = hasDiscount ? product.price - (product.price * product.discount! / 100) : product.price;
   const isFavorite = isInWishlist(product._id);
+  const inCompare = isInCompare(product._id);
+  const compareMaxed = compareList.length >= 3 && !inCompare;
+
+  // Calculate lowest possible installment (assuming 36 months)
+  const lowestInstallment = Math.ceil((discountedPrice * 1.15) / 36);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -46,10 +53,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }
   };
 
+  const getSEOLink = (p: any) => {
+    const slug = p.title?.en
+      ? p.title.en.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")
+      : "product";
+    return `/products/${slug}-${p._id}`;
+  };
+
   const handleViewDetails = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    router.push(`/products/${product._id}`);
+    router.push(getSEOLink(product));
   };
 
   return (
@@ -61,7 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-50/50 dark:bg-white/[0.02]">
-        <Link href={`/products/${product._id}`} className="block w-full h-full">
+        <Link href={getSEOLink(product)} className="block w-full h-full">
           <img
             src={product.images[0]}
             alt={language === "ar" ? product.title.ar : product.title.en}
@@ -104,16 +118,45 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           >
             <FiEye size={18} />
           </button>
+          <button
+            onClick={e => { e.preventDefault(); e.stopPropagation(); inCompare ? removeFromCompare(product._id) : addToCompare({ ...product, discount: product.discount ?? 0 }); }}
+            disabled={compareMaxed}
+            title={compareMaxed ? (language === "ar" ? "الحد الأقصى 3 منتجات" : "Max 3 products") : (inCompare ? (language === "ar" ? "إزالة من المقارنة" : "Remove from compare") : (language === "ar" ? "إضافة للمقارنة" : "Add to compare"))}
+            className={cn(
+              "w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-xl backdrop-blur-md",
+              inCompare
+                ? "bg-blue-500 text-white"
+                : compareMaxed
+                  ? "bg-white/50 dark:bg-black/50 text-gray-300 cursor-not-allowed"
+                  : "bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white hover:bg-blue-500 hover:text-white"
+            )}
+          >
+            <FiRepeat size={18} />
+          </button>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-4 md:p-6 flex flex-col flex-1">
-        <Link href={`/products/${product._id}`} className="mb-2">
+        <Link href={getSEOLink(product)} className="mb-2">
           <h3 className="text-sm md:text-lg font-black line-clamp-2 hover:text-primary transition-colors leading-tight min-h-[2.5rem] md:min-h-[3.5rem]">
             {language === "ar" ? product.title.ar : product.title.en}
           </h3>
         </Link>
+        
+        <div className="mb-3">
+          <div className="inline-flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-2 py-1 rounded-lg">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-primary">
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M8 12L11 15L16 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="text-[10px] md:text-xs font-bold text-gray-600 dark:text-gray-300">
+              {language === "ar" ? "قسط بـ " : "Install from "}
+              <span className="text-primary font-black">{lowestInstallment} {language === "ar" ? "ج.م" : "EGP"}</span>
+              {language === "ar" ? " / شهر" : " / mo"}
+            </span>
+          </div>
+        </div>
         
         <div className="mt-auto flex flex-col gap-4">
           <div className="flex items-baseline gap-2">

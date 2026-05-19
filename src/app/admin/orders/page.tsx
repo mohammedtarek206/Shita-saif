@@ -4,9 +4,10 @@ import React, { useState, useEffect } from "react";
 import { 
   FiPackage, FiCheckCircle, FiXCircle, 
   FiClock, FiEye, FiDownload, FiDollarSign,
-  FiPhone, FiChevronDown, FiTrash2, FiCalendar, FiUser, FiSearch, FiTruck, FiEdit3
+  FiPhone, FiChevronDown, FiTrash2, FiCalendar, FiUser, FiSearch, FiTruck, FiEdit3, FiPrinter, FiX
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -14,6 +15,9 @@ export default function AdminOrders() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingOrder, setEditingOrder] = useState<any>(null);
+  const [printingOrder, setPrintingOrder] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
+  const [printMode, setPrintMode] = useState<"invoice" | "receipt">("invoice");
 
   const fetchOrders = async () => {
     try {
@@ -33,6 +37,7 @@ export default function AdminOrders() {
   };
 
   useEffect(() => {
+    setMounted(true);
     fetchOrders();
   }, []);
 
@@ -68,6 +73,14 @@ export default function AdminOrders() {
     }
   };
 
+  const handlePrint = (order: any, mode: "invoice" | "receipt" = "invoice") => {
+    setPrintingOrder(order);
+    setPrintMode(mode);
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "delivered": return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
@@ -93,6 +106,30 @@ export default function AdminOrders() {
 
   return (
     <div className="space-y-8 pb-20">
+      {/* Print CSS Injection */}
+      <style>{`
+        @media print {
+          body > *:not(#printable-invoice-container) {
+            display: none !important;
+          }
+          #printable-invoice-container {
+            display: block !important;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: ${printMode === "receipt" ? "80mm !important" : "100% !important"};
+            max-width: ${printMode === "receipt" ? "80mm !important" : "none !important"};
+            background: white !important;
+            color: black !important;
+            padding: ${printMode === "receipt" ? "10px !important" : "40px !important"};
+            box-sizing: border-box;
+            direction: rtl;
+            font-size: ${printMode === "receipt" ? "11px !important" : "inherit"};
+            line-height: 1.4;
+          }
+        }
+      `}</style>
+
       {/* Header & Search */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -184,6 +221,20 @@ export default function AdminOrders() {
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-2">
                     <button 
+                      onClick={() => handlePrint(order, "invoice")}
+                      title="طباعة فاتورة A4 / Print A4 Invoice"
+                      className="w-9 h-9 flex items-center justify-center bg-emerald-500/10 text-emerald-500 rounded-xl hover:bg-emerald-500 hover:text-white transition-all"
+                    >
+                      <FiPrinter size={14} />
+                    </button>
+                    <button 
+                      onClick={() => handlePrint(order, "receipt")}
+                      title="طباعة إيصال حراري / Print Thermal Receipt"
+                      className="w-9 h-9 flex items-center justify-center bg-indigo-500/10 text-indigo-500 rounded-xl hover:bg-indigo-500 hover:text-white transition-all"
+                    >
+                      <FiPrinter size={14} className="scale-x-[-1]" />
+                    </button>
+                    <button 
                       onClick={() => setEditingOrder(order)}
                       className="w-10 h-10 flex items-center justify-center bg-primary/10 text-primary rounded-xl hover:bg-primary hover:text-white transition-all"
                     >
@@ -201,6 +252,54 @@ export default function AdminOrders() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="lg:hidden space-y-4">
+        {filteredOrders.map((order: any) => (
+          <div key={order._id} className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-black text-sm">{order.orderNumber || order.invoiceNumber}</p>
+                <p className="text-[10px] text-gray-500 font-bold">{new Date(order.createdAt).toLocaleDateString()}</p>
+              </div>
+              <span className={cn("px-3 py-1 rounded-lg text-[9px] font-black uppercase", getStatusColor(order.status))}>
+                {order.status}
+              </span>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-xs font-black text-gray-800 dark:text-gray-200">{order.shippingAddress?.name}</p>
+              <p className="text-[10px] text-gray-500 font-bold">{order.shippingAddress?.phone}</p>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-gray-100 dark:border-white/5 pt-3">
+              <p className="font-black text-primary">{order.totalPrice.toLocaleString()} EGP</p>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => handlePrint(order, "invoice")}
+                  title="A4 Invoice"
+                  className="p-2.5 bg-emerald-500/10 text-emerald-500 rounded-xl"
+                >
+                  <FiPrinter size={16} />
+                </button>
+                <button 
+                  onClick={() => handlePrint(order, "receipt")}
+                  title="Thermal Receipt"
+                  className="p-2.5 bg-indigo-500/10 text-indigo-500 rounded-xl"
+                >
+                  <FiPrinter size={16} className="scale-x-[-1]" />
+                </button>
+                <button 
+                  onClick={() => setEditingOrder(order)}
+                  className="p-2.5 bg-primary/10 text-primary rounded-xl"
+                >
+                  <FiEdit3 size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Edit Modal / Drawer */}
@@ -222,7 +321,7 @@ export default function AdminOrders() {
                   <p className="text-xs font-bold text-gray-500">{editingOrder.orderNumber}</p>
                 </div>
                 <button onClick={() => setEditingOrder(null)} className="w-12 h-12 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all">
-                  <FiXCircle size={24} />
+                  <FiX size={20} />
                 </button>
               </div>
 
@@ -304,22 +403,225 @@ export default function AdminOrders() {
         )}
       </AnimatePresence>
 
-      {/* Image Modal */}
-      <AnimatePresence>
-        {selectedImage && (
-          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setSelectedImage(null)}
-              className="absolute inset-0 bg-black/95 backdrop-blur-2xl cursor-zoom-out" 
-            />
-            <motion.img 
-              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-              src={selectedImage} className="relative max-w-full max-h-[80vh] rounded-[3rem] shadow-2xl border-2 border-white/10" 
-            />
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Hidden printable invoice container */}
+      {mounted && printingOrder && typeof window !== "undefined" && createPortal(
+        <div id="printable-invoice-container" className="font-cairo text-black">
+          {printMode === "invoice" ? (
+            /* ========================================================
+               1. A4 INVOICE TEMPLATE (Amazon / Noon inspired)
+               ======================================================== */
+            <div style={{ direction: "rtl", textAlign: "right" }}>
+              {/* Top Banner and Brand details */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "3px solid #6366f1", paddingBottom: "20px", marginBottom: "25px" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <img src="/Logo-removebg-preview.png" alt="Logo" style={{ width: "60px", height: "60px", objectFit: "contain" }} />
+                    <div>
+                      <h1 style={{ margin: 0, fontWeight: "900", fontSize: "26px", color: "#1e1b4b" }}>معرض الشتاء والصيف</h1>
+                      <p style={{ margin: "2px 0 0 0", color: "#4f46e5", fontSize: "11px", fontWeight: "900", letterSpacing: "1px" }}>SHETA-SAIF APPLIANCES</p>
+                    </div>
+                  </div>
+                  <p style={{ margin: "10px 0 0 0", color: "#666", fontSize: "11px", lineHeight: "1.6" }}>
+                    تزمنت الشرقية، بني سويف، مصر <br />
+                    هاتف: 01223366046 | البريد: whaba78@gmail.com
+                  </p>
+                </div>
+                
+                <div style={{ textAlign: "left", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                  <div style={{ backgroundColor: "#f3f4f6", padding: "8px 15px", borderRadius: "10px", marginBottom: "10px", borderRight: "4px solid #db2777" }}>
+                    <h2 style={{ margin: 0, color: "#db2777", fontWeight: "900", fontSize: "18px" }}>فاتورة مبيعات رقمية</h2>
+                    <p style={{ margin: "2px 0 0 0", fontSize: "12px", fontWeight: "bold", color: "#374151" }}>
+                      رقم الطلب: {printingOrder.orderNumber || printingOrder.invoiceNumber}
+                    </p>
+                  </div>
+                  {/* Retail Code128 Barcode Generator API */}
+                  <img 
+                    src={`https://bwipjs-api.metafloor.com/?bcid=code128&text=${printingOrder.orderNumber || printingOrder.invoiceNumber || 'INV-123'}&scale=1.5&rotate=N&includeText=true`}
+                    alt="Barcode"
+                    style={{ height: "40px", width: "150px", objectFit: "contain", marginBottom: "5px" }}
+                  />
+                </div>
+              </div>
+
+              {/* QR and Order Tracking Details card */}
+              <div style={{ display: "grid", gridTemplateColumns: "2.5fr 1fr", gap: "20px", marginBottom: "25px" }}>
+                
+                {/* Details Grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+                  <div style={{ border: "1px solid #e5e7eb", padding: "15px", borderRadius: "15px", backgroundColor: "#fafafa" }}>
+                    <h4 style={{ margin: "0 0 8px 0", color: "#4f46e5", fontWeight: "900", borderBottom: "1px solid #e5e7eb", paddingBottom: "4px", fontSize: "13px" }}>👤 بيانات العميل</h4>
+                    <p style={{ margin: "4px 0", fontSize: "12px" }}><b>الاسم:</b> {printingOrder.shippingAddress?.name}</p>
+                    <p style={{ margin: "4px 0", fontSize: "12px" }}><b>الهاتف:</b> {printingOrder.shippingAddress?.phone}</p>
+                    <p style={{ margin: "4px 0", fontSize: "12px" }}><b>العنوان:</b> {printingOrder.shippingAddress?.street}, {printingOrder.shippingAddress?.city}</p>
+                  </div>
+                  
+                  <div style={{ border: "1px solid #e5e7eb", padding: "15px", borderRadius: "15px", backgroundColor: "#fafafa" }}>
+                    <h4 style={{ margin: "0 0 8px 0", color: "#4f46e5", fontWeight: "900", borderBottom: "1px solid #e5e7eb", paddingBottom: "4px", fontSize: "13px" }}>📦 تفاصيل الشحنة والتتبع</h4>
+                    <p style={{ margin: "4px 0", fontSize: "12px" }}><b>التاريخ:</b> {new Date(printingOrder.createdAt).toLocaleDateString("ar-EG")}</p>
+                    <p style={{ margin: "4px 0", fontSize: "12px" }}><b>طريقة الدفع:</b> {printingOrder.paymentStatus === "paid" ? "مدفوع بالكامل" : "الدفع عند الاستلام (COD)"}</p>
+                    <p style={{ margin: "4px 0", fontSize: "12px" }}><b>رقم التتبع:</b> TRK-{printingOrder.orderNumber || printingOrder._id?.substring(18)}</p>
+                    <p style={{ margin: "4px 0", fontSize: "12px" }}><b>الوقت المتوقع للتوصيل:</b> خلال 2-3 أيام عمل</p>
+                  </div>
+                </div>
+
+                {/* QR Code tracking container */}
+                <div style={{ border: "1px solid #e5e7eb", borderRadius: "15px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px", backgroundColor: "#fff" }}>
+                  <img 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=https://wintersummer.com/orders/track/${printingOrder._id}`}
+                    alt="Tracking QR Code"
+                    style={{ width: "90px", height: "90px", objectFit: "contain", marginBottom: "5px" }}
+                  />
+                  <span style={{ fontSize: "9px", fontWeight: "900", color: "#4f46e5", textAlign: "center" }}>امسح لتتبع الطلب لايف</span>
+                </div>
+
+              </div>
+
+              {/* Products Table */}
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "25px", border: "1px solid #e5e7eb", borderRadius: "12px", overflow: "hidden" }}>
+                <thead>
+                  <tr style={{ backgroundColor: "#4f46e5", color: "#ffffff" }}>
+                    <th style={{ padding: "12px 15px", textAlign: "right", fontSize: "12px", fontWeight: "900" }}>المنتج المطلوب</th>
+                    <th style={{ padding: "12px 15px", textAlign: "center", fontSize: "12px", fontWeight: "900", width: "80px" }}>الكمية</th>
+                    <th style={{ padding: "12px 15px", textAlign: "center", fontSize: "12px", fontWeight: "900", width: "120px" }}>سعر الوحدة</th>
+                    <th style={{ padding: "12px 15px", textAlign: "left", fontSize: "12px", fontWeight: "900", width: "120px" }}>إجمالي البند</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {printingOrder.items?.map((item: any, i: number) => (
+                    <tr key={i} style={{ borderBottom: "1px solid #e5e7eb", backgroundColor: i % 2 === 0 ? "#fafafa" : "#ffffff" }}>
+                      <td style={{ padding: "12px 15px", fontSize: "12px", fontWeight: "bold" }}>
+                        {item.product?.title?.ar || item.product?.title?.en || "منتج منزل مميز"}
+                      </td>
+                      <td style={{ padding: "12px 15px", textAlign: "center", fontSize: "12px", fontWeight: "bold" }}>
+                        {item.quantity}
+                      </td>
+                      <td style={{ padding: "12px 15px", textAlign: "center", fontSize: "12px", fontWeight: "bold" }}>
+                        {item.price?.toLocaleString()} ج.م
+                      </td>
+                      <td style={{ padding: "12px 15px", textAlign: "left", fontSize: "12px", fontWeight: "bold" }}>
+                        {(item.price * item.quantity)?.toLocaleString()} ج.م
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Financial Calculation card */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px" }}>
+                
+                {/* Developer Credit Signature block (SEO Optimized) */}
+                <div style={{ border: "1px dashed #6366f1", padding: "12px 20px", borderRadius: "15px", backgroundColor: "#f5f3ff", textAlign: "right" }}>
+                  <p style={{ margin: 0, fontSize: "9px", fontWeight: "900", color: "#6b7280", uppercase: true }}>
+                    DEVELOPER SIGNATURE & SYSTEMS INFRASTRUCTURE
+                  </p>
+                  <p style={{ margin: "4px 0 0 0", fontSize: "11px", fontWeight: "900", color: "#4f46e5" }}>
+                    تصميم وتطوير بواسطة: م. محمد طارق (Eng. Mohamed Tarek)
+                  </p>
+                  <p style={{ margin: "2px 0 0 0", fontSize: "11px", fontWeight: "bold", color: "#db2777" }}>
+                    📞 هاتف المطور: 01284621015 (WhatsApp Support)
+                  </p>
+                </div>
+
+                {/* Final Calculation Table */}
+                <div style={{ width: "320px", border: "1px solid #e5e7eb", padding: "15px", borderRadius: "15px", backgroundColor: "#fafafa" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", margin: "5px 0", fontSize: "12px" }}>
+                    <span style={{ color: "#666" }}>إجمالي المنتجات:</span>
+                    <span style={{ fontWeight: "bold" }}>{(printingOrder.totalPrice - (printingOrder.shippingCost || 0)).toLocaleString()} ج.م</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", margin: "5px 0", fontSize: "12px" }}>
+                    <span style={{ color: "#666" }}>تكلفة الشحن والتوصيل:</span>
+                    <span style={{ fontWeight: "bold" }}>{(printingOrder.shippingCost || 0).toLocaleString()} ج.م</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0 0 0", paddingTop: "10px", borderTop: "2px solid #e5e7eb", fontWeight: "900", fontSize: "16px", color: "#db2777" }}>
+                    <span>المبلغ الصافي المستحق:</span>
+                    <span>{printingOrder.totalPrice.toLocaleString()} ج.م</span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Slogan */}
+              <div style={{ textAlign: "center", borderTop: "1px solid #e5e7eb", paddingTop: "15px", color: "#6b7280", fontSize: "11px" }}>
+                نشكركم لاختياركم معرض الشتاء والصيف. نسعد دائماً بزيارتكم وثقتكم الغالية!
+              </div>
+
+            </div>
+          ) : (
+            /* ========================================================
+               2. THERMAL RECEIPT TEMPLATE (80mm width standard)
+               ======================================================== */
+            <div style={{ direction: "rtl", textAlign: "right", padding: "5px", fontSize: "11px", lineHeight: "1.3" }}>
+              <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                <img src="/Logo-removebg-preview.png" alt="Logo" style={{ width: "40px", height: "40px", objectFit: "contain", margin: "0 auto 5px auto" }} />
+                <h3 style={{ margin: 0, fontWeight: "900", fontSize: "15px" }}>معرض الشتاء والصيف</h3>
+                <p style={{ margin: "2px 0 0 0", fontSize: "9px", color: "#555" }}>إيصال مبيعات سريع</p>
+              </div>
+
+              <div style={{ borderTop: "1px dashed #000", borderBottom: "1px dashed #000", padding: "5px 0", margin: "5px 0" }}>
+                <p style={{ margin: "2px 0" }}><b>الفاتورة:</b> {printingOrder.orderNumber || printingOrder.invoiceNumber}</p>
+                <p style={{ margin: "2px 0" }}><b>التاريخ:</b> {new Date(printingOrder.createdAt).toLocaleDateString("ar-EG")}</p>
+                <p style={{ margin: "2px 0" }}><b>العميل:</b> {printingOrder.shippingAddress?.name}</p>
+                <p style={{ margin: "2px 0" }}><b>الهاتف:</b> {printingOrder.shippingAddress?.phone}</p>
+              </div>
+
+              <table style={{ width: "100%", borderCollapse: "collapse", margin: "10px 0" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px dashed #000" }}>
+                    <th style={{ textAlign: "right", padding: "3px 0", fontSize: "10px" }}>المنتج</th>
+                    <th style={{ textAlign: "center", padding: "3px 0", fontSize: "10px", width: "30px" }}>ك</th>
+                    <th style={{ textAlign: "left", padding: "3px 0", fontSize: "10px", width: "70px" }}>الإجمالي</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {printingOrder.items?.map((item: any, i: number) => (
+                    <tr key={i} style={{ borderBottom: "1px dotted #ccc" }}>
+                      <td style={{ padding: "4px 0", fontSize: "10px" }}>{item.product?.title?.ar?.substring(0, 25) || "منتج منزل"}</td>
+                      <td style={{ padding: "4px 0", textAlign: "center", fontSize: "10px" }}>{item.quantity}</td>
+                      <td style={{ padding: "4px 0", textAlign: "left", fontSize: "10px" }}>{(item.price * item.quantity)?.toLocaleString()} ج</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div style={{ margin: "5px 0", fontSize: "11px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", margin: "2px 0" }}>
+                  <span>إجمالي المنتجات:</span>
+                  <span>{(printingOrder.totalPrice - (printingOrder.shippingCost || 0)).toLocaleString()} ج</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", margin: "2px 0" }}>
+                  <span>الشحن والتوصيل:</span>
+                  <span>{(printingOrder.shippingCost || 0).toLocaleString()} ج</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", margin: "4px 0 0 0", paddingTop: "4px", borderTop: "1px dashed #000", fontWeight: "900", fontSize: "13px" }}>
+                  <span>الصافي المطلوب:</span>
+                  <span>{printingOrder.totalPrice.toLocaleString()} ج.م</span>
+                </div>
+              </div>
+
+              {/* Barcode inside thermal receipt */}
+              <div style={{ textAlign: "center", margin: "10px 0" }}>
+                <img 
+                  src={`https://bwipjs-api.metafloor.com/?bcid=code128&text=${printingOrder.orderNumber || printingOrder.invoiceNumber || 'INV-123'}&scale=1.2&rotate=N&includeText=true`}
+                  alt="Barcode"
+                  style={{ height: "30px", width: "120px", objectFit: "contain" }}
+                />
+              </div>
+
+              {/* Developer credits block inside Receipt */}
+              <div style={{ borderTop: "1px dashed #000", paddingTop: "6px", marginTop: "10px", textAlign: "center", fontSize: "9px" }}>
+                <p style={{ margin: 0, fontWeight: "bold" }}>تصميم وتطوير بواسطة:</p>
+                <p style={{ margin: "2px 0", fontWeight: "900" }}>م. محمد طارق (Mohamed Tarek)</p>
+                <p style={{ margin: 0 }}>📞 01284621015</p>
+              </div>
+
+              <div style={{ textAlign: "center", marginTop: "10px", fontSize: "9px", color: "#666" }}>
+                شكراً لتسوقكم معنا!
+              </div>
+            </div>
+          )}
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

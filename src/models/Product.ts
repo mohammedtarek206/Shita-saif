@@ -9,8 +9,13 @@ export interface IProduct extends Document {
     ar: string;
     en: string;
   };
-  category: string;
+  category: mongoose.Types.ObjectId | string;
+  subCategory: string; // The slug or ID of the subcategory
   brand: string;
+  SKU: string;
+  colors: string[];
+  warranty: string;
+  shippingStatus: string;
   price: number;
   discount: number;
   stock: number;
@@ -36,8 +41,13 @@ const ProductSchema: Schema = new Schema(
       ar: { type: String, required: true },
       en: { type: String, required: true },
     },
-    category: { type: String, required: true },
+    category: { type: Schema.Types.Mixed, required: true },
+    subCategory: { type: String },
     brand: { type: String, required: true },
+    SKU: { type: String },
+    colors: [{ type: String }],
+    warranty: { type: String },
+    shippingStatus: { type: String, default: "In Stock" },
     price: { type: Number, required: true },
     discount: { type: Number, default: 0 },
     stock: { type: Number, required: true, default: 0 },

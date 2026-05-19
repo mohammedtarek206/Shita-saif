@@ -29,7 +29,12 @@ export async function POST(req: Request) {
       title: { ar: body.nameAr, en: body.nameEn },
       description: { ar: body.nameAr, en: body.nameEn }, // Fallback
       category: body.category,
+      subCategory: body.subCategory,
       brand: body.brand || "WinterSummer",
+      SKU: body.SKU,
+      colors: body.colors || [],
+      warranty: body.warranty,
+      shippingStatus: body.shippingStatus || "In Stock",
       price: Number(body.price),
       discount: Number(body.discount || 0),
       stock: Number(body.stock || 0),

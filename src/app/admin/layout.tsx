@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   FiGrid, FiBox, FiShoppingCart, FiUsers, 
-  FiStar, FiLayers, FiSettings, FiLogOut, FiMenu, FiX 
+  FiStar, FiLayers, FiSettings, FiLogOut, FiMenu, FiX, FiActivity, FiGlobe
 } from "react-icons/fi";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSession, signOut } from "next-auth/react";
+import AdminNotifications from "@/components/AdminNotifications";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -21,10 +22,14 @@ function cn(...inputs: ClassValue[]) {
 const sidebarLinks = [
   { name: { ar: "نظرة عامة", en: "Overview" }, icon: <FiGrid />, href: "/admin" },
   { name: { ar: "المنتجات", en: "Products" }, icon: <FiBox />, href: "/admin/products" },
+  { name: { ar: "الأقسام", en: "Categories" }, icon: <FiLayers />, href: "/admin/categories" },
   { name: { ar: "الطلبات", en: "Orders" }, icon: <FiShoppingCart />, href: "/admin/orders" },
+  { name: { ar: "الكوبونات", en: "Coupons" }, icon: <FiStar />, href: "/admin/coupons" },
   { name: { ar: "المستخدمين", en: "Users" }, icon: <FiUsers />, href: "/admin/users" },
   { name: { ar: "الشركاء", en: "Partners" }, icon: <FiLayers />, href: "/admin/partners" },
   { name: { ar: "التقييمات", en: "Reviews" }, icon: <FiStar />, href: "/admin/reviews" },
+  { name: { ar: "سجل العمليات", en: "Audit Logs" }, icon: <FiActivity />, href: "/admin/logs", superAdminOnly: true },
+  { name: { ar: "تحسين SEO والمدونة", en: "SEO & Blog Manager" }, icon: <FiGlobe />, href: "/admin/seo" },
   { name: { ar: "الإعدادات", en: "Settings" }, icon: <FiSettings />, href: "/admin/settings" },
 ];
 
@@ -81,22 +86,24 @@ export default function AdminLayout({
       </div>
 
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto no-scrollbar">
-        {sidebarLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            onClick={() => setIsSidebarOpen(false)}
-            className={cn(
-              "flex items-center gap-3 px-6 py-4 rounded-2xl transition-all duration-300",
-              pathname === link.href 
-                ? "gradient-primary text-white shadow-xl shadow-primary/20 scale-[1.02]" 
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-            )}
-          >
-            <span className="text-xl">{link.icon}</span>
-            <span className="font-bold text-sm">{language === "ar" ? link.name.ar : link.name.en}</span>
-          </Link>
-        ))}
+        {sidebarLinks
+          .filter(link => !link.superAdminOnly || userRole === "superadmin")
+          .map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setIsSidebarOpen(false)}
+              className={cn(
+                "flex items-center gap-3 px-6 py-4 rounded-2xl transition-all duration-300",
+                pathname === link.href 
+                  ? "gradient-primary text-white shadow-xl shadow-primary/20 scale-[1.02]" 
+                  : "text-gray-400 hover:text-white hover:bg-white/5"
+              )}
+            >
+              <span className="text-xl">{link.icon}</span>
+              <span className="font-bold text-sm">{language === "ar" ? link.name.ar : link.name.en}</span>
+            </Link>
+          ))}
       </nav>
 
       <div className="p-6 border-t border-white/5">
@@ -130,11 +137,14 @@ export default function AdminLayout({
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] lg:hidden"
             />
             <motion.div
-              initial={{ x: "-100%" }}
+              initial={{ x: language === "ar" ? "100%" : "-100%" }}
               animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
+              exit={{ x: language === "ar" ? "100%" : "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-72 bg-black z-[110] lg:hidden shadow-2xl"
+              className={cn(
+                "fixed inset-y-0 w-72 bg-black z-[110] lg:hidden shadow-2xl",
+                language === "ar" ? "right-0" : "left-0"
+              )}
             >
               <SidebarContent />
             </motion.div>
@@ -158,6 +168,7 @@ export default function AdminLayout({
           </div>
           
           <div className="flex items-center gap-2 md:gap-6">
+            <AdminNotifications />
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
                 <div className="font-black text-sm">{session?.user?.name || "Admin"}</div>

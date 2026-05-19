@@ -105,3 +105,16 @@ h1, h2, h3, h4, h5, h6 {
   mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
 
+/* Global Select Options Fix for Light and Dark Modes */
+select option {
+  background-color: #ffffff !important;
+  color: #111111 !important;
+}
+
+.dark select option,
+[data-theme='dark'] select option {
+  background-color: #111111 !important;
+  color: #ffffff !important;
+}
+
+

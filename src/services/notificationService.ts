@@ -7,10 +7,10 @@ export const sendOrderNotification = async (order: any, type: "status_update" | 
     }[type];
 
     console.log(`[NOTIFICATION SYSTEM] Sending updates for Order ${order.orderNumber}...`);
-    
+
     // 1. Send Email (e.g., SendGrid/Nodemailer)
     console.log(`- Email sent to: ${order.shippingAddress.email} -> "${message}"`);
-    
+
     // 2. Send SMS/WhatsApp (e.g., Twilio)
     console.log(`- WhatsApp message sent to: ${order.shippingAddress.phone} -> "${message}"`);
 

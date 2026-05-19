@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   role: "user" | "admin" | "superadmin";
+  status: "Active" | "Suspended";
   wishlist: mongoose.Types.ObjectId[];
   orders: mongoose.Types.ObjectId[];
   notifications: {
@@ -23,6 +24,7 @@ const UserSchema: Schema = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String },
     role: { type: String, enum: ["user", "admin", "superadmin"], default: "user" },
+    status: { type: String, enum: ["Active", "Suspended"], default: "Active" },
     wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }],
     orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],
     notifications: [

@@ -25,10 +25,12 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const langDropdownRef = React.useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
-  const { language, toggleLanguage } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const { totalItems } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
   const { data: session, status } = useSession();
@@ -46,6 +48,9 @@ const Navbar = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsDropdownOpen(false);
       }
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
+        setIsLangDropdownOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -57,11 +62,12 @@ const Navbar = () => {
 
   const navLinks = [
     { name: { ar: "الرئيسية", en: "Home" }, href: "/" },
+    { name: { ar: "الأقسام", en: "Categories" }, href: "/categories" },
     { name: { ar: "المنتجات", en: "Products" }, href: "/products" },
     { name: { ar: "العروض", en: "Offers" }, href: "/offers" },
     { name: { ar: "شركاؤنا", en: "Partners" }, href: "/partners" },
-    { name: { ar: "من نحن", en: "About" }, href: "/about" },
-    { name: { ar: "اتصل بنا", en: "Contact" }, href: "/contact" },
+    { name: { ar: "تتبع الطلب", en: "Track Order" }, href: "/track" },
+    { name: { ar: "تواصل معنا", en: "Contact Us" }, href: "/contact" },
   ];
 
   return (
@@ -167,16 +173,50 @@ const Navbar = () => {
                 )
               ))}
 
-              <button 
-                onClick={toggleLanguage} 
-                className={cn(
-                  "px-4 py-2.5 rounded-2xl transition-all flex items-center gap-2 font-black text-xs uppercase tracking-tighter hover:scale-105",
-                  !isScrolled ? "text-white bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
-                )}
-              >
-                <FiGlobe className="text-lg" />
-                <span>{language === "ar" ? "EN" : "AR"}</span>
-              </button>
+              <div className="relative" ref={langDropdownRef}>
+                <button 
+                  onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)} 
+                  className={cn(
+                    "px-3 py-2 md:px-4 md:py-2.5 rounded-2xl transition-all flex items-center gap-2 font-black text-xs uppercase tracking-tighter hover:scale-105",
+                    !isScrolled ? "text-white bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
+                  )}
+                >
+                  <img src={language === "ar" ? "https://flagcdn.com/w20/eg.png" : "https://flagcdn.com/w20/gb.png"} className="w-4 h-4 rounded-full object-cover" alt="flag" />
+                  <span>{language === "ar" ? "العربية" : "English"}</span>
+                </button>
+
+                <AnimatePresence>
+                  {isLangDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                      className="absolute top-full mt-2 right-0 w-40 bg-white dark:bg-[#0A0A0A] rounded-2xl shadow-xl border border-gray-100 dark:border-white/10 overflow-hidden z-50 p-2"
+                    >
+                      <button 
+                        onClick={() => { setLanguage("ar"); setIsLangDropdownOpen(false); }}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm",
+                          language === "ar" ? "bg-primary/10 text-primary" : "hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300"
+                        )}
+                      >
+                        <img src="https://flagcdn.com/w20/eg.png" className="w-5 h-5 rounded-full object-cover" alt="AR" />
+                        العربية
+                      </button>
+                      <button 
+                        onClick={() => { setLanguage("en"); setIsLangDropdownOpen(false); }}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm mt-1",
+                          language === "en" ? "bg-primary/10 text-primary" : "hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300"
+                        )}
+                      >
+                        <img src="https://flagcdn.com/w20/gb.png" className="w-5 h-5 rounded-full object-cover" alt="EN" />
+                        English
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             {/* Cart Always Visible */}
@@ -334,10 +374,16 @@ const Navbar = () => {
                     {theme === "light" ? <FiMoon className="text-xl" /> : <FiSun className="text-xl" />}
                     <span className="text-[10px] font-black uppercase">{theme === "light" ? "Dark" : "Light"}</span>
                   </button>
-                  <button onClick={toggleLanguage} className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl">
-                    <FiGlobe className="text-xl" />
-                    <span className="text-[10px] font-black uppercase">{language === "ar" ? "English" : "العربية"}</span>
-                  </button>
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => setLanguage("ar")} className={cn("flex items-center gap-3 p-4 rounded-2xl transition-all", language === "ar" ? "bg-primary/10 text-primary font-black" : "bg-gray-50 dark:bg-white/5 font-bold")}>
+                      <img src="https://flagcdn.com/w20/eg.png" className="w-6 h-6 rounded-full object-cover" alt="AR" />
+                      العربية
+                    </button>
+                    <button onClick={() => setLanguage("en")} className={cn("flex items-center gap-3 p-4 rounded-2xl transition-all", language === "en" ? "bg-primary/10 text-primary font-black" : "bg-gray-50 dark:bg-white/5 font-bold")}>
+                      <img src="https://flagcdn.com/w20/gb.png" className="w-6 h-6 rounded-full object-cover" alt="EN" />
+                      English
+                    </button>
+                  </div>
                 </div>
                 
                 {status === "unauthenticated" && (

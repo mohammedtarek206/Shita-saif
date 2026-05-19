@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
@@ -8,31 +9,50 @@ import { FiSearch, FiFilter, FiTrendingUp, FiGrid, FiList } from "react-icons/fi
 import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const { language } = useLanguage();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get('search') || "";
+  const initialCategory = searchParams.get('category') || "all";
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [selectedSub, setSelectedSub] = useState("all");
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProductsAndCategories = async () => {
       try {
-        const res = await fetch("/api/admin/products");
-        const data = await res.json();
-        if (Array.isArray(data)) setProducts(data);
+        const [prodRes, catRes] = await Promise.all([
+          fetch("/api/admin/products"),
+          fetch("/api/categories")
+        ]);
+        const prodData = await prodRes.json();
+        const catData = await catRes.json();
+        
+        if (Array.isArray(prodData)) setProducts(prodData);
+        if (Array.isArray(catData)) setCategories(catData);
       } catch (err) {
-        console.error("Error fetching products:", err);
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchProducts();
+    fetchProductsAndCategories();
   }, []);
 
-  const filteredProducts = products.filter(p => 
-    p.title?.en?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    p.title?.ar?.includes(searchTerm)
-  );
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = p.title?.en?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          p.title?.ar?.includes(searchTerm) ||
+                          (typeof p.category === 'string' && p.category.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesCategory = selectedCategory === "all" || p.category === selectedCategory;
+    const matchesSub = selectedSub === "all" || p.subCategory === selectedSub;
+    const matchesPrice = p.price >= priceRange.min && p.price <= priceRange.max;
+
+    return matchesSearch && matchesCategory && matchesSub && matchesPrice;
+  });
 
   const t = {
     title: language === "ar" ? "كتالوج المنتجات" : "Product Catalog",
@@ -94,8 +114,69 @@ export default function ProductsPage() {
           </div>
         </motion.div>
 
-        {/* Products Grid */}
-        {loading ? (
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          {/* Filters Sidebar */}
+          <div className="w-full lg:w-1/4 shrink-0 space-y-8">
+            <div className="bg-white dark:bg-white/5 rounded-3xl p-6 border border-gray-100 dark:border-white/5">
+              <h3 className="font-black text-lg mb-4 uppercase tracking-widest">{language === "ar" ? "الأقسام" : "Categories"}</h3>
+              <div className="space-y-2">
+                <button 
+                  onClick={() => { setSelectedCategory("all"); setSelectedSub("all"); }}
+                  className={`w-full text-start px-4 py-3 rounded-xl font-bold text-sm transition-all ${selectedCategory === "all" ? "bg-primary text-white" : "hover:bg-gray-50 dark:hover:bg-white/5"}`}
+                >
+                  {language === "ar" ? "كل المنتجات" : "All Products"}
+                </button>
+                {categories.map(cat => (
+                  <div key={cat._id} className="space-y-1">
+                    <button 
+                      onClick={() => { setSelectedCategory(cat._id); setSelectedSub("all"); }}
+                      className={`w-full text-start px-4 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-3 ${selectedCategory === cat._id ? "bg-primary text-white" : "hover:bg-gray-50 dark:hover:bg-white/5"}`}
+                    >
+                      {cat.icon && <img src={cat.icon} className={`w-5 h-5 ${selectedCategory === cat._id ? "invert brightness-0" : ""}`} alt="" />}
+                      {language === "ar" ? cat.name?.ar : cat.name?.en}
+                    </button>
+                    {/* SubCategories */}
+                    <AnimatePresence>
+                      {selectedCategory === cat._id && cat.subCategories?.length > 0 && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="pl-4 pr-2 space-y-1 overflow-hidden">
+                          {cat.subCategories.map((sub: any) => (
+                            <button 
+                              key={sub.slug}
+                              onClick={() => setSelectedSub(sub.slug)}
+                              className={`w-full text-start px-4 py-2 rounded-lg font-bold text-xs transition-all ${selectedSub === sub.slug ? "bg-gray-100 dark:bg-white/10 text-primary" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"}`}
+                            >
+                              - {language === "ar" ? sub.name?.ar : sub.name?.en}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-white/5 rounded-3xl p-6 border border-gray-100 dark:border-white/5">
+              <h3 className="font-black text-lg mb-4 uppercase tracking-widest">{language === "ar" ? "نطاق السعر" : "Price Range"}</h3>
+              <div className="space-y-4">
+                <input 
+                  type="range" 
+                  min="0" max="100000" step="500"
+                  value={priceRange.max}
+                  onChange={(e) => setPriceRange({...priceRange, max: parseInt(e.target.value)})}
+                  className="w-full accent-primary"
+                />
+                <div className="flex items-center justify-between font-bold text-sm">
+                  <span>0 {language === "ar" ? "ج.م" : "EGP"}</span>
+                  <span className="text-primary">{priceRange.max} {language === "ar" ? "ج.م" : "EGP"}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Products Grid */}
+          <div className="flex-1">
+            {loading ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
               <div key={n} className="aspect-[3/4] bg-white dark:bg-white/5 rounded-[2.5rem] animate-pulse border border-gray-100 dark:border-white/5" />
@@ -136,9 +217,19 @@ export default function ProductsPage() {
             </AnimatePresence>
           </div>
         )}
+          </div>
+        </div>
       </div>
       
       <Footer />
     </main>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-[#0A0A0A] flex items-center justify-center">Loading...</div>}>
+      <ProductsContent />
+    </Suspense>
   );
 }

@@ -10,18 +10,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useRecentlyViewed } from "@/context/RecentlyViewedContext";
+import ProductCard from "@/components/ProductCard";
+import ProductReviews from "@/components/ProductReviews";
 
 export default function ProductDetails({ params }: { params: any }) {
   const resolvedParams: any = React.use(params);
-  const id = resolvedParams?.id;
+  const rawId = resolvedParams?.id;
+  const id = rawId?.includes("-") ? rawId.split("-").pop() : rawId;
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [cartToast, setCartToast] = useState(false);
   const { language } = useLanguage();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { recentlyViewed, addRecentlyViewed } = useRecentlyViewed();
   const router = useRouter();
 
   useEffect(() => {
@@ -29,7 +35,25 @@ export default function ProductDetails({ params }: { params: any }) {
       try {
         const res = await fetch(`/api/admin/products/${id}`);
         const data = await res.json();
-        if (data && !data.error) setProduct(data);
+        if (data && !data.error) {
+          setProduct(data);
+          addRecentlyViewed({
+            _id: data._id,
+            title: data.title,
+            price: data.price,
+            discount: data.discount,
+            images: data.images,
+            category: data.category,
+          });
+          // Fetch related products from same category
+          try {
+            const relRes = await fetch(`/api/admin/products?category=${data.category}`);
+            const relData = await relRes.json();
+            if (Array.isArray(relData)) {
+              setRelatedProducts(relData.filter((p: any) => p._id !== data._id).slice(0, 4));
+            }
+          } catch (e) { /* silently fail */ }
+        }
       } catch (err) {
         console.error("Error fetching product:", err);
       } finally {
@@ -83,7 +107,43 @@ export default function ProductDetails({ params }: { params: any }) {
   const isProductInWishlist = isInWishlist(product._id);
 
   return (
-    <main className="min-h-screen bg-white dark:bg-[#0A0A0A] transition-colors duration-500">
+    <main className="min-h-screen bg-white dark:bg-[#0A0A0A] transition-colors duration-500 font-cairo">
+      {product && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              "name": product.title?.[language] || product.title?.ar || product.title?.en,
+              "image": product.images || [],
+              "description": product.description?.[language] || product.description?.ar || product.description?.en,
+              "sku": product.SKU || product._id,
+              "brand": {
+                "@type": "Brand",
+                "name": product.brand || "معرض الشتاء والصيف"
+              },
+              "offers": {
+                "@type": "Offer",
+                "url": `https://wintersummer.com/products/${product.title?.en?.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${product._id}`,
+                "priceCurrency": "EGP",
+                "price": product.price - (product.discount || 0),
+                "priceValidUntil": "2030-12-31",
+                "itemCondition": "https://schema.org/NewCondition",
+                "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                "seller": {
+                  "@type": "Organization",
+                  "name": "معرض الشتاء والصيف",
+                  "founder": {
+                    "@type": "Person",
+                    "name": "محمد محمد وهبه (Mohamed Wahba)"
+                  }
+                }
+              }
+            })
+          }}
+        />
+      )}
       <Navbar />
 
       <AnimatePresence>
@@ -276,6 +336,47 @@ export default function ProductDetails({ params }: { params: any }) {
             ))}
           </div>
         </section>
+
+        {/* Related Products */}
+        {relatedProducts.length > 0 && (
+          <section className="mt-20 pt-20 border-t border-gray-100 dark:border-white/10">
+            <div className="flex items-center gap-6 mb-12">
+              <h2 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter">
+                {language === "ar" ? "منتجات ذات صلة" : "Related Products"}
+              </h2>
+              <div className="flex-1 h-px bg-gray-100 dark:bg-white/10" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {relatedProducts.map((relProduct, i) => (
+                <motion.div key={relProduct._id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                  <ProductCard product={relProduct as any} />
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Reviews Section */}
+        <ProductReviews productId={id} />
+
+        {/* Recently Viewed Products */}
+        {recentlyViewed.filter(p => p._id !== id).length > 0 && (
+          <section className="mt-20 pt-20 border-t border-gray-100 dark:border-white/10">
+            <div className="flex items-center gap-6 mb-12">
+              <h2 className="text-2xl md:text-4xl font-black italic uppercase tracking-tighter">
+                {language === "ar" ? "شوهد مؤخراً" : "Recently Viewed"}
+              </h2>
+              <div className="flex-1 h-px bg-gray-100 dark:bg-white/10" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {recentlyViewed.filter(p => p._id !== id).slice(0, 4).map((recentProduct, i) => (
+                <motion.div key={recentProduct._id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                  <ProductCard product={recentProduct as any} />
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <Footer />

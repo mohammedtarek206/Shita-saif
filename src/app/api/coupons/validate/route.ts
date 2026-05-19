@@ -1,48 +1,25 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Coupon from "@/models/Coupon";
 
-export async function POST(req: Request) {
-  try {
-    await connectDB();
-    const { code, amount } = await req.json();
+// POST /api/coupons/validate  — checks if a code is valid and returns the discount
+export async function POST(req: NextRequest) {
+  await connectDB();
+  const { code, orderTotal } = await req.json();
 
-    const coupon = await Coupon.findOne({ 
-      code: code.toUpperCase(), 
-      isActive: true,
-      expiryDate: { $gt: new Date() }
-    });
+  if (!code) return NextResponse.json({ error: "No code provided" }, { status: 400 });
 
-    if (!coupon) {
-      return NextResponse.json({ error: "Invalid or expired coupon" }, { status: 404 });
-    }
+  const coupon = await Coupon.findOne({ code: code.toUpperCase(), isActive: true });
 
-    if (amount < coupon.minOrderAmount) {
-      return NextResponse.json({ 
-        error: `Minimum order amount for this coupon is ${coupon.minOrderAmount} EGP` 
-      }, { status: 400 });
-    }
+  if (!coupon) return NextResponse.json({ error: "invalid" }, { status: 404 });
+  if (new Date() > coupon.expiresAt) return NextResponse.json({ error: "expired" }, { status: 410 });
+  if (coupon.usedCount >= coupon.maxUses) return NextResponse.json({ error: "maxed" }, { status: 409 });
+  if (orderTotal < coupon.minOrder) return NextResponse.json({ error: "min_order", minOrder: coupon.minOrder }, { status: 422 });
 
-    if (coupon.usageLimit && coupon.usageCount >= coupon.usageLimit) {
-      return NextResponse.json({ error: "Coupon usage limit reached" }, { status: 400 });
-    }
+  const discount =
+    coupon.type === "percentage"
+      ? Math.round((orderTotal * coupon.value) / 100)
+      : Math.min(coupon.value, orderTotal);
 
-    let discountValue = 0;
-    if (coupon.discountType === "percentage") {
-      discountValue = (amount * coupon.discountAmount) / 100;
-      if (coupon.maxDiscount && discountValue > coupon.maxDiscount) {
-        discountValue = coupon.maxDiscount;
-      }
-    } else {
-      discountValue = coupon.discountAmount;
-    }
-
-    return NextResponse.json({ 
-      discount: discountValue,
-      code: coupon.code
-    });
-
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  return NextResponse.json({ valid: true, discount, type: coupon.type, value: coupon.value });
 }

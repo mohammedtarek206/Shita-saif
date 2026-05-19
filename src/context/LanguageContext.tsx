@@ -37,10 +37,22 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
       document.body.classList.remove("font-poppins");
       document.body.classList.add("font-cairo");
       document.body.style.fontFamily = "var(--font-cairo), sans-serif";
+      document.title = "الشتاء والصيف | أفضل الأجهزة المنزلية الفاخرة";
+      
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute("content", "معرض الشتاء والصيف للأجهزة الكهربائية والمنزلية. جودة عالية وأفضل الأسعار.");
+      }
     } else {
       document.body.classList.remove("font-cairo");
       document.body.classList.add("font-poppins");
       document.body.style.fontFamily = "var(--font-poppins), sans-serif";
+      document.title = "Sheta & Saif | Premium Home Appliances";
+      
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute("content", "Sheta and Saif for electrical and home appliances. High quality and best prices.");
+      }
     }
   };
 

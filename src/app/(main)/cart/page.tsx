@@ -1,16 +1,53 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
-import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiArrowRight } from "react-icons/fi";
+import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiArrowRight, FiTag, FiCheck, FiX } from "react-icons/fi";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CartPage() {
   const { language } = useLanguage();
   const { cart, removeFromCart, updateQuantity, totalPrice, totalItems } = useCart();
+  const [couponCode, setCouponCode] = useState("");
+  const [couponState, setCouponState] = useState<null | { discount: number; type: string; value: number }>(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+
+  const finalTotal = couponState ? Math.max(0, totalPrice - couponState.discount) : totalPrice;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError("");
+    setCouponState(null);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode, orderTotal: totalPrice }),
+      });
+      const data = await res.json();
+      if (res.ok && data.valid) {
+        setCouponState(data);
+      } else {
+        const msgs: Record<string, string> = {
+          invalid: language === "ar" ? "الكود غير صحيح" : "Invalid code",
+          expired: language === "ar" ? "الكود منتهي الصلاحية" : "Code expired",
+          maxed: language === "ar" ? "تم استنفاد الكود" : "Code limit reached",
+          min_order: language === "ar" ? `الحد الأدنى للطلب: ${data.minOrder} ج.م` : `Minimum order: ${data.minOrder} EGP`,
+        };
+        setCouponError(msgs[data.error] || (language === "ar" ? "حدث خطأ" : "An error occurred"));
+      }
+    } catch {
+      setCouponError(language === "ar" ? "خطأ في الاتصال" : "Connection error");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
 
   const t = {
     title: language === "ar" ? "سلة التسوق" : "Shopping Cart",
@@ -26,6 +63,7 @@ export default function CartPage() {
     promoCode: language === "ar" ? "كود الخصم" : "Promo Code",
     apply: language === "ar" ? "تطبيق" : "Apply",
     continue: language === "ar" ? "متابعة التسوق" : "Continue Shopping",
+    discount: language === "ar" ? "خصم الكوبون" : "Coupon Discount",
   };
 
   if (cart.length === 0) {
@@ -104,33 +142,65 @@ export default function CartPage() {
                   <span>{t.shipping}</span>
                   <span className="text-green-500 font-black">{t.free}</span>
                 </div>
+                <AnimatePresence>
+                  {couponState && (
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex justify-between text-green-600 font-bold">
+                      <span className="flex items-center gap-1"><FiTag /> {t.discount}</span>
+                      <span className="font-black">-{couponState.discount.toLocaleString()} {language === "ar" ? "ج.م" : "EGP"}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 <div className="h-[1px] bg-gray-100 dark:bg-white/10 my-4" />
                 <div className="flex justify-between items-baseline">
                   <span className="text-lg font-black">{t.total}</span>
                   <div className="text-3xl font-black text-primary">
-                    {totalPrice.toLocaleString()} <span className="text-sm">{language === "ar" ? "ج.م" : "EGP"}</span>
+                    {finalTotal.toLocaleString()} <span className="text-sm">{language === "ar" ? "ج.م" : "EGP"}</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="relative group">
-                  <input 
-                    type="text" 
-                    placeholder={t.promoCode}
-                    className={cn(
-                      "w-full py-4 bg-gray-100 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none transition-all placeholder:font-bold",
-                      language === "ar" ? "pl-24 pr-6" : "pr-24 pl-6"
+                {/* Coupon input */}
+                {!couponState ? (
+                  <div className="space-y-2">
+                    <div className="relative group">
+                      <FiTag className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
+                      <input
+                        type="text"
+                        placeholder={t.promoCode}
+                        value={couponCode}
+                        onChange={e => setCouponCode(e.target.value.toUpperCase())}
+                        onKeyDown={e => e.key === "Enter" && handleApplyCoupon()}
+                        className={cn(
+                          "w-full py-4 bg-gray-100 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none transition-all font-bold text-gray-900 dark:text-white uppercase tracking-widest text-sm",
+                          language === "ar" ? "pl-24 pr-12" : "pr-24 pl-12"
+                        )}
+                      />
+                      <button
+                        onClick={handleApplyCoupon}
+                        disabled={couponLoading}
+                        className={cn(
+                          "absolute top-2 bottom-2 px-5 bg-black dark:bg-white text-white dark:text-black rounded-xl text-xs font-black transition-all hover:scale-105 disabled:opacity-50",
+                          language === "ar" ? "left-2" : "right-2"
+                        )}
+                      >
+                        {couponLoading
+                          ? <div className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+                          : t.apply
+                        }
+                      </button>
+                    </div>
+                    {couponError && (
+                      <p className="text-red-500 text-xs font-bold flex items-center gap-1"><FiX /> {couponError}</p>
                     )}
-                  />
-                  <button className={cn(
-                    "absolute top-2 bottom-2 px-6 bg-black dark:bg-white text-white dark:text-black rounded-xl text-xs font-black transition-all hover:scale-105",
-                    language === "ar" ? "left-2" : "right-2"
-                  )}>
-                    {t.apply}
-                  </button>
-                </div>
-                
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between px-5 py-3.5 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-2xl">
+                    <span className="flex items-center gap-2 text-green-700 dark:text-green-400 font-black text-sm"><FiCheck /> {couponCode}</span>
+                    <button onClick={() => { setCouponState(null); setCouponCode(""); }} className="text-gray-400 hover:text-red-500 transition-colors"><FiX /></button>
+                  </div>
+                )}
+
                 <Link href="/checkout" className="w-full py-4 bg-primary text-white rounded-2xl font-black shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 text-lg">
                   {t.checkout}
                   <FiArrowRight className={language === "ar" ? "rotate-180" : ""} />
@@ -140,6 +210,7 @@ export default function CartPage() {
                   {t.continue}
                 </Link>
               </div>
+
             </div>
           </div>
         </div>

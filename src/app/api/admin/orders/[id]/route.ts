@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { sendOrderNotification } from "@/services/notificationService";
 
+import { logActivity } from "@/services/logService";
+
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -34,8 +36,11 @@ export async function PATCH(
 
     const order = await Order.findByIdAndUpdate(id, updateData, { new: true });
     
-    if (order && body.status) {
-      await sendOrderNotification(order, body.status === "delivered" ? "delivered" : "status_update");
+    if (order) {
+      if (body.status) {
+        await sendOrderNotification(order, body.status === "delivered" ? "delivered" : "status_update");
+      }
+      await logActivity(req, "UPDATE_ORDER", "Order", id, `Updated order status or details. Body: ${JSON.stringify(body)}`);
     }
 
     return NextResponse.json(order);
@@ -57,7 +62,11 @@ export async function DELETE(
     }
 
     await connectDB();
-    await Order.findByIdAndDelete(id);
+    const order = await Order.findById(id);
+    if (order) {
+      await Order.findByIdAndDelete(id);
+      await logActivity(req, "DELETE_ORDER", "Order", id, `Deleted order with ID ${id} (Total: ${order.total})`);
+    }
     return NextResponse.json({ message: "Order deleted" });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
