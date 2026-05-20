@@ -97,6 +97,9 @@ export const metadata: Metadata = {
     icon: "/Logo-removebg-preview.png",
     apple: "/Logo-removebg-preview.png",
   },
+  verification: {
+    google: "0u4uZXTMCMvpnDisJOP8FnppCswNksQ5w7BqHXlYH0Q",
+  },
 };
 
 import StoreEffectsWrapper from "@/components/StoreEffectsWrapper";
