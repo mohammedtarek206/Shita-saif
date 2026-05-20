@@ -162,10 +162,21 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-gray-500 text-xs font-bold tracking-widest uppercase">
-            © {new Date().getFullYear()} {language === "ar" ? "الشتاء والصيف. جميع الحقوق محفوظة لـ محمد محمد وهبه (Mohamed Wahba)." : "Winter & Summer. All rights reserved to Mohamed Mohamed Wahba."}
-          </p>
+        <div className="mt-20 pt-8 border-t border-white/5 flex flex-col lg:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col items-center lg:items-start gap-4">
+            <p className="text-gray-500 text-xs font-bold tracking-widest uppercase text-center lg:text-left">
+              © {new Date().getFullYear()} {language === "ar" ? "الشتاء والصيف. جميع الحقوق محفوظة لـ محمد محمد وهبه (Mohamed Wahba)." : "Winter & Summer. All rights reserved to Mohamed Mohamed Wahba."}
+            </p>
+            <div className="inline-flex items-center flex-wrap justify-center gap-2 text-[11px] font-black text-gray-500">
+              <span>{language === "ar" ? "تصميم وتطوير بواسطة" : "Designed & Developed by"}</span>
+              <a href="https://wa.me/201284621015" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 border border-primary/20 hover:border-primary/50 text-white rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(var(--primary),0.1)] hover:shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:-translate-y-0.5 group">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
+                <span className="tracking-widest">Mohammed Tarek</span>
+                <span className="w-1 h-1 rounded-full bg-gray-600 group-hover:bg-primary transition-colors" />
+                <span className="font-mono text-primary group-hover:text-white transition-colors">01284621015</span>
+              </a>
+            </div>
+          </div>
           <div className="flex items-center gap-8 opacity-40 hover:opacity-100 transition-opacity duration-500 grayscale">
             <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" />
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
