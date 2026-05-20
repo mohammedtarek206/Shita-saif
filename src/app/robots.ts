@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         "/orders/",
       ],
     },
-    sitemap: "https://wintersummer.com/sitemap.xml",
+    sitemap: "https://elshetawelsaif.com/sitemap.xml",
   };
 }

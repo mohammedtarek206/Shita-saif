@@ -59,28 +59,28 @@ export const metadata: Metadata = {
     "Best Electronics Store"
   ],
   authors: [
-    { name: "محمد محمد وهبه (Mohamed Wahba)", url: "https://wintersummer.com/about" },
-    { name: "محمد طارق (Mohamed Tarek)", url: "https://wintersummer.com" }
+    { name: "محمد محمد وهبه (Mohamed Wahba)", url: "https://elshetawelsaif.com/about" },
+    { name: "محمد طارق (Mohamed Tarek)", url: "https://elshetawelsaif.com" }
   ],
   creator: "محمد محمد وهبه (Mohamed Wahba) & محمد طارق (Mohamed Tarek)",
   publisher: "معرض الشتاء والصيف",
   alternates: {
-    canonical: "https://wintersummer.com",
+    canonical: "https://elshetawelsaif.com",
     languages: {
-      "ar-EG": "https://wintersummer.com",
-      "en-US": "https://wintersummer.com/en",
+      "ar-EG": "https://elshetawelsaif.com",
+      "en-US": "https://elshetawelsaif.com/en",
     },
   },
   openGraph: {
     type: "website",
     locale: "ar_EG",
-    url: "https://wintersummer.com",
+    url: "https://elshetawelsaif.com",
     siteName: "معرض الشتاء والصيف",
     title: "معرض الشتاء والصيف | أفضل معرض أجهزة كهربائية وأدوات منزلية",
     description: "أفضل عروض الأجهزة الكهربائية والمنزلية من معرض الشتاء والصيف بأفضل الأسعار والجودة في مصر. تأسس تحت إشراف الأستاذ محمد محمد وهبه (Mohamed Wahba).",
     images: [
       {
-        url: "https://wintersummer.com/Logo-removebg-preview.png",
+        url: "https://elshetawelsaif.com/Logo-removebg-preview.png",
         width: 800,
         height: 800,
         alt: "معرض الشتاء والصيف - محمد محمد وهبه",
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "معرض الشتاء والصيف | أجهزة كهربائية وأدوات منزلية",
     description: "أفضل عروض الأجهزة الكهربائية والمنزلية من معرض الشتاء والصيف بأفضل الأسعار والجودة في مصر.",
-    images: ["https://wintersummer.com/Logo-removebg-preview.png"],
+    images: ["https://elshetawelsaif.com/Logo-removebg-preview.png"],
   },
   icons: {
     icon: "/Logo-removebg-preview.png",
@@ -121,8 +121,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Store",
               "name": "معرض الشتاء والصيف للأجهزة الكهربائية",
-              "url": "https://wintersummer.com",
-              "logo": "https://wintersummer.com/Logo-removebg-preview.png",
+              "url": "https://elshetawelsaif.com",
+              "logo": "https://elshetawelsaif.com/Logo-removebg-preview.png",
               "description": "معرض الشتاء والصيف للأجهزة الكهربائية والمنزلية. جودة عالية وأفضل الأسعار.",
               "founder": {
                 "@type": "Person",
@@ -135,7 +135,7 @@ export default function RootLayout({
                 "name": "محمد طارق (Mohamed Tarek)",
                 "jobTitle": "Lead Full-Stack Web Developer",
                 "telephone": "+201284621015",
-                "url": "https://wintersummer.com"
+                "url": "https://elshetawelsaif.com"
               },
               "contactPoint": {
                 "@type": "ContactPoint",

@@ -4,7 +4,7 @@ import Product from "@/models/Product";
 import BlogPost from "@/models/BlogPost";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://wintersummer.com";
+  const baseUrl = "https://elshetawelsaif.com";
 
   // 1. Core pages sitemap configuration
   const staticPages = [
