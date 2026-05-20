@@ -110,7 +110,7 @@ const Navbar = () => {
                 "text-[9px] md:text-[11px] font-black uppercase tracking-[0.4em] hidden sm:block transition-all duration-500 mt-1",
                 !isScrolled ? "text-white/80 drop-shadow-md" : "text-gray-500 dark:text-gray-400"
               )}>
-                {language === "ar" ? "للأجهزة المنزلية الفاخرة" : "Premium Home Appliances"}
+                {language === "ar" ? "للأجهزة الكهربية المنزلية" : "Premium Home Appliances"}
               </span>
             </div>
           </Link>

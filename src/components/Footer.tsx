@@ -30,7 +30,7 @@ const Footer = () => {
                     SHETA-SAIF
                   </span>
                   <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
-                    {language === "ar" ? "للأجهزة المنزلية الفاخرة" : "Premium Appliances"}
+                    {language === "ar" ? "للأجهزة الكهربية المنزلية" : "Premium Appliances"}
                   </span>
                 </div>
               </div>
