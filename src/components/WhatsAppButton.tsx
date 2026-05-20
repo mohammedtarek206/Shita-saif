@@ -7,7 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export default function WhatsAppButton() {
   const { language } = useLanguage();
-  const phoneNumber = "201000000000"; // Replace with actual phone number
+  const phoneNumber = "201223366046"; // Replace with actual phone number
   const message = language === "ar" ? "مرحباً، أود الاستفسار عن منتجاتكم." : "Hello, I would like to inquire about your products.";
 
   const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;

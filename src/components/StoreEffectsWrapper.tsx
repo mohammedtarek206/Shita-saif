@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { FiAlertTriangle, FiInstagram, FiPhoneCall, FiSettings } from "react-icons/fi";
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
@@ -9,10 +10,12 @@ import Link from "next/link";
 export default function StoreEffectsWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { language } = useLanguage();
+  const { data: session } = useSession();
   const [config, setConfig] = useState<any>(null);
   const [timeLeft, setTimeLeft] = useState<string>("");
 
   const isAdminPath = pathname.startsWith("/admin") || pathname.startsWith("/api") || pathname.startsWith("/login");
+  const isAuthorized = (session?.user as any)?.role === "admin" || (session?.user as any)?.role === "superadmin";
 
   const fetchConfig = async () => {
     try {
@@ -61,7 +64,7 @@ export default function StoreEffectsWrapper({ children }: { children: React.Reac
   if (!config) return <>{children}</>;
 
   // 1. Maintenance Screen block
-  if (config.maintenanceMode && !isAdminPath) {
+  if (config.maintenanceMode && !isAdminPath && !isAuthorized) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center p-6 relative overflow-hidden font-cairo">
         {/* Animated grid background */}
@@ -89,7 +92,7 @@ export default function StoreEffectsWrapper({ children }: { children: React.Reac
 
           {/* Customer support links */}
           <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-center gap-4 text-xs font-black text-gray-400">
-            <a href="tel:0100000000" className="flex items-center gap-2 hover:text-primary transition-colors bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">
+            <a href="tel:01284621015" className="flex items-center gap-2 hover:text-primary transition-colors bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">
               <FiPhoneCall /> {language === "ar" ? "اتصل بالدعم الفني" : "Call Support"}
             </a>
             <Link href="/login" className="flex items-center gap-2 hover:text-primary transition-colors bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">
