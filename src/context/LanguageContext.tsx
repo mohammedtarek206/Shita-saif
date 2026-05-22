@@ -37,7 +37,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
       document.body.classList.remove("font-poppins");
       document.body.classList.add("font-cairo");
       document.body.style.fontFamily = "var(--font-cairo), sans-serif";
-      document.title = "الشتاء والصيف | أفضل الأجهزة المنزلية الفاخرة";
+      document.title = "الشتاء والصيف | أفضل الأجهزة الكهربائيه و المنزلية الفاخرة";
       
       const metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription) {
