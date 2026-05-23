@@ -92,7 +92,7 @@ export default function StoreEffectsWrapper({ children }: { children: React.Reac
 
           {/* Customer support links */}
           <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-center gap-4 text-xs font-black text-gray-400">
-            <a href="tel:01284621015" className="flex items-center gap-2 hover:text-primary transition-colors bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">
+            <a href="tel:01223366046" className="flex items-center gap-2 hover:text-primary transition-colors bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">
               <FiPhoneCall /> {language === "ar" ? "اتصل بالدعم الفني" : "Call Support"}
             </a>
             <Link href="/login" className="flex items-center gap-2 hover:text-primary transition-colors bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">

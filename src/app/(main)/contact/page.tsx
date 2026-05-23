@@ -47,7 +47,7 @@ export default function ContactPage() {
   const inputCls = "w-full px-6 py-4 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 focus:border-primary rounded-2xl outline-none font-bold text-sm text-gray-900 dark:text-white transition-all placeholder:text-gray-400 placeholder:font-bold";
 
   const info = [
-    { icon: <FiPhone />, label: t.phone, value: "01284621015", href: "tel:01284621015", color: "bg-blue-500/10 text-blue-500" },
+    { icon: <FiPhone />, label: t.phone, value: "01223366046", href: "tel:01223366046", color: "bg-blue-500/10 text-blue-500" },
     { icon: <FaWhatsapp />, label: t.whatsapp, value: "01223366046", href: "https://wa.me/201223366046", color: "bg-green-500/10 text-green-500" },
     { icon: <FiMail />, label: t.email, value: "info@shetasaif.com", href: "mailto:info@shetasaif.com", color: "bg-primary/10 text-primary" },
     { icon: <FiMapPin />, label: t.address, value: t.addressValue, href: "#", color: "bg-orange-500/10 text-orange-500" },

@@ -46,10 +46,6 @@ export const metadata: Metadata = {
     "Mohamed Mohamed Wahba",
     "Mohamed Wahba",
     "محمد وهبه",
-    "محمد طارق",
-    "Mohamed Tarek",
-    "مطور الشتاء والصيف",
-    "Winter Summer Developer",
     "Winter and Summer",
     "Winter & Summer Store",
     "Home Appliances",
@@ -58,11 +54,8 @@ export const metadata: Metadata = {
     "Kitchen Appliances",
     "Best Electronics Store"
   ],
-  authors: [
-    { name: "محمد محمد وهبه (Mohamed Wahba)", url: "https://elshetawelsaif.com/about" },
-    { name: "محمد طارق (Mohamed Tarek)", url: "https://elshetawelsaif.com" }
-  ],
-  creator: "محمد محمد وهبه (Mohamed Wahba) & محمد طارق (Mohamed Tarek)",
+  authors: [{ name: "محمد محمد وهبه (Mohamed Wahba)", url: "https://elshetawelsaif.com/about" }],
+  creator: "معرض الشتاء والصيف",
   publisher: "معرض الشتاء والصيف",
   alternates: {
     canonical: "https://elshetawelsaif.com",
@@ -129,13 +122,6 @@ export default function RootLayout({
                 "name": "محمد محمد وهبه (Mohamed Mohamed Wahba)",
                 "jobTitle": "Founder & Chairman",
                 "nationality": "Egyptian"
-              },
-              "developer": {
-                "@type": "Person",
-                "name": "محمد طارق (Mohamed Tarek)",
-                "jobTitle": "Lead Full-Stack Web Developer",
-                "telephone": "+201284621015",
-                "url": "https://elshetawelsaif.com"
               },
               "contactPoint": {
                 "@type": "ContactPoint",

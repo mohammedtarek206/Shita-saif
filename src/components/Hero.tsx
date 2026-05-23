@@ -6,9 +6,15 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 const defaultSlides = [
   {
@@ -17,8 +23,9 @@ const defaultSlides = [
     titleEn: "Your Modern Kitchen",
     subtitleAr: "تشكيلة واسعة من أفران الطبخ والثلاجات الفاخرة",
     subtitleEn: "Wide range of premium cooking ovens and refrigerators",
-    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=2070&auto=format&fit=crop",
-    link: "/products"
+    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=1200&auto=format&fit=crop",
+    link: "/products",
+    discount: 50,
   },
   {
     id: "2",
@@ -26,8 +33,9 @@ const defaultSlides = [
     titleEn: "Smart Laundry",
     subtitleAr: "أحدث الغسالات والمنشفات بتقنيات ذكاء اصطناعي",
     subtitleEn: "Latest washers and dryers with AI technologies",
-    image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?q=80&w=2071&auto=format&fit=crop",
-    link: "/products"
+    image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?q=80&w=1200&auto=format&fit=crop",
+    link: "/products",
+    discount: 35,
   },
   {
     id: "3",
@@ -35,13 +43,90 @@ const defaultSlides = [
     titleEn: "Summer Freshness",
     subtitleAr: "أقوى أنظمة التكييف والتحكم بالمناخ المنزلي",
     subtitleEn: "Powerful AC systems and home climate control",
-    image: "https://images.unsplash.com/photo-1631542171261-267866385732?q=80&w=2070&auto=format&fit=crop",
-    link: "/products"
-  }
+    image: "https://images.unsplash.com/photo-1631542171261-267866385732?q=80&w=1200&auto=format&fit=crop",
+    link: "/products",
+    discount: 40,
+  },
 ];
+
+const btnBase =
+  "inline-flex h-12 min-w-[148px] items-center justify-center gap-2 rounded-xl px-6 text-sm font-bold transition-all duration-300 sm:text-base";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  visible: (delay: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, delay, ease: "easeOut" as const },
+  }),
+};
+
+// ─── Mini Image Carousel (inside promo card) ─────────────────────────────────
+const promoImages = [
+  "/hero-appliances.png",
+  "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=900&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?q=80&w=900&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1631542171261-267866385732?q=80&w=900&auto=format&fit=crop",
+];
+
+function MiniImageCarousel() {
+  const [current, setCurrent] = React.useState(0);
+  const [prev, setPrev] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((c) => {
+        setPrev(c);
+        return (c + 1) % promoImages.length;
+      });
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="relative w-full overflow-hidden rounded-2xl" style={{ aspectRatio: "4/3" }}>
+      {/* Previous image fading out */}
+      {prev !== null && (
+        <img
+          key={`prev-${prev}`}
+          src={promoImages[prev]}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          style={{ animation: "miniCarouselFadeOut 0.7s ease forwards" }}
+        />
+      )}
+      {/* Current image fading in */}
+      <img
+        key={`cur-${current}`}
+        src={promoImages[current]}
+        alt="معرض الشتاء والصيف"
+        className="absolute inset-0 h-full w-full object-cover object-center"
+        style={{ animation: "miniCarouselFadeIn 0.7s ease forwards" }}
+      />
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+      {/* Dot indicators */}
+      <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+        {promoImages.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setPrev(current); setCurrent(i); }}
+            aria-label={`صورة ${i + 1}`}
+            className={cn(
+              "h-1.5 rounded-full transition-all duration-300",
+              i === current ? "w-5 bg-white" : "w-1.5 bg-white/50"
+            )}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const Hero = () => {
   const { language } = useLanguage();
+  const isAr = language === "ar";
   const [banners, setBanners] = React.useState<any[]>([]);
 
   React.useEffect(() => {
@@ -50,9 +135,7 @@ const Hero = () => {
         const res = await fetch("/api/config");
         if (res.ok) {
           const data = await res.json();
-          if (data.banners && data.banners.length > 0) {
-            setBanners(data.banners);
-          }
+          if (data.banners?.length > 0) setBanners(data.banners);
         }
       } catch (e) {
         console.error("Error fetching banners:", e);
@@ -64,104 +147,154 @@ const Hero = () => {
   const activeSlides = banners.length > 0 ? banners : defaultSlides;
 
   return (
-    <section className="relative h-[100svh] md:h-[85vh] min-h-[500px] w-full overflow-hidden bg-black">
+    <section className="relative w-full overflow-hidden bg-[#0c0f14]">
       <Swiper
         modules={[Autoplay, Pagination, EffectFade]}
         effect="fade"
         fadeEffect={{ crossFade: true }}
-        pagination={{ 
-          clickable: true,
-          dynamicBullets: true 
-        }}
-        autoplay={{ delay: 6000, disableOnInteraction: false }}
-        className="h-full w-full"
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 6500, disableOnInteraction: false }}
+        className="hero-swiper w-full"
+        speed={600}
       >
         {activeSlides.map((slide, index) => (
           <SwiperSlide key={slide.id || index}>
             {({ isActive }) => (
-              <div className="relative h-full w-full overflow-hidden">
-                {/* Background Image with Ken Burns effect */}
-                <div 
-                  className={`absolute inset-0 bg-cover bg-center transition-transform duration-[12000ms] ease-out ${isActive ? 'scale-110' : 'scale-100'}`}
+              <div className="relative min-h-[560px] w-full md:min-h-[600px] lg:min-h-[620px] lg:max-h-[720px]">
+                {/* Background */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                   style={{ backgroundImage: `url(${slide.image})` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent from-primary/10 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent opacity-80" />
+                  aria-hidden
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0c0f14]/95 via-[#0c0f14]/75 to-[#1E4FA3]/30" />
+                <div
+                  className={cn(
+                    "absolute inset-0",
+                    isAr
+                      ? "bg-gradient-to-l from-[#0c0f14]/90 via-transparent to-transparent"
+                      : "bg-gradient-to-r from-[#0c0f14]/90 via-transparent to-transparent"
+                  )}
+                  aria-hidden
+                />
+
+                {/* Soft ambient glow — center zone */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+                  <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[100px] lg:h-80 lg:w-80" />
+                  <div className="absolute left-[38%] top-[30%] h-40 w-40 rounded-full bg-secondary/15 blur-[80px] hidden lg:block" />
+                  <div className="absolute right-[20%] bottom-[20%] h-32 w-32 rounded-full bg-primary/10 blur-[70px] hidden lg:block" />
                 </div>
- 
-                {/* Content Overlay */}
-                <div className={cn(
-                  "container mx-auto px-4 h-full flex flex-col justify-center relative z-20 transition-all duration-1000",
-                  isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12",
-                  language === 'ar' ? 'items-end text-right' : 'items-start text-left'
-                )}>
-                  <div className="max-w-3xl w-full">
-                    <motion.span 
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={isActive ? { opacity: 1, x: 0 } : {}}
-                      className="inline-block px-4 py-1.5 rounded-full bg-primary/20 text-primary border border-primary/30 text-xs md:text-sm font-black mb-4 md:mb-8 backdrop-blur-md"
+
+                {/* 3-zone layout */}
+                <div className="relative z-10 mx-auto flex h-full min-h-[560px] w-full max-w-7xl items-center px-6 py-28 md:min-h-[600px] md:py-32 lg:min-h-[620px] lg:px-10">
+                  <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
+                    {/* Zone 1 — Content */}
+                    <motion.div
+                      className="flex flex-col gap-6 lg:col-span-5 lg:gap-7"
+                      initial="hidden"
+                      animate={isActive ? "visible" : "hidden"}
                     >
-                      {language === "ar" ? "حصرياً في معرضنا" : "Exclusive Collection"}
-                    </motion.span>
-                    
-                    <h1 className="text-4xl md:text-7xl lg:text-8xl font-black text-white mb-4 md:mb-8 leading-[1.1] tracking-tighter drop-shadow-2xl">
-                      {language === "ar" ? slide.titleAr : slide.titleEn}
-                    </h1>
-                    
-                    <p className="text-sm md:text-xl lg:text-2xl text-gray-300 mb-8 md:mb-12 max-w-xl leading-relaxed font-medium drop-shadow-lg">
-                      {language === "ar" ? slide.subtitleAr : slide.subtitleEn}
-                    </p>
-                    
-                    <div className="flex flex-wrap gap-3 md:gap-5">
-                      <Link 
-                        href={slide.link || "/products"}
-                        className="px-8 md:px-10 py-4 md:py-5 bg-primary text-white rounded-2xl font-black hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/40 flex items-center justify-center text-sm md:text-lg z-30"
+                      <motion.span
+                        variants={fadeUp}
+                        custom={0}
+                        className="inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm"
                       >
-                        {language === "ar" ? "ابدأ التسوق" : "Start Shopping"}
-                      </Link>
-                      <Link 
-                        href="/offers"
-                        className="px-8 md:px-10 py-4 md:py-5 bg-white/10 text-white rounded-2xl font-black backdrop-blur-xl hover:bg-white/20 transition-all border border-white/20 text-sm md:text-lg flex items-center justify-center z-30"
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                        {isAr ? "حصرياً في معرضنا" : "Exclusive at our store"}
+                      </motion.span>
+
+                      <motion.h1
+                        variants={fadeUp}
+                        custom={0.08}
+                        className="text-4xl font-bold leading-[1.2] tracking-tight text-white md:text-5xl lg:text-6xl xl:text-7xl"
                       >
-                        {language === "ar" ? "أفضل العروض" : "Hot Offers"}
-                      </Link>
+                        {isAr ? slide.titleAr : slide.titleEn}
+                      </motion.h1>
+
+                      <motion.p
+                        variants={fadeUp}
+                        custom={0.16}
+                        className="max-w-md text-base font-medium leading-relaxed text-gray-300 md:text-lg"
+                      >
+                        {isAr ? slide.subtitleAr : slide.subtitleEn}
+                      </motion.p>
+
+                      <motion.div
+                        variants={fadeUp}
+                        custom={0.24}
+                        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
+                      >
+                        <Link
+                          href={slide.link || "/products"}
+                          className={cn(
+                            btnBase,
+                            "bg-gradient-primary text-white shadow-lg shadow-primary/25 hover:brightness-110 hover:shadow-primary/35 active:scale-[0.98]"
+                          )}
+                        >
+                          {isAr ? "ابدأ التسوق" : "Start Shopping"}
+                          <ArrowIcon className={cn(isAr && "rotate-180")} />
+                        </Link>
+                        <Link
+                          href="/offers"
+                          className={cn(
+                            btnBase,
+                            "border border-white/25 bg-white/10 text-white backdrop-blur-sm hover:border-white/40 hover:bg-white/15 active:scale-[0.98]"
+                          )}
+                        >
+                          {isAr ? "أفضل العروض" : "Hot Offers"}
+                        </Link>
+                      </motion.div>
+                    </motion.div>
+
+                    {/* Zone 2 — Center breathing space (desktop only) */}
+                    <div className="relative hidden min-h-[120px] lg:col-span-2 lg:block" aria-hidden>
+                      <motion.div
+                        animate={isActive ? { opacity: [0.4, 0.7, 0.4], scale: [1, 1.05, 1] } : {}}
+                        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md"
+                      />
+                      <motion.div
+                        animate={isActive ? { y: [-6, 6, -6] } : {}}
+                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute left-1/2 top-[30%] h-3 w-3 -translate-x-1/2 rounded-full bg-primary/60 blur-[1px]"
+                      />
+                      <motion.div
+                        animate={isActive ? { y: [6, -6, 6] } : {}}
+                        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute left-1/2 bottom-[28%] h-2 w-2 -translate-x-1/2 rounded-full bg-secondary/70"
+                      />
                     </div>
+
+                    {/* Zone 3 — Promo / product card */}
+                    <motion.div
+                      className="lg:col-span-5"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                      <div className="mx-auto w-full max-w-sm lg:ms-auto lg:me-0 lg:max-w-md">
+                        <div className="overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-1.5 shadow-2xl backdrop-blur-xl">
+                          <MiniImageCarousel />
+                        </div>
+                      </div>
+                    </motion.div>
                   </div>
-                </div>
-                
-                {/* Visual Elements */}
-                <div className={`absolute bottom-32 right-12 hidden 2xl:block transition-all duration-1000 delay-500 ${isActive ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'}`}>
-                   <div className="w-48 h-48 glass rounded-[3rem] p-8 flex flex-col items-center justify-center border-white/20">
-                      <span className="text-4xl font-black text-primary">50%</span>
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter text-center">
-                        {language === 'ar' ? 'خصم متاح الآن' : 'Discount Available'}
-                      </span>
-                   </div>
                 </div>
               </div>
             )}
           </SwiperSlide>
         ))}
       </Swiper>
-      
-      {/* Scroll Down Indicator */}
-      <motion.div 
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 hidden md:flex flex-col items-center gap-2"
-      >
-        <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
-          <div className="w-1 h-2 bg-white/60 rounded-full" />
-        </div>
-      </motion.div>
     </section>
   );
 };
 
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(" ");
+function ArrowIcon({ className }: { className?: string }) {
+  return (
+    <svg className={cn("h-4 w-4", className)} fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+    </svg>
+  );
 }
 
 export default Hero;
-
-

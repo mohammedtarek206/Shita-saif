@@ -507,22 +507,7 @@ export default function AdminOrders() {
               </table>
 
               {/* Financial Calculation card */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px" }}>
-                
-                {/* Developer Credit Signature block (SEO Optimized) */}
-                <div style={{ border: "1px dashed #6366f1", padding: "12px 20px", borderRadius: "15px", backgroundColor: "#f5f3ff", textAlign: "right" }}>
-                  <p style={{ margin: 0, fontSize: "9px", fontWeight: "900", color: "#6b7280", textTransform: "uppercase" }}>
-                    DEVELOPER SIGNATURE & SYSTEMS INFRASTRUCTURE
-                  </p>
-                  <p style={{ margin: "4px 0 0 0", fontSize: "11px", fontWeight: "900", color: "#4f46e5" }}>
-                    تصميم وتطوير بواسطة: م. محمد طارق (Eng. Mohamed Tarek)
-                  </p>
-                  <p style={{ margin: "2px 0 0 0", fontSize: "11px", fontWeight: "bold", color: "#db2777" }}>
-                    📞 هاتف المطور: 01284621015 (WhatsApp Support)
-                  </p>
-                </div>
-
-                {/* Final Calculation Table */}
+              <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end", marginBottom: "40px" }}>
                 <div style={{ width: "320px", border: "1px solid #e5e7eb", padding: "15px", borderRadius: "15px", backgroundColor: "#fafafa" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", margin: "5px 0", fontSize: "12px" }}>
                     <span style={{ color: "#666" }}>إجمالي المنتجات:</span>
@@ -605,13 +590,6 @@ export default function AdminOrders() {
                   alt="Barcode"
                   style={{ height: "30px", width: "120px", objectFit: "contain" }}
                 />
-              </div>
-
-              {/* Developer credits block inside Receipt */}
-              <div style={{ borderTop: "1px dashed #000", paddingTop: "6px", marginTop: "10px", textAlign: "center", fontSize: "9px" }}>
-                <p style={{ margin: 0, fontWeight: "bold" }}>تصميم وتطوير بواسطة:</p>
-                <p style={{ margin: "2px 0", fontWeight: "900" }}>م. محمد طارق (Mohamed Tarek)</p>
-                <p style={{ margin: 0 }}>📞 01284621015</p>
               </div>
 
               <div style={{ textAlign: "center", marginTop: "10px", fontSize: "9px", color: "#666" }}>

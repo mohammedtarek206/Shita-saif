@@ -27,7 +27,7 @@ export default function Home() {
         const productsData = await productsRes.json();
         const partnersData = await partnersRes.json();
         
-        if (Array.isArray(productsData)) setProducts(productsData.slice(0, 8));
+        if (Array.isArray(productsData)) setProducts(productsData.slice(0, 12));
         if (Array.isArray(partnersData)) setPartners(partnersData);
       } catch (err) {
         console.error("Error fetching home data:", err);
@@ -119,13 +119,13 @@ export default function Home() {
           </div>
           
           {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-              {[1, 2, 3, 4].map((n) => (
+            <div className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4 md:gap-8">
+              {[1, 2, 3, 4, 5, 6].map((n) => (
                 <div key={n} className="aspect-[3/4] bg-gray-100 dark:bg-white/5 rounded-[2.5rem] animate-pulse" />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-6 md:gap-10 2xl:gap-12">
               {products.length > 0 ? (
                 products.map((product, i) => (
                   <motion.div 

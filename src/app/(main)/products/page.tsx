@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,6 +8,8 @@ import ProductCard from "@/components/ProductCard";
 import { FiSearch, FiFilter, FiTrendingUp, FiGrid, FiList } from "react-icons/fi";
 import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
+import PriceRangeSlider from "@/components/PriceRangeSlider";
+import { PRICE_FILTER_MIN, PRICE_FILTER_MAX } from "@/constants/pricing";
 
 function ProductsContent() {
   const { language } = useLanguage();
@@ -20,7 +22,10 @@ function ProductsContent() {
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedSub, setSelectedSub] = useState("all");
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
+  const [priceRange, setPriceRange] = useState({ min: PRICE_FILTER_MIN, max: PRICE_FILTER_MAX });
+  const handlePriceChange = useCallback((range: { min: number; max: number }) => {
+    setPriceRange(range);
+  }, []);
   useEffect(() => {
     const fetchProductsAndCategories = async () => {
       try {
@@ -42,17 +47,21 @@ function ProductsContent() {
     fetchProductsAndCategories();
   }, []);
 
-  const filteredProducts = products.filter(p => {
-    const matchesSearch = p.title?.en?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          p.title?.ar?.includes(searchTerm) ||
-                          (typeof p.category === 'string' && p.category.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesCategory = selectedCategory === "all" || p.category === selectedCategory;
-    const matchesSub = selectedSub === "all" || p.subCategory === selectedSub;
-    const matchesPrice = p.price >= priceRange.min && p.price <= priceRange.max;
+  const filteredProducts = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return products.filter((p) => {
+      const matchesSearch =
+        p.title?.en?.toLowerCase().includes(term) ||
+        p.title?.ar?.includes(searchTerm) ||
+        (typeof p.category === "string" && p.category.toLowerCase().includes(term));
 
-    return matchesSearch && matchesCategory && matchesSub && matchesPrice;
-  });
+      const matchesCategory = selectedCategory === "all" || p.category === selectedCategory;
+      const matchesSub = selectedSub === "all" || p.subCategory === selectedSub;
+      const matchesPrice = p.price >= priceRange.min && p.price <= priceRange.max;
+
+      return matchesSearch && matchesCategory && matchesSub && matchesPrice;
+    });
+  }, [products, searchTerm, selectedCategory, selectedSub, priceRange]);
 
   const t = {
     title: language === "ar" ? "كتالوج المنتجات" : "Product Catalog",
@@ -157,20 +166,15 @@ function ProductsContent() {
             </div>
 
             <div className="bg-white dark:bg-white/5 rounded-3xl p-6 border border-gray-100 dark:border-white/5">
-              <h3 className="font-black text-lg mb-4 uppercase tracking-widest">{language === "ar" ? "نطاق السعر" : "Price Range"}</h3>
-              <div className="space-y-4">
-                <input 
-                  type="range" 
-                  min="0" max="100000" step="500"
-                  value={priceRange.max}
-                  onChange={(e) => setPriceRange({...priceRange, max: parseInt(e.target.value)})}
-                  className="w-full accent-primary"
-                />
-                <div className="flex items-center justify-between font-bold text-sm">
-                  <span>0 {language === "ar" ? "ج.م" : "EGP"}</span>
-                  <span className="text-primary">{priceRange.max} {language === "ar" ? "ج.م" : "EGP"}</span>
-                </div>
-              </div>
+              <h3 className="font-black text-lg mb-2 uppercase tracking-widest">{language === "ar" ? "نطاق السعر" : "Price Range"}</h3>
+              <p className="text-xs text-gray-500 font-bold mb-5">
+                {language === "ar" ? "من 0 إلى 1,000,000 ج.م" : "From 0 to 1,000,000 EGP"}
+              </p>
+              <PriceRangeSlider
+                min={priceRange.min}
+                max={priceRange.max}
+                onChange={handlePriceChange}
+              />
             </div>
           </div>
 

@@ -21,7 +21,7 @@ export async function GET() {
             image: "/Slider-1.jpg",
             titleAr: "معرض الشتاء والصيف",
             titleEn: "Winter & Summer Exhibition",
-            subtitleAr: "أقوى عروض الأجهزة المنزلية والتكييفات",
+            subtitleAr: "أقوى العروض للأجهزة الكهربائية المنزلية",
             subtitleEn: "Best deals on home appliances & ACs",
             link: "/products"
           }

@@ -68,10 +68,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="group bg-white dark:bg-white/[0.03] rounded-[2rem] overflow-hidden border border-gray-100 dark:border-white/10 hover:shadow-2xl transition-all duration-500 flex flex-col h-full relative"
+      whileHover={{ y: -10, scale: 1.02 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="group bg-white dark:bg-white/[0.03] rounded-[2rem] overflow-hidden border border-gray-100 dark:border-white/10 shadow-lg hover:shadow-[0_30px_60px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_30px_60px_rgba(255,255,255,0.05)] transition-all flex flex-col h-full relative"
     >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-50/50 dark:bg-white/[0.02]">
