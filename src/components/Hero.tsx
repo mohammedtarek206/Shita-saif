@@ -160,7 +160,7 @@ const Hero = () => {
         {activeSlides.map((slide, index) => (
           <SwiperSlide key={slide.id || index}>
             {({ isActive }) => (
-              <div className="relative min-h-[560px] w-full md:min-h-[600px] lg:min-h-[620px] lg:max-h-[720px]">
+              <div className="relative min-h-[480px] w-full sm:min-h-[540px] md:min-h-[580px] lg:min-h-[620px] lg:max-h-[720px]">
                 {/* Background */}
                 <div
                   className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -186,11 +186,11 @@ const Hero = () => {
                 </div>
 
                 {/* 3-zone layout */}
-                <div className="relative z-10 mx-auto flex h-full min-h-[560px] w-full max-w-7xl items-center px-6 py-28 md:min-h-[600px] md:py-32 lg:min-h-[620px] lg:px-10">
+                <div className="relative z-10 mx-auto flex h-full min-h-[480px] w-full max-w-7xl items-center px-4 py-20 sm:px-6 sm:py-24 md:min-h-[560px] md:py-28 lg:min-h-[600px] lg:px-10">
                   <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
                     {/* Zone 1 — Content */}
                     <motion.div
-                      className="flex flex-col gap-6 lg:col-span-5 lg:gap-7"
+                      className="flex flex-col gap-4 sm:gap-6 lg:col-span-5 lg:gap-7"
                       initial="hidden"
                       animate={isActive ? "visible" : "hidden"}
                     >
@@ -206,7 +206,7 @@ const Hero = () => {
                       <motion.h1
                         variants={fadeUp}
                         custom={0.08}
-                        className="text-4xl font-bold leading-[1.2] tracking-tight text-white md:text-5xl lg:text-6xl xl:text-7xl"
+                        className="text-3xl font-bold leading-[1.15] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
                       >
                         {isAr ? slide.titleAr : slide.titleEn}
                       </motion.h1>
@@ -214,7 +214,7 @@ const Hero = () => {
                       <motion.p
                         variants={fadeUp}
                         custom={0.16}
-                        className="max-w-md text-base font-medium leading-relaxed text-gray-300 md:text-lg"
+                        className="max-w-md text-sm font-medium leading-relaxed text-gray-300 sm:text-base md:text-lg"
                       >
                         {isAr ? slide.subtitleAr : slide.subtitleEn}
                       </motion.p>
@@ -222,7 +222,7 @@ const Hero = () => {
                       <motion.div
                         variants={fadeUp}
                         custom={0.24}
-                        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
+                        className="flex flex-row flex-wrap items-center gap-2.5 sm:gap-4"
                       >
                         <Link
                           href={slide.link || "/products"}
@@ -267,7 +267,7 @@ const Hero = () => {
 
                     {/* Zone 3 — Promo / product card */}
                     <motion.div
-                      className="lg:col-span-5"
+                      className="hidden sm:block lg:col-span-5"
                       initial={{ opacity: 0, y: 20 }}
                       animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                       transition={{ duration: 0.5, delay: 0.2 }}

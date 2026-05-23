@@ -125,7 +125,7 @@ const Navbar = () => {
           />
         )}
 
-        <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-6 lg:gap-6 lg:px-10">
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-3 px-3 sm:px-6 lg:gap-6 lg:px-10">
           {/* ——— Left: Brand ——— */}
           <Link
             href="/"
@@ -134,7 +134,7 @@ const Navbar = () => {
             <img
               src="/Logo-removebg-preview.png"
               alt={isAr ? "الشتاء والصيف" : "Sheta Saif"}
-              className="h-10 w-10 shrink-0 object-contain sm:h-11 sm:w-11"
+              className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 object-contain"
             />
             <div className="hidden min-w-0 flex-col sm:flex">
               <span

@@ -105,7 +105,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body
-        className={`${cairo.variable} ${poppins.variable} min-h-screen font-cairo`}
+        className={`${cairo.variable} ${poppins.variable} min-h-screen font-cairo max-w-[100vw] overflow-x-hidden`}
       >
         <script
           type="application/ld+json"

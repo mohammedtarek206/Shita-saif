@@ -81,8 +81,8 @@ function ProductsContent() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-2 block italic">Winter & Summer Collection</span>
-              <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-2">{t.title}</h1>
-              <p className="text-gray-500 font-bold text-sm md:text-base">{t.subtitle}</p>
+              <h1 className="text-3xl sm:text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-2">{t.title}</h1>
+              <p className="text-gray-500 font-bold text-xs sm:text-sm md:text-base">{t.subtitle}</p>
             </motion.div>
             
             <motion.div 
@@ -96,25 +96,25 @@ function ProductsContent() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-8 py-12">
+      <div className="container mx-auto px-3 sm:px-4 md:px-8 py-8 md:py-12">
         {/* Search and Filters Bar */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row items-center gap-6 mb-16"
+          className="flex flex-col md:flex-row items-center gap-4 sm:gap-6 mb-8 md:mb-16"
         >
           <div className="relative flex-1 w-full group">
             <FiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors text-xl" />
             <input 
               type="text" 
               placeholder={t.searchPlaceholder}
-              className="w-full pl-16 pr-8 py-5 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 focus:border-primary rounded-[2rem] outline-none font-bold shadow-xl transition-all"
+              className="w-full pl-12 pr-6 py-4 sm:pl-16 sm:pr-8 sm:py-5 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 focus:border-primary rounded-2xl sm:rounded-[2rem] outline-none font-bold shadow-xl transition-all text-sm sm:text-base"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <button className="flex-1 md:flex-none flex items-center justify-center gap-3 px-10 py-5 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl">
+            <button className="flex-1 md:flex-none flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl sm:rounded-[2rem] font-black text-[10px] sm:text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl">
               <FiFilter /> {t.filter}
             </button>
             <div className="hidden lg:flex items-center gap-2 px-6 py-5 bg-primary/10 text-primary rounded-[2rem] font-black text-xs uppercase tracking-widest">
@@ -181,13 +181,13 @@ function ProductsContent() {
           {/* Products Grid */}
           <div className="flex-1">
             {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6 md:gap-10">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
               <div key={n} className="aspect-[3/4] bg-white dark:bg-white/5 rounded-[2.5rem] animate-pulse border border-gray-100 dark:border-white/5" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 md:gap-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6 md:gap-10">
             <AnimatePresence mode="popLayout">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product, i) => (

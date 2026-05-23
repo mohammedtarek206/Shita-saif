@@ -71,9 +71,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      whileHover={{ y: -10, scale: 1.02 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="group bg-white dark:bg-white/[0.03] rounded-[2rem] overflow-hidden border border-gray-100 dark:border-white/10 shadow-lg hover:shadow-[0_30px_60px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_30px_60px_rgba(255,255,255,0.05)] transition-all flex flex-col h-full relative"
+      whileHover={{ y: -6, scale: 1.01 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="group bg-white dark:bg-white/[0.03] rounded-2xl sm:rounded-[2rem] overflow-hidden border border-gray-100 dark:border-white/10 shadow-md hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_40px_rgba(255,255,255,0.04)] transition-all flex flex-col h-full relative"
     >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-50/50 dark:bg-white/[0.02]">
@@ -81,7 +81,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <img
             src={product.images[0]}
             alt={language === "ar" ? product.title.ar : product.title.en}
-            className="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700 ease-out"
+            className="w-full h-full object-contain p-3 sm:p-6 group-hover:scale-105 sm:group-hover:scale-110 transition-transform duration-700 ease-out"
             loading="lazy"
           />
         </Link>
@@ -102,11 +102,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-300 z-30">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-300 z-30">
           <button 
             onClick={handleAddToWishlist}
             className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-xl backdrop-blur-md",
+              "w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-all shadow-xl backdrop-blur-md",
               isFavorite 
                 ? "bg-primary text-white" 
                 : "bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white hover:bg-primary hover:text-white"
@@ -116,16 +116,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </button>
           <button 
             onClick={handleViewDetails}
-            className="w-10 h-10 rounded-xl bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white flex items-center justify-center hover:bg-secondary hover:text-white transition-all shadow-xl backdrop-blur-md"
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white flex items-center justify-center hover:bg-secondary hover:text-white transition-all shadow-xl backdrop-blur-md"
           >
-            <FiEye size={18} />
+            <FiEye size={15} className="sm:hidden" />
+            <FiEye size={18} className="hidden sm:block" />
           </button>
           <button
             onClick={e => { e.preventDefault(); e.stopPropagation(); inCompare ? removeFromCompare(product._id) : addToCompare({ ...product, discount: product.discount ?? 0 }); }}
             disabled={compareMaxed}
             title={compareMaxed ? (language === "ar" ? "الحد الأقصى 3 منتجات" : "Max 3 products") : (inCompare ? (language === "ar" ? "إزالة من المقارنة" : "Remove from compare") : (language === "ar" ? "إضافة للمقارنة" : "Add to compare"))}
             className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-xl backdrop-blur-md",
+              "w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-all shadow-xl backdrop-blur-md",
               inCompare
                 ? "bg-blue-500 text-white"
                 : compareMaxed
@@ -133,15 +134,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   : "bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white hover:bg-blue-500 hover:text-white"
             )}
           >
-            <FiRepeat size={18} />
+            <FiRepeat size={15} className="sm:hidden" />
+            <FiRepeat size={18} className="hidden sm:block" />
           </button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-4 md:p-6 flex flex-col flex-1">
+      <div className="p-3 sm:p-4 md:p-5 flex flex-col flex-1">
         <Link href={getSEOLink(product)} className="mb-2">
-          <h3 className="text-sm md:text-lg font-black line-clamp-2 hover:text-primary transition-colors leading-tight min-h-[2.5rem] md:min-h-[3.5rem]">
+          <h3 className="text-xs sm:text-sm md:text-base font-black line-clamp-2 hover:text-primary transition-colors leading-tight min-h-[2.2rem] sm:min-h-[2.5rem] md:min-h-[3rem]">
             {language === "ar" ? product.title.ar : product.title.en}
           </h3>
         </Link>
@@ -162,7 +164,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         
         <div className="mt-auto flex flex-col gap-4">
           <div className="flex items-baseline gap-2">
-            <span className="text-lg md:text-2xl font-black text-primary">
+            <span className="text-base sm:text-lg md:text-2xl font-black text-primary">
               {discountedPrice.toLocaleString()} <span className="text-[10px] md:text-xs">{language === "ar" ? "ج.م" : "EGP"}</span>
             </span>
             {hasDiscount && (
@@ -174,7 +176,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           
           <button 
             onClick={handleAddToCart}
-            className="w-full py-3.5 bg-secondary text-white rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-primary transition-all shadow-lg shadow-secondary/20 hover:shadow-primary/40 active:scale-95 group/btn"
+            className="w-full py-2.5 sm:py-3 bg-secondary text-white rounded-xl sm:rounded-2xl font-black flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-primary transition-all shadow-lg shadow-secondary/20 hover:shadow-primary/40 active:scale-95 group/btn text-xs sm:text-sm"
           >
             <FiShoppingCart className="group-hover/btn:rotate-12 transition-transform" />
             <span className="text-xs md:text-sm">{language === 'ar' ? 'أضف للسلة' : 'Add to Cart'}</span>
