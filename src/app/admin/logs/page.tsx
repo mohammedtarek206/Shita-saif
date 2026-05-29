@@ -167,7 +167,7 @@ export default function AuditLogsPage() {
                 </tr>
               ) : (
                 logs.map((log) => (
-                  <tr key={log?._id || log?.id || log?.slug || log?.name || log?.title?.en || log?.title?.ar || JSON.stringify(log).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
+                  <tr key={(log as any)?._id || (log as any)?.id || (log as any)?.slug || (log as any)?.name || (log as any)?.title?.en || (log as any)?.title?.ar || JSON.stringify(log).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
                     {/* Admin */}
                     <td className="py-5 px-6">
                       <div className="flex items-center gap-3">

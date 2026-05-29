@@ -131,7 +131,7 @@ export default function OffersPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: i * 0.05 }}
-                    key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)}
+                    key={(product as any)?._id || (product as any)?.id || (product as any)?.slug || (product as any)?.name || (product as any)?.title?.en || (product as any)?.title?.ar || JSON.stringify(product).substring(0, 20)}
                   >
                     <ProductCard product={product} />
                   </motion.div>

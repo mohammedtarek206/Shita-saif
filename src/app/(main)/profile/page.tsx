@@ -124,7 +124,7 @@ export default function ProfilePage() {
         <div className="flex gap-2 mb-12 overflow-x-auto pb-4 no-scrollbar mt-32 md:mt-0">
           {tabs.map((tab) => (
             <button
-              key={tab?._id || tab?.id || tab?.slug || tab?.name || tab?.title?.en || tab?.title?.ar || JSON.stringify(tab).substring(0, 20)}
+              key={(tab as any)?._id || (tab as any)?.id || (tab as any)?.slug || (tab as any)?.name || (tab as any)?.title?.en || (tab as any)?.title?.ar || JSON.stringify(tab).substring(0, 20)}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest whitespace-nowrap transition-all ${
                 activeTab === tab.id
@@ -202,7 +202,7 @@ export default function ProfilePage() {
                   {orders.map((order, idx) => (
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
-                      key={order?._id || order?.id || order?.slug || order?.name || order?.title?.en || order?.title?.ar || JSON.stringify(order).substring(0, 20)} className="bg-white dark:bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-gray-100 dark:border-white/10 shadow-2xl overflow-hidden group hover:border-primary/30 transition-all"
+                      key={(order as any)?._id || (order as any)?.id || (order as any)?.slug || (order as any)?.name || (order as any)?.title?.en || (order as any)?.title?.ar || JSON.stringify(order).substring(0, 20)} className="bg-white dark:bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-gray-100 dark:border-white/10 shadow-2xl overflow-hidden group hover:border-primary/30 transition-all"
                     >
                       <div className="p-8 md:p-10">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">

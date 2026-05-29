@@ -148,7 +148,7 @@ export default function SettingsAdmin() {
             { id: "banners", name: t.tabBanners, icon: <FiLayers /> },
           ].map((tab) => (
             <button
-              key={tab?._id || tab?.id || tab?.slug || tab?.name || tab?.title?.en || tab?.title?.ar || JSON.stringify(tab).substring(0, 20)}
+              key={(tab as any)?._id || (tab as any)?.id || (tab as any)?.slug || (tab as any)?.name || (tab as any)?.title?.en || (tab as any)?.title?.ar || JSON.stringify(tab).substring(0, 20)}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-4 w-full px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300 ${
                 activeTab === tab.id 
@@ -349,7 +349,7 @@ export default function SettingsAdmin() {
 
                 <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
                   {config.banners?.map((banner: any, index: number) => (
-                    <div key={banner?._id || banner?.id || banner?.slug || banner?.name || banner?.title?.en || banner?.title?.ar || JSON.stringify(banner).substring(0, 20)} className="relative bg-gray-50 dark:bg-white/[0.01] p-6 rounded-[2rem] border border-gray-100 dark:border-white/5 space-y-4">
+                    <div key={(banner as any)?._id || (banner as any)?.id || (banner as any)?.slug || (banner as any)?.name || (banner as any)?.title?.en || (banner as any)?.title?.ar || JSON.stringify(banner).substring(0, 20)} className="relative bg-gray-50 dark:bg-white/[0.01] p-6 rounded-[2rem] border border-gray-100 dark:border-white/5 space-y-4">
                       <div className="absolute top-4 right-4">
                         <button 
                           onClick={() => handleRemoveBanner(banner.id)}

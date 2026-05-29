@@ -89,7 +89,7 @@ export default function PartnersAdmin() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ delay: i * 0.05 }}
-              key={partner?._id || partner?.id || partner?.slug || partner?.name || partner?.title?.en || partner?.title?.ar || JSON.stringify(partner).substring(0, 20)} 
+              key={(partner as any)?._id || (partner as any)?.id || (partner as any)?.slug || (partner as any)?.name || (partner as any)?.title?.en || (partner as any)?.title?.ar || JSON.stringify(partner).substring(0, 20)} 
               className="bg-white dark:bg-black/40 backdrop-blur-xl p-8 rounded-[3rem] border border-gray-100 dark:border-white/5 shadow-2xl group relative overflow-hidden"
             >
               <div className="flex items-start justify-between mb-8 relative z-10">

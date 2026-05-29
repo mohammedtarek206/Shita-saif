@@ -334,7 +334,7 @@ export default function ProductDetails({ params }: { params: any }) {
                 { id: "features", label: language === "ar" ? "المميزات والاستخدام" : "Features & Usage", icon: <FiAward /> }
               ].map(tab => (
                 <button
-                  key={tab?._id || tab?.id || tab?.slug || tab?.name || tab?.title?.en || tab?.title?.ar || JSON.stringify(tab).substring(0, 20)}
+                  key={(tab as any)?._id || (tab as any)?.id || (tab as any)?.slug || (tab as any)?.name || (tab as any)?.title?.en || (tab as any)?.title?.ar || JSON.stringify(tab).substring(0, 20)}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
                     "flex items-center gap-4 p-5 rounded-2xl font-black uppercase tracking-widest text-sm transition-all text-left rtl:text-right",
@@ -423,7 +423,7 @@ export default function ProductDetails({ params }: { params: any }) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {relatedProducts.map((relProduct, i) => (
-                <motion.div key={relProduct?._id || relProduct?.id || relProduct?.slug || relProduct?.name || relProduct?.title?.en || relProduct?.title?.ar || JSON.stringify(relProduct).substring(0, 20)} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <motion.div key={(relProduct as any)?._id || (relProduct as any)?.id || (relProduct as any)?.slug || (relProduct as any)?.name || (relProduct as any)?.title?.en || (relProduct as any)?.title?.ar || JSON.stringify(relProduct).substring(0, 20)} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
                   <ProductCard product={relProduct as any} />
                 </motion.div>
               ))}
@@ -445,7 +445,7 @@ export default function ProductDetails({ params }: { params: any }) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {recentlyViewed.filter(p => p._id !== id).slice(0, 4).map((recentProduct, i) => (
-                <motion.div key={recentProduct?._id || recentProduct?.id || recentProduct?.slug || recentProduct?.name || recentProduct?.title?.en || recentProduct?.title?.ar || JSON.stringify(recentProduct).substring(0, 20)} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <motion.div key={(recentProduct as any)?._id || (recentProduct as any)?.id || (recentProduct as any)?.slug || (recentProduct as any)?.name || (recentProduct as any)?.title?.en || (recentProduct as any)?.title?.ar || JSON.stringify(recentProduct).substring(0, 20)} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
                   <ProductCard product={recentProduct as any} />
                 </motion.div>
               ))}

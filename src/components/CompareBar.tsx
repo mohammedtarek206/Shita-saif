@@ -25,7 +25,7 @@ export default function CompareBar() {
             {/* Products mini list */}
             <div className="flex items-center gap-3 flex-1 overflow-x-auto no-scrollbar">
               {compareList.map(product => (
-                <div key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} className="relative shrink-0 group">
+                <div key={(product as any)?._id || (product as any)?.id || (product as any)?.slug || (product as any)?.name || (product as any)?.title?.en || (product as any)?.title?.ar || JSON.stringify(product).substring(0, 20)} className="relative shrink-0 group">
                   <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 rounded-2xl p-2 border border-gray-100 dark:border-white/10 overflow-hidden">
                     <img
                       src={product.images?.[0] || "/placeholder.png"}

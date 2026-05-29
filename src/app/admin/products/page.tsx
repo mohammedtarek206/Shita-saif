@@ -287,7 +287,7 @@ export default function ProductsAdmin() {
           >
             <option value="All" className="bg-white dark:bg-black font-bold">{t.allCategories}</option>
             {categoriesData.map(cat => (
-              <option key={cat?._id || cat?.id || cat?.slug || cat?.name || cat?.title?.en || cat?.title?.ar || JSON.stringify(cat).substring(0, 20)} value={cat._id} className="bg-white dark:bg-black font-bold">
+              <option key={(cat as any)?._id || (cat as any)?.id || (cat as any)?.slug || (cat as any)?.name || (cat as any)?.title?.en || (cat as any)?.title?.ar || JSON.stringify(cat).substring(0, 20)} value={cat._id} className="bg-white dark:bg-black font-bold">
                 {language === "ar" ? cat.name?.ar : cat.name?.en}
               </option>
             ))}
@@ -330,7 +330,7 @@ export default function ProductsAdmin() {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
             {filteredProducts.map((product) => (
-              <tr key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors group">
+              <tr key={(product as any)?._id || (product as any)?.id || (product as any)?.slug || (product as any)?.name || (product as any)?.title?.en || (product as any)?.title?.ar || JSON.stringify(product).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors group">
                 {/* Checkbox */}
                 <td className="py-5 px-6 text-center">
                   <input 
@@ -411,7 +411,7 @@ export default function ProductsAdmin() {
       {/* Mobile Card View */}
       <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
         {filteredProducts.map((product) => (
-          <div key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} className="bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-6 relative shadow-md">
+          <div key={(product as any)?._id || (product as any)?.id || (product as any)?.slug || (product as any)?.name || (product as any)?.title?.en || (product as any)?.title?.ar || JSON.stringify(product).substring(0, 20)} className="bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-6 relative shadow-md">
             {/* Mobile Checkbox */}
             <div className="absolute top-4 right-4 rtl:left-4 rtl:right-auto">
               <input 
@@ -594,7 +594,7 @@ export default function ProductsAdmin() {
                     }}>
                     <option value="">{language === "ar" ? "اختر القسم الرئيسي" : "Select Category"}</option>
                     {categoriesData.map(cat => (
-                      <option key={cat?._id || cat?.id || cat?.slug || cat?.name || cat?.title?.en || cat?.title?.ar || JSON.stringify(cat).substring(0, 20)} value={cat._id}>{cat.name?.en} / {cat.name?.ar}</option>
+                      <option key={(cat as any)?._id || (cat as any)?.id || (cat as any)?.slug || (cat as any)?.name || (cat as any)?.title?.en || (cat as any)?.title?.ar || JSON.stringify(cat).substring(0, 20)} value={cat._id}>{cat.name?.en} / {cat.name?.ar}</option>
                     ))}
                   </select>
                 </div>

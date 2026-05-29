@@ -129,7 +129,7 @@ export default function Home() {
               {products.length > 0 ? (
                 products.map((product, i) => (
                   <motion.div 
-                    key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
+                    key={(product as any)?._id || (product as any)?.id || (product as any)?.slug || (product as any)?.name || (product as any)?.title?.en || (product as any)?.title?.ar || JSON.stringify(product).substring(0, 20)} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                   >
                     <ProductCard product={product} />
                   </motion.div>
@@ -173,7 +173,7 @@ export default function Home() {
             {statsData.map((stat, i) => (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.5 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                key={stat?._id || stat?.id || stat?.slug || stat?.name || stat?.title?.en || stat?.title?.ar || JSON.stringify(stat).substring(0, 20)} className="space-y-4"
+                key={(stat as any)?._id || (stat as any)?.id || (stat as any)?.slug || (stat as any)?.name || (stat as any)?.title?.en || (stat as any)?.title?.ar || JSON.stringify(stat).substring(0, 20)} className="space-y-4"
               >
                 <div className="w-16 h-16 md:w-24 md:h-24 rounded-[2rem] bg-white/20 border border-white/20 flex items-center justify-center text-3xl md:text-5xl mx-auto backdrop-blur-md shadow-2xl">
                   {stat.icon}

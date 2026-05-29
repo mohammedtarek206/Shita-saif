@@ -106,7 +106,7 @@ export default function CouponsAdmin() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {coupons.map((coupon, i) => (
             <motion.div
-              key={coupon?._id || coupon?.id || coupon?.slug || coupon?.name || coupon?.title?.en || coupon?.title?.ar || JSON.stringify(coupon).substring(0, 20)}
+              key={(coupon as any)?._id || (coupon as any)?.id || (coupon as any)?.slug || (coupon as any)?.name || (coupon as any)?.title?.en || (coupon as any)?.title?.ar || JSON.stringify(coupon).substring(0, 20)}
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
               className={`relative bg-white dark:bg-white/[0.03] rounded-[2rem] p-6 border-2 transition-all ${
                 coupon.isActive ? "border-primary/20 shadow-xl shadow-primary/5" : "border-gray-100 dark:border-white/5 opacity-60"

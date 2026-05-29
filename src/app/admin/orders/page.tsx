@@ -185,7 +185,7 @@ export default function AdminOrders() {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
             {filteredOrders.map((order: any) => (
-              <tr key={order?._id || order?.id || order?.slug || order?.name || order?.title?.en || order?.title?.ar || JSON.stringify(order).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+              <tr key={(order as any)?._id || (order as any)?.id || (order as any)?.slug || (order as any)?.name || (order as any)?.title?.en || (order as any)?.title?.ar || JSON.stringify(order).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                 <td className="px-8 py-6">
                   <div className="font-black text-sm group-hover:text-primary transition-colors">{order.orderNumber || order.invoiceNumber}</div>
                   <div className="text-[10px] text-gray-500 font-bold mt-1">
@@ -257,7 +257,7 @@ export default function AdminOrders() {
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4">
         {filteredOrders.map((order: any) => (
-          <div key={order?._id || order?.id || order?.slug || order?.name || order?.title?.en || order?.title?.ar || JSON.stringify(order).substring(0, 20)} className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-4">
+          <div key={(order as any)?._id || (order as any)?.id || (order as any)?.slug || (order as any)?.name || (order as any)?.title?.en || (order as any)?.title?.ar || JSON.stringify(order).substring(0, 20)} className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-black text-sm">{order.orderNumber || order.invoiceNumber}</p>

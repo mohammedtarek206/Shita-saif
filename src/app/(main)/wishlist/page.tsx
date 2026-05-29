@@ -20,7 +20,7 @@ export default function WishlistPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {wishlist.length > 0 ? (
             wishlist.map((product) => (
-              <ProductCard key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} product={product} />
+              <ProductCard key={(product as any)?._id || (product as any)?.id || (product as any)?.slug || (product as any)?.name || (product as any)?.title?.en || (product as any)?.title?.ar || JSON.stringify(product).substring(0, 20)} product={product} />
             ))
           ) : (
             <div className="lg:col-span-4 text-center py-20 glass rounded-[3rem] border-white/20">

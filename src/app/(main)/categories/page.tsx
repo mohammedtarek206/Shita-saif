@@ -64,7 +64,7 @@ export default function CategoriesPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                key={category?._id || category?.id || category?.slug || category?.name || category?.title?.en || category?.title?.ar || JSON.stringify(category).substring(0, 20)}
+                key={(category as any)?._id || (category as any)?.id || (category as any)?.slug || (category as any)?.name || (category as any)?.title?.en || (category as any)?.title?.ar || JSON.stringify(category).substring(0, 20)}
               >
                 <Link href={`/products?category=${category._id}`} className="group block h-full">
                   <div className="bg-white dark:bg-white/[0.02] rounded-[2.5rem] overflow-hidden border border-gray-100 dark:border-white/5 hover:shadow-2xl hover:border-primary/50 transition-all duration-500 h-full flex flex-col relative">

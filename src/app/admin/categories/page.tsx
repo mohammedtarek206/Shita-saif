@@ -188,7 +188,7 @@ export default function CategoriesAdmin() {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
             {filteredCategories.map((category) => (
-              <tr key={category?._id || category?.id || category?.slug || category?.name || category?.title?.en || category?.title?.ar || JSON.stringify(category).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+              <tr key={(category as any)?._id || (category as any)?.id || (category as any)?.slug || (category as any)?.name || (category as any)?.title?.en || (category as any)?.title?.ar || JSON.stringify(category).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                 <td className="px-8 py-5">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 p-2 flex items-center justify-center overflow-hidden">

@@ -19,7 +19,7 @@ export default function ReviewsAdmin() {
 
       <div className="space-y-6">
         {reviews.map((review) => (
-          <div key={review?._id || review?.id || review?.slug || review?.name || review?.title?.en || review?.title?.ar || JSON.stringify(review).substring(0, 20)} className="bg-white dark:bg-black/40 backdrop-blur-xl p-8 rounded-[3rem] border border-gray-100 dark:border-white/5 shadow-2xl">
+          <div key={(review as any)?._id || (review as any)?.id || (review as any)?.slug || (review as any)?.name || (review as any)?.title?.en || (review as any)?.title?.ar || JSON.stringify(review).substring(0, 20)} className="bg-white dark:bg-black/40 backdrop-blur-xl p-8 rounded-[3rem] border border-gray-100 dark:border-white/5 shadow-2xl">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-4 mb-4">

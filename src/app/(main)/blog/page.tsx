@@ -219,7 +219,7 @@ export default function BlogListing() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredPosts.map((post, index) => (
                 <motion.div
-                  key={post?._id || post?.id || post?.slug || post?.name || post?.title?.en || post?.title?.ar || JSON.stringify(post).substring(0, 20)}
+                  key={(post as any)?._id || (post as any)?.id || (post as any)?.slug || (post as any)?.name || (post as any)?.title?.en || (post as any)?.title?.ar || JSON.stringify(post).substring(0, 20)}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}

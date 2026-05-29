@@ -141,7 +141,7 @@ export default function SEOBlogManager() {
             { id: "diagnostics", name: t.tabDiagnostics, icon: <FiBarChart2 /> },
           ].map((tab) => (
             <button
-              key={tab?._id || tab?.id || tab?.slug || tab?.name || tab?.title?.en || tab?.title?.ar || JSON.stringify(tab).substring(0, 20)}
+              key={(tab as any)?._id || (tab as any)?.id || (tab as any)?.slug || (tab as any)?.name || (tab as any)?.title?.en || (tab as any)?.title?.ar || JSON.stringify(tab).substring(0, 20)}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-4 w-full px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300 ${
                 activeTab === tab.id 
@@ -244,7 +244,7 @@ export default function SEOBlogManager() {
                     </div>
                   ) : (
                     posts.map((post) => (
-                      <div key={post?._id || post?.id || post?.slug || post?.name || post?.title?.en || post?.title?.ar || JSON.stringify(post).substring(0, 20)} className="bg-gray-50 dark:bg-white/[0.01] p-5 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center justify-between gap-4">
+                      <div key={(post as any)?._id || (post as any)?.id || (post as any)?.slug || (post as any)?.name || (post as any)?.title?.en || (post as any)?.title?.ar || JSON.stringify(post).substring(0, 20)} className="bg-gray-50 dark:bg-white/[0.01] p-5 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-4 min-w-0">
                           <img src={post.coverImage} className="w-16 h-16 rounded-xl object-cover shrink-0" />
                           <div className="min-w-0">

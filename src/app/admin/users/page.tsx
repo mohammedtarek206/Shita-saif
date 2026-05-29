@@ -227,7 +227,7 @@ export default function UsersAdmin() {
                 users.map((user) => {
                   const isSelf = session?.user?.email === user.email;
                   return (
-                    <tr key={user?._id || user?.id || user?.slug || user?.name || user?.title?.en || user?.title?.ar || JSON.stringify(user).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
+                    <tr key={(user as any)?._id || (user as any)?.id || (user as any)?.slug || (user as any)?.name || (user as any)?.title?.en || (user as any)?.title?.ar || JSON.stringify(user).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
                       {/* Name & Email */}
                       <td className="py-5 px-6">
                         <div className="flex items-center gap-3">
