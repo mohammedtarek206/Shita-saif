@@ -27,7 +27,10 @@ export async function POST(req: Request) {
     // Transform flat data from UI to nested model structure
     const productData = {
       title: { ar: body.nameAr, en: body.nameEn },
-      description: { ar: body.nameAr, en: body.nameEn }, // Fallback
+      description: { 
+        ar: body.description?.ar || body.nameAr, 
+        en: body.description?.en || body.nameEn 
+      },
       category: body.category,
       subCategory: body.subCategory,
       brand: body.brand || "WinterSummer",

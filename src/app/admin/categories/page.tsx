@@ -10,6 +10,8 @@ export default function CategoriesAdmin() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   
   const [newCategory, setNewCategory] = useState({
     nameAr: "",
@@ -50,6 +52,14 @@ export default function CategoriesAdmin() {
 
   const handleAddCategory = async () => {
     try {
+      setError("");
+      setSuccess("");
+      
+      if (!newCategory.nameAr || !newCategory.nameEn || !newCategory.slug || !newCategory.image || !newCategory.icon) {
+        setError("Please fill all required fields (Names, Slug, Image, Icon)");
+        return;
+      }
+
       const url = editingCategory ? `/api/admin/categories/${editingCategory._id}` : "/api/admin/categories";
       const method = editingCategory ? "PATCH" : "POST";
       
@@ -61,7 +71,7 @@ export default function CategoriesAdmin() {
         description: { ar: newCategory.descAr, en: newCategory.descEn },
         subCategories: newCategory.subCategories.filter(s => s.nameAr || s.nameEn).map(s => ({
           name: { ar: s.nameAr, en: s.nameEn },
-          slug: s.slug
+          slug: s.slug || (s.nameEn.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, ""))
         }))
       };
 
@@ -70,18 +80,26 @@ export default function CategoriesAdmin() {
         body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },
       });
+      
       if (res.ok) {
+        setSuccess(editingCategory ? "Category updated successfully!" : "Category created successfully!");
         fetchCategories();
-        closeModal();
+        setTimeout(() => closeModal(), 1500);
+      } else {
+        const data = await res.json();
+        setError(data.error || "Failed to save category");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setError(err.message || "An error occurred");
     }
   };
 
   const closeModal = () => {
     setShowAddModal(false);
     setEditingCategory(null);
+    setError("");
+    setSuccess("");
     setNewCategory({
       nameAr: "", nameEn: "", slug: "", image: "", icon: "", descAr: "", descEn: "",
       subCategories: [{ nameAr: "", nameEn: "", slug: "" }]
@@ -233,6 +251,19 @@ export default function CategoriesAdmin() {
                   <FiX className="text-2xl" />
                 </button>
               </div>
+
+              {error && (
+                <div className="bg-rose-500/10 border border-rose-500/20 text-rose-500 px-6 py-4 rounded-2xl font-bold text-sm flex items-center justify-between">
+                  {error}
+                  <button onClick={() => setError("")}><FiX /></button>
+                </div>
+              )}
+              {success && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 px-6 py-4 rounded-2xl font-bold text-sm flex items-center justify-between">
+                  {success}
+                  <button onClick={() => setSuccess("")}><FiX /></button>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <div className="space-y-2">

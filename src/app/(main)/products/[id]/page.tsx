@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { FiShoppingCart, FiHeart, FiShield, FiTruck, FiRefreshCw, FiCheck, FiZap, FiInfo, FiTag, FiStar } from "react-icons/fi";
+import { FiShoppingCart, FiHeart, FiShield, FiTruck, FiRefreshCw, FiCheck, FiZap, FiInfo, FiTag, FiStar, FiFileText, FiList, FiAward } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
@@ -24,6 +24,8 @@ export default function ProductDetails({ params }: { params: any }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [cartToast, setCartToast] = useState(false);
+  const [activeTab, setActiveTab] = useState("description");
+  const [showFullDesc, setShowFullDesc] = useState(false);
   const { language } = useLanguage();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -321,19 +323,92 @@ export default function ProductDetails({ params }: { params: any }) {
           </div>
         </div>
         
-        {/* Full Specifications Overlay */}
+        {/* Product Details Tabs */}
         <section className="mt-32 pt-20 border-t border-gray-100 dark:border-white/10">
-          <div className="flex items-center gap-6 mb-16">
-            <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">Full Specifications</h2>
-            <div className="flex-1 h-px bg-gray-100 dark:bg-white/10" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {Array.isArray(language === "ar" ? product.specifications?.ar : product.specifications?.en) && (language === "ar" ? product.specifications?.ar : product.specifications?.en)?.map((spec: any, i: number) => (
-              <div key={i} className="group border-b border-gray-50 dark:border-white/5 pb-4">
-                <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2 block italic">{spec.key}</span>
-                <span className="text-lg font-bold group-hover:translate-x-2 transition-transform inline-block">{spec.value}</span>
-              </div>
-            ))}
+          <div className="flex flex-col md:flex-row gap-12">
+            {/* Tabs Navigation */}
+            <div className="md:w-1/4 flex flex-col gap-4">
+              {[
+                { id: "description", label: language === "ar" ? "الوصف الشامل" : "Description", icon: <FiFileText /> },
+                { id: "specifications", label: language === "ar" ? "المواصفات التقنية" : "Specifications", icon: <FiList /> },
+                { id: "features", label: language === "ar" ? "المميزات والاستخدام" : "Features & Usage", icon: <FiAward /> }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={cn(
+                    "flex items-center gap-4 p-5 rounded-2xl font-black uppercase tracking-widest text-sm transition-all text-left rtl:text-right",
+                    activeTab === tab.id 
+                      ? "bg-primary text-white shadow-xl shadow-primary/20 scale-105" 
+                      : "bg-gray-50 dark:bg-white/5 text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10"
+                  )}
+                >
+                  <span className="text-xl">{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Tab Content */}
+            <div className="md:w-3/4 min-h-[400px]">
+              <AnimatePresence mode="wait">
+                {activeTab === "description" && (
+                  <motion.div key="desc" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-gray-50 dark:bg-white/[0.02] p-8 md:p-12 rounded-[3rem] border border-gray-100 dark:border-white/5">
+                    <h3 className="text-2xl font-black mb-6 italic uppercase tracking-widest">{language === "ar" ? "وصف المنتج" : "Product Description"}</h3>
+                    <div className="relative">
+                      <p className={cn(
+                        "text-gray-600 dark:text-gray-400 leading-loose text-lg font-medium",
+                        !showFullDesc && "line-clamp-4"
+                      )}>
+                        {language === "ar" ? product.description?.ar || product.title?.ar : product.description?.en || product.title?.en}
+                      </p>
+                      {!showFullDesc && (
+                        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-50 dark:from-[#111] to-transparent" />
+                      )}
+                    </div>
+                    <button 
+                      onClick={() => setShowFullDesc(!showFullDesc)}
+                      className="mt-6 text-primary font-black uppercase tracking-widest text-sm hover:underline"
+                    >
+                      {showFullDesc ? (language === "ar" ? "عرض أقل" : "Show Less") : (language === "ar" ? "قراءة المزيد" : "Read More")}
+                    </button>
+                  </motion.div>
+                )}
+
+                {activeTab === "specifications" && (
+                  <motion.div key="specs" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-gray-50 dark:bg-white/[0.02] p-8 md:p-12 rounded-[3rem] border border-gray-100 dark:border-white/5">
+                    <h3 className="text-2xl font-black mb-10 italic uppercase tracking-widest">{language === "ar" ? "المواصفات التقنية" : "Technical Specifications"}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                      {Array.isArray(language === "ar" ? product.specifications?.ar : product.specifications?.en) && (language === "ar" ? product.specifications?.ar : product.specifications?.en)?.map((spec: any, i: number) => (
+                        <div key={i} className="group border-b border-gray-200 dark:border-white/10 pb-4 flex flex-col gap-2">
+                          <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] italic">{spec.key}</span>
+                          <span className="text-lg font-bold text-gray-900 dark:text-white group-hover:translate-x-2 rtl:group-hover:-translate-x-2 transition-transform inline-block">{spec.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeTab === "features" && (
+                  <motion.div key="features" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {[
+                      { icon: <FiZap />, title: language === "ar" ? "أداء عالي" : "High Performance", desc: language === "ar" ? "مصمم لتقديم أفضل أداء مع استهلاك طاقة مثالي." : "Designed to deliver the best performance with optimal energy consumption." },
+                      { icon: <FiShield />, title: language === "ar" ? "حماية متقدمة" : "Advanced Protection", desc: language === "ar" ? "مزود بأنظمة أمان حديثة لحماية الجهاز والمستخدم." : "Equipped with modern safety systems to protect the device and user." },
+                      { icon: <FiAward />, title: language === "ar" ? "جودة ممتازة" : "Premium Quality", desc: language === "ar" ? "مصنوع من مواد عالية الجودة لضمان عمر افتراضي طويل." : "Made of high quality materials to ensure long lifespan." },
+                      { icon: <FiRefreshCw />, title: language === "ar" ? "سهولة الاستخدام" : "Easy to Use", desc: language === "ar" ? "واجهة بسيطة وتصميم يسهل الاستخدام اليومي." : "Simple interface and design that facilitates daily use." }
+                    ].map((feature, i) => (
+                      <div key={i} className="bg-gray-50 dark:bg-white/[0.02] p-8 rounded-[3rem] border border-gray-100 dark:border-white/5 hover:border-primary/50 transition-colors group">
+                        <div className="w-14 h-14 bg-white dark:bg-white/5 rounded-2xl flex items-center justify-center text-primary text-2xl mb-6 shadow-md group-hover:scale-110 transition-transform">
+                          {feature.icon}
+                        </div>
+                        <h4 className="text-xl font-black mb-3">{feature.title}</h4>
+                        <p className="text-gray-500 font-medium leading-relaxed">{feature.desc}</p>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </section>
 

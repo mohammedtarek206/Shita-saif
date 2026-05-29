@@ -143,10 +143,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Content */}
       <div className="p-3 sm:p-4 md:p-5 flex flex-col flex-1">
         <Link href={getSEOLink(product)} className="mb-2">
-          <h3 className="text-xs sm:text-sm md:text-base font-black line-clamp-2 hover:text-primary transition-colors leading-tight min-h-[2.2rem] sm:min-h-[2.5rem] md:min-h-[3rem]">
+          <h3 className="text-xs sm:text-sm md:text-base font-black line-clamp-1 hover:text-primary transition-colors leading-tight">
             {language === "ar" ? product.title.ar : product.title.en}
           </h3>
         </Link>
+        
+        {/* Short Description */}
+        <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-2 mb-3 leading-relaxed">
+          {language === "ar" ? (product as any).description?.ar || product.title.ar : (product as any).description?.en || product.title.en}
+        </p>
         
         <div className="mb-3">
           <div className="inline-flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-2 py-1 rounded-lg">

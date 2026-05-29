@@ -16,11 +16,13 @@ export default function ProductsAdmin() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [categoriesData, setCategoriesData] = useState<any[]>([]);
   const [newProduct, setNewProduct] = useState({
-    nameAr: "", nameEn: "", category: "", subCategory: "", SKU: "", warranty: "", shippingStatus: "In Stock", colors: [""], price: "", discount: "", stock: "", images: [""],
+    nameAr: "", nameEn: "", descAr: "", descEn: "", category: "", subCategory: "", SKU: "", warranty: "", shippingStatus: "In Stock", colors: [""], price: "", discount: "", stock: "", images: [""],
     specs: [{ key: "", value: "" }]
   });
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // Bulk Edit States
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -101,8 +103,16 @@ export default function ProductsAdmin() {
   }, []);
 
   const handleAddProduct = async () => {
-    const finalImages = newProduct.images.map(convertDriveLink).filter(url => url.trim() !== "");
     try {
+      setError("");
+      setSuccess("");
+      
+      if (!newProduct.nameAr || !newProduct.nameEn || !newProduct.category || !newProduct.subCategory || !newProduct.price) {
+        setError(language === "ar" ? "الرجاء تعبئة جميع الحقول المطلوبة (الاسم، القسم، القسم الفرعي، السعر)" : "Please fill all required fields (Name, Category, Sub Category, Price)");
+        return;
+      }
+
+      const finalImages = newProduct.images.map(convertDriveLink).filter(url => url.trim() !== "");
       const url = editingProduct ? `/api/admin/products/${editingProduct._id}` : "/api/admin/products";
       const method = editingProduct ? "PATCH" : "POST";
       
@@ -111,6 +121,7 @@ export default function ProductsAdmin() {
         body: JSON.stringify({ 
           ...newProduct, 
           title: { ar: newProduct.nameAr, en: newProduct.nameEn },
+          description: { ar: newProduct.descAr, en: newProduct.descEn },
           price: Number(newProduct.price),
           discount: Number(newProduct.discount),
           stock: Number(newProduct.stock),
@@ -120,18 +131,25 @@ export default function ProductsAdmin() {
         headers: { "Content-Type": "application/json" },
       });
       if (res.ok) {
+        setSuccess(language === "ar" ? "تم الحفظ بنجاح!" : "Saved successfully!");
         fetchProducts();
-        closeModal();
+        setTimeout(() => closeModal(), 1500);
+      } else {
+        const data = await res.json();
+        setError(data.error || "Failed to save product");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setError(err.message || "An error occurred");
     }
   };
 
   const closeModal = () => {
     setShowAddModal(false);
     setEditingProduct(null);
-    setNewProduct({ nameAr: "", nameEn: "", category: "", subCategory: "", SKU: "", warranty: "", shippingStatus: "In Stock", colors: [""], price: "", discount: "", stock: "", images: [""], specs: [{ key: "", value: "" }] });
+    setError("");
+    setSuccess("");
+    setNewProduct({ nameAr: "", nameEn: "", descAr: "", descEn: "", category: "", subCategory: "", SKU: "", warranty: "", shippingStatus: "In Stock", colors: [""], price: "", discount: "", stock: "", images: [""], specs: [{ key: "", value: "" }] });
   };
 
   const startEdit = (product: any) => {
@@ -139,6 +157,8 @@ export default function ProductsAdmin() {
     setNewProduct({
       nameAr: product.title?.ar || "",
       nameEn: product.title?.en || "",
+      descAr: product.description?.ar || "",
+      descEn: product.description?.en || "",
       category: product.category || "",
       subCategory: product.subCategory || "",
       SKU: product.SKU || "",
@@ -530,6 +550,19 @@ export default function ProductsAdmin() {
                 </button>
               </div>
 
+              {error && (
+                <div className="bg-rose-500/10 border border-rose-500/20 text-rose-500 px-6 py-4 rounded-2xl font-bold text-sm flex items-center justify-between">
+                  {error}
+                  <button onClick={() => setError("")}><FiX /></button>
+                </div>
+              )}
+              {success && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 px-6 py-4 rounded-2xl font-bold text-sm flex items-center justify-between">
+                  {success}
+                  <button onClick={() => setSuccess("")}><FiX /></button>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "الاسم (بالعربية)" : "Name (Arabic)"}</label>
@@ -541,10 +574,20 @@ export default function ProductsAdmin() {
                   <input type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
                     value={newProduct.nameEn} onChange={(e) => setNewProduct({...newProduct, nameEn: e.target.value})} />
                 </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "الوصف (بالعربية)" : "Description (Arabic)"}</label>
+                  <textarea rows={3} className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm resize-none"
+                    value={newProduct.descAr} onChange={(e) => setNewProduct({...newProduct, descAr: e.target.value})} />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "الوصف (بالإنجليزية)" : "Description (English)"}</label>
+                  <textarea rows={3} className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm resize-none"
+                    value={newProduct.descEn} onChange={(e) => setNewProduct({...newProduct, descEn: e.target.value})} />
+                </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "القسم الرئيسي" : "Category"}</label>
                   <select className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.category} onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}>
+                    value={newProduct.category} onChange={(e) => setNewProduct({...newProduct, category: e.target.value, subCategory: ""})}>
                     <option value="">Select Category</option>
                     {categoriesData.map(cat => (
                       <option key={cat._id} value={cat._id}>{cat.name?.en} / {cat.name?.ar}</option>
