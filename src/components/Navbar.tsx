@@ -330,7 +330,7 @@ const Navbar = () => {
                           if (item.adminOnly && role !== "admin" && role !== "superadmin") return null;
                           return (
                             <Link
-                              key={i}
+                              key={`item-${i}`}
                               href={item.href}
                               className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-primary/10 hover:text-primary"
                               onClick={() => setIsDropdownOpen(false)}

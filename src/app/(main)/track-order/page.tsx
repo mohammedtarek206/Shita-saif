@@ -195,7 +195,7 @@ function TrackOrderContent() {
                         const stepInfo = getStatusInfo(stepStatus);
                         const isActive = getStatusInfo(order.status).step >= stepInfo.step;
                         return (
-                          <div key={i} className="flex flex-col items-center gap-4 relative z-10">
+                          <div key={`item-${i}`} className="flex flex-col items-center gap-4 relative z-10">
                             <div className={cn(
                               "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-xl",
                               isActive ? "bg-primary text-white scale-110" : "bg-gray-100 dark:bg-white/10 text-gray-400"
@@ -278,7 +278,7 @@ function TrackOrderContent() {
                   <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-8">{t.products}</h3>
                   <div className="space-y-6">
                     {order.products.map((item: any, i: number) => (
-                      <div key={i} className="flex items-center gap-6 p-4 bg-gray-50 dark:bg-white/5 rounded-[2rem] border border-transparent hover:border-primary/20 transition-all">
+                      <div key={`item-${i}`} className="flex items-center gap-6 p-4 bg-gray-50 dark:bg-white/5 rounded-[2rem] border border-transparent hover:border-primary/20 transition-all">
                         <div className="w-20 h-20 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center p-2 shadow-lg">
                           <img src={item.product?.images?.[0] || item.image} alt="Product" className="w-full h-full object-contain" />
                         </div>

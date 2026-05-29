@@ -153,7 +153,7 @@ export default function AdminNotifications() {
                 ) : (
                   notifications.map((notif) => (
                     <Link
-                      key={notif._id}
+                      key={notif?._id || notif?.id || notif?.slug || notif?.name || notif?.title?.en || notif?.title?.ar || JSON.stringify(notif).substring(0, 20)}
                       href="/admin/orders"
                       onClick={() => setIsOpen(false)}
                       className="block p-3 hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all border border-transparent hover:border-gray-100 dark:hover:border-white/5"

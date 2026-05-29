@@ -141,7 +141,7 @@ export default function SEOBlogManager() {
             { id: "diagnostics", name: t.tabDiagnostics, icon: <FiBarChart2 /> },
           ].map((tab) => (
             <button
-              key={tab.id}
+              key={tab?._id || tab?.id || tab?.slug || tab?.name || tab?.title?.en || tab?.title?.ar || JSON.stringify(tab).substring(0, 20)}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-4 w-full px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300 ${
                 activeTab === tab.id 
@@ -244,7 +244,7 @@ export default function SEOBlogManager() {
                     </div>
                   ) : (
                     posts.map((post) => (
-                      <div key={post._id} className="bg-gray-50 dark:bg-white/[0.01] p-5 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center justify-between gap-4">
+                      <div key={post?._id || post?.id || post?.slug || post?.name || post?.title?.en || post?.title?.ar || JSON.stringify(post).substring(0, 20)} className="bg-gray-50 dark:bg-white/[0.01] p-5 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-4 min-w-0">
                           <img src={post.coverImage} className="w-16 h-16 rounded-xl object-cover shrink-0" />
                           <div className="min-w-0">
@@ -281,7 +281,7 @@ export default function SEOBlogManager() {
                     { label: "Cumulative Layout Shift (CLS)", value: "0.01", rating: "Stable", color: "text-emerald-500", bg: "bg-emerald-500/10" },
                     { label: "First Input Delay (FID)", value: "12ms", rating: "Excellent", color: "text-emerald-500", bg: "bg-emerald-500/10" },
                   ].map((vit, i) => (
-                    <div key={i} className="bg-gray-50 dark:bg-white/[0.01] border border-gray-100 dark:border-white/5 p-6 rounded-2xl flex flex-col gap-2">
+                    <div key={`item-${i}`} className="bg-gray-50 dark:bg-white/[0.01] border border-gray-100 dark:border-white/5 p-6 rounded-2xl flex flex-col gap-2">
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">{vit.label}</p>
                       <p className="text-2xl font-black">{vit.value}</p>
                       <span className={`text-[10px] font-black uppercase inline-block px-2.5 py-1 rounded-lg w-max ${vit.bg} ${vit.color}`}>
@@ -312,7 +312,7 @@ export default function SEOBlogManager() {
                           { key: "عروض التكييفات", vol: "90K/mo", pos: "#4 🟡", owner: "محمد وهبه" },
                           { key: "أدوات منزلية", vol: "110K/mo", pos: "#5 🟡", owner: "معرض الشتاء والصيف" },
                         ].map((row, idx) => (
-                          <tr key={idx}>
+                          <tr key={`item-${idx}`}>
                             <td className="px-6 py-4 font-black">{row.key}</td>
                             <td className="px-6 py-4 text-gray-500">{row.vol}</td>
                             <td className="px-6 py-4 font-black">{row.pos}</td>

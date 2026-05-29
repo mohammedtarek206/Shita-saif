@@ -25,7 +25,7 @@ export default function CompareBar() {
             {/* Products mini list */}
             <div className="flex items-center gap-3 flex-1 overflow-x-auto no-scrollbar">
               {compareList.map(product => (
-                <div key={product._id} className="relative shrink-0 group">
+                <div key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} className="relative shrink-0 group">
                   <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 rounded-2xl p-2 border border-gray-100 dark:border-white/10 overflow-hidden">
                     <img
                       src={product.images?.[0] || "/placeholder.png"}
@@ -43,7 +43,7 @@ export default function CompareBar() {
               ))}
               {/* Empty slots */}
               {Array.from({ length: 3 - compareList.length }).map((_, i) => (
-                <div key={i} className="w-14 h-14 bg-gray-50 dark:bg-white/5 rounded-2xl border-2 border-dashed border-gray-200 dark:border-white/10 shrink-0 flex items-center justify-center text-gray-300 dark:text-gray-700 text-xl">
+                <div key={`item-${i}`} className="w-14 h-14 bg-gray-50 dark:bg-white/5 rounded-2xl border-2 border-dashed border-gray-200 dark:border-white/10 shrink-0 flex items-center justify-center text-gray-300 dark:text-gray-700 text-xl">
                   +
                 </div>
               ))}

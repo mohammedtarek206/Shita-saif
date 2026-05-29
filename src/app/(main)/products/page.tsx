@@ -20,8 +20,8 @@ function ProductsContent() {
   const initialCategory = searchParams.get('category') || "all";
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
-  const [selectedSub, setSelectedSub] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory !== "all" ? initialCategory : null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState({ min: PRICE_FILTER_MIN, max: PRICE_FILTER_MAX });
   const handlePriceChange = useCallback((range: { min: number; max: number }) => {
     setPriceRange(range);
@@ -55,13 +55,18 @@ function ProductsContent() {
         p.title?.ar?.includes(searchTerm) ||
         (typeof p.category === "string" && p.category.toLowerCase().includes(term));
 
-      const matchesCategory = selectedCategory === "all" || p.category === selectedCategory;
-      const matchesSub = selectedSub === "all" || p.subCategory === selectedSub;
+      // Category matching
+      const matchesCategory = !selectedCategory || p.category === selectedCategory || p.category?._id === selectedCategory;
+      
+      // SubCategory matching
+      const matchesSub = !selectedSubCategory || p.subCategory === selectedSubCategory || p.subCategory?._id === selectedSubCategory;
+      
+      // Price matching
       const matchesPrice = p.price >= priceRange.min && p.price <= priceRange.max;
 
       return matchesSearch && matchesCategory && matchesSub && matchesPrice;
     });
-  }, [products, searchTerm, selectedCategory, selectedSub, priceRange]);
+  }, [products, searchTerm, selectedCategory, selectedSubCategory, priceRange]);
 
   const t = {
     title: language === "ar" ? "كتالوج المنتجات" : "Product Catalog",
@@ -130,38 +135,50 @@ function ProductsContent() {
               <h3 className="font-black text-lg mb-4 uppercase tracking-widest">{language === "ar" ? "الأقسام" : "Categories"}</h3>
               <div className="space-y-2">
                 <button 
-                  onClick={() => { setSelectedCategory("all"); setSelectedSub("all"); }}
-                  className={`w-full text-start px-4 py-3 rounded-xl font-bold text-sm transition-all ${selectedCategory === "all" ? "bg-primary text-white" : "hover:bg-gray-50 dark:hover:bg-white/5"}`}
+                  onClick={() => { setSelectedCategory(null); setSelectedSubCategory(null); }}
+                  className={`w-full text-start px-4 py-3 rounded-xl font-bold text-sm transition-all ${!selectedCategory ? "bg-primary text-white shadow-md" : "hover:bg-gray-50 dark:hover:bg-white/5"}`}
                 >
                   {language === "ar" ? "كل المنتجات" : "All Products"}
                 </button>
-                {categories.map(cat => (
-                  <div key={cat._id} className="space-y-1">
-                    <button 
-                      onClick={() => { setSelectedCategory(cat._id); setSelectedSub("all"); }}
-                      className={`w-full text-start px-4 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-3 ${selectedCategory === cat._id ? "bg-primary text-white" : "hover:bg-gray-50 dark:hover:bg-white/5"}`}
-                    >
-                      {cat.icon && <img src={cat.icon} className={`w-5 h-5 ${selectedCategory === cat._id ? "invert brightness-0" : ""}`} alt="" />}
-                      {language === "ar" ? cat.name?.ar : cat.name?.en}
-                    </button>
-                    {/* SubCategories */}
-                    <AnimatePresence>
-                      {selectedCategory === cat._id && cat.subCategories?.length > 0 && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="pl-4 pr-2 space-y-1 overflow-hidden">
-                          {cat.subCategories.map((sub: any) => (
-                            <button 
-                              key={sub.slug}
-                              onClick={() => setSelectedSub(sub.slug)}
-                              className={`w-full text-start px-4 py-2 rounded-lg font-bold text-xs transition-all ${selectedSub === sub.slug ? "bg-gray-100 dark:bg-white/10 text-primary" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"}`}
-                            >
-                              - {language === "ar" ? sub.name?.ar : sub.name?.en}
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                ))}
+                {categories.map(cat => {
+                  const catId = cat?._id || cat?.id;
+                  if (!catId) return null;
+                  
+                  return (
+                    <div key={catId} className="space-y-1">
+                      <button 
+                        onClick={() => { setSelectedCategory(catId); setSelectedSubCategory(null); }}
+                        className={`w-full text-start px-4 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-3 ${selectedCategory === catId ? "bg-primary text-white shadow-md scale-[1.02]" : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 hover:translate-x-1 rtl:hover:-translate-x-1"}`}
+                      >
+                        {cat.icon && <img src={cat.icon} className={`w-5 h-5 transition-all ${selectedCategory === catId ? "brightness-0 invert" : "opacity-70"}`} alt="" />}
+                        {language === "ar" ? cat.name?.ar : cat.name?.en}
+                      </button>
+                      
+                      {/* SubCategories */}
+                      <AnimatePresence>
+                        {selectedCategory === catId && cat.subCategories?.length > 0 && (
+                          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="pl-4 pr-2 space-y-1 overflow-hidden mt-1">
+                            {cat.subCategories.map((sub: any) => {
+                              const subId = sub?._id || sub?.id;
+                              if (!subId) return null;
+                              
+                              return (
+                                <button 
+                                  key={subId}
+                                  onClick={() => setSelectedSubCategory(subId)}
+                                  className={`w-full text-start px-4 py-2 rounded-lg font-bold text-xs transition-all flex items-center gap-2 ${selectedSubCategory === subId ? "bg-primary/10 text-primary border border-primary/20" : "text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white border border-transparent"}`}
+                                >
+                                  <div className={`w-1.5 h-1.5 rounded-full ${selectedSubCategory === subId ? "bg-primary" : "bg-gray-300 dark:bg-white/20"}`} />
+                                  {language === "ar" ? sub.name?.ar : sub.name?.en}
+                                </button>
+                              );
+                            })}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -197,7 +214,7 @@ function ProductsContent() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: i * 0.05 }}
-                    key={product._id}
+                    key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)}
                   >
                     <ProductCard product={product} />
                   </motion.div>

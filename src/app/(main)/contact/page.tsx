@@ -75,7 +75,7 @@ export default function ContactPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {info.map((item, i) => (
                 <motion.a
-                  key={i}
+                  key={`item-${i}`}
                   href={item.href}
                   target={item.href.startsWith("http") ? "_blank" : "_self"}
                   rel="noopener noreferrer"

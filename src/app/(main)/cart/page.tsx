@@ -98,7 +98,7 @@ export default function CartPage() {
             {cart.map((item) => {
               const itemPrice = item.discount ? item.price - (item.price * item.discount / 100) : item.price;
               return (
-                <div key={item._id} className="glass p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border-white/20 flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                <div key={item?._id || item?.id || item?.slug || item?.name || item?.title?.en || item?.title?.ar || JSON.stringify(item).substring(0, 20)} className="glass p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border-white/20 flex flex-col md:flex-row items-center gap-4 md:gap-8">
                   <div className="w-24 h-24 md:w-32 md:h-32 bg-white dark:bg-white/5 rounded-2xl md:rounded-3xl p-4 flex-shrink-0 flex items-center justify-center">
                     <img src={item.images[0]} alt={language === "ar" ? item.title.ar : item.title.en} className="w-full h-full object-contain" />
                   </div>

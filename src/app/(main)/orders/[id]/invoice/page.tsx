@@ -117,7 +117,7 @@ export default function InvoicePage() {
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-white/5">
                 {order.products.map((item: any, i: number) => (
-                  <tr key={i} className="text-sm font-bold">
+                  <tr key={`item-${i}`} className="text-sm font-bold">
                     <td className="py-6">
                       <p className="font-black">{language === "ar" ? (item.product?.title?.ar || item.title?.ar) : (item.product?.title?.en || item.title?.en)}</p>
                       <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">{item.product?.brand}</p>

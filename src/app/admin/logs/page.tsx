@@ -150,7 +150,7 @@ export default function AuditLogsPage() {
             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i} className="animate-pulse">
+                  <tr key={`item-${i}`} className="animate-pulse">
                     <td className="py-5 px-6"><div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-28" /></td>
                     <td className="py-5 px-6"><div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-24" /></td>
                     <td className="py-5 px-6"><div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-16" /></td>
@@ -167,7 +167,7 @@ export default function AuditLogsPage() {
                 </tr>
               ) : (
                 logs.map((log) => (
-                  <tr key={log._id} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
+                  <tr key={log?._id || log?.id || log?.slug || log?.name || log?.title?.en || log?.title?.ar || JSON.stringify(log).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
                     {/* Admin */}
                     <td className="py-5 px-6">
                       <div className="flex items-center gap-3">

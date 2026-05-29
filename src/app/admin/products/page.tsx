@@ -249,7 +249,7 @@ export default function ProductsAdmin() {
           { label: t.lowStock, value: products.filter(p => p.stock > 0 && p.stock < 5).length, icon: <FiFilter />, color: "from-amber-500 to-amber-600" },
           { label: t.outOfStock, value: products.filter(p => p.stock === 0).length, icon: <FiX />, color: "from-rose-500 to-rose-600" },
         ].map((stat, i) => (
-          <div key={i} className="bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] flex items-center gap-4 shadow-md">
+          <div key={`item-${i}`} className="bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] flex items-center gap-4 shadow-md">
             <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white text-xl shadow-lg`}>
               {stat.icon}
             </div>
@@ -287,7 +287,7 @@ export default function ProductsAdmin() {
           >
             <option value="All" className="bg-white dark:bg-black font-bold">{t.allCategories}</option>
             {categoriesData.map(cat => (
-              <option key={cat._id} value={cat._id} className="bg-white dark:bg-black font-bold">
+              <option key={cat?._id || cat?.id || cat?.slug || cat?.name || cat?.title?.en || cat?.title?.ar || JSON.stringify(cat).substring(0, 20)} value={cat._id} className="bg-white dark:bg-black font-bold">
                 {language === "ar" ? cat.name?.ar : cat.name?.en}
               </option>
             ))}
@@ -330,7 +330,7 @@ export default function ProductsAdmin() {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
             {filteredProducts.map((product) => (
-              <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors group">
+              <tr key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors group">
                 {/* Checkbox */}
                 <td className="py-5 px-6 text-center">
                   <input 
@@ -411,7 +411,7 @@ export default function ProductsAdmin() {
       {/* Mobile Card View */}
       <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
         {filteredProducts.map((product) => (
-          <div key={product._id} className="bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-6 relative shadow-md">
+          <div key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} className="bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-6 relative shadow-md">
             {/* Mobile Checkbox */}
             <div className="absolute top-4 right-4 rtl:left-4 rtl:right-auto">
               <input 
@@ -586,23 +586,36 @@ export default function ProductsAdmin() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "القسم الرئيسي" : "Category"}</label>
-                  <select className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.category} onChange={(e) => setNewProduct({...newProduct, category: e.target.value, subCategory: ""})}>
-                    <option value="">Select Category</option>
+                  <select className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary hover:border-primary/30 rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm cursor-pointer shadow-sm"
+                    value={newProduct.category} 
+                    onChange={(e) => {
+                      console.log("Category changed, resetting subCategory. New Category:", e.target.value);
+                      setNewProduct({...newProduct, category: e.target.value, subCategory: ""});
+                    }}>
+                    <option value="">{language === "ar" ? "اختر القسم الرئيسي" : "Select Category"}</option>
                     {categoriesData.map(cat => (
-                      <option key={cat._id} value={cat._id}>{cat.name?.en} / {cat.name?.ar}</option>
+                      <option key={cat?._id || cat?.id || cat?.slug || cat?.name || cat?.title?.en || cat?.title?.ar || JSON.stringify(cat).substring(0, 20)} value={cat._id}>{cat.name?.en} / {cat.name?.ar}</option>
                     ))}
                   </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "القسم الفرعي" : "Sub Category"}</label>
-                  <select className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.subCategory} onChange={(e) => setNewProduct({...newProduct, subCategory: e.target.value})}>
-                    <option value="">Select Sub Category</option>
+                  <select className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary hover:border-primary/30 rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm cursor-pointer shadow-sm"
+                    value={newProduct.subCategory} 
+                    onChange={(e) => {
+                      console.log("SubCategory selected:", e.target.value);
+                      setNewProduct({...newProduct, subCategory: e.target.value});
+                    }}>
+                    <option value="">{language === "ar" ? "اختر القسم الفرعي" : "Select Sub Category"}</option>
                     {newProduct.category && categoriesData.find(c => c._id === newProduct.category)?.subCategories?.map((sub: any) => (
-                      <option key={sub.slug} value={sub.slug}>{sub.name?.en} / {sub.name?.ar}</option>
+                      <option key={sub._id} value={sub._id}>{sub.name?.en} / {sub.name?.ar}</option>
                     ))}
                   </select>
+                  {!newProduct.subCategory && newProduct.category && (
+                    <p className="text-xs text-rose-500 font-bold px-2 flex items-center gap-1">
+                      {language === "ar" ? "يجب اختيار القسم الفرعي" : "Sub Category is required"}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">SKU</label>
@@ -642,7 +655,7 @@ export default function ProductsAdmin() {
                     </button>
                   </div>
                   {newProduct.images.map((img, index) => (
-                    <div key={index} className="relative group flex items-center gap-2">
+                    <div key={`item-${index}`} className="relative group flex items-center gap-2">
                       <div className="relative flex-1">
                         <FiLink className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl group-focus-within:text-primary transition-colors" />
                         <input type="text" placeholder="Paste image URL here..." className="w-full pl-14 pr-6 py-5 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-3xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"

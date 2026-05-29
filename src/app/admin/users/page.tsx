@@ -209,7 +209,7 @@ export default function UsersAdmin() {
             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
               {loading ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <tr key={i} className="animate-pulse">
+                  <tr key={`item-${i}`} className="animate-pulse">
                     <td className="py-5 px-6"><div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-48" /></td>
                     <td className="py-5 px-6"><div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-24" /></td>
                     <td className="py-5 px-6"><div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-16" /></td>
@@ -227,7 +227,7 @@ export default function UsersAdmin() {
                 users.map((user) => {
                   const isSelf = session?.user?.email === user.email;
                   return (
-                    <tr key={user._id} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
+                    <tr key={user?._id || user?.id || user?.slug || user?.name || user?.title?.en || user?.title?.ar || JSON.stringify(user).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
                       {/* Name & Email */}
                       <td className="py-5 px-6">
                         <div className="flex items-center gap-3">

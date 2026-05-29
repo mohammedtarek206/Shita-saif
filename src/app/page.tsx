@@ -80,7 +80,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                key={i} 
+                key={`item-${i}`} 
                 className="flex items-center gap-5 p-6 md:p-8 bg-white dark:bg-white/5 backdrop-blur-xl rounded-3xl border border-gray-100 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all group"
               >
                 <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
@@ -129,7 +129,7 @@ export default function Home() {
               {products.length > 0 ? (
                 products.map((product, i) => (
                   <motion.div 
-                    key={product._id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
+                    key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                   >
                     <ProductCard product={product} />
                   </motion.div>
@@ -154,7 +154,7 @@ export default function Home() {
           <div className="flex space-x-8 md:space-x-12 animate-scroll group-hover:pause">
             {partners.length > 0 ? (
               [...partners, ...partners, ...partners].map((partner, i) => (
-                <div key={i} className="flex-shrink-0 w-40 md:w-56 h-24 md:h-32 bg-white dark:bg-white/5 backdrop-blur-xl rounded-3xl p-6 md:p-8 flex items-center justify-center border border-gray-100 dark:border-white/5 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all shadow-xl hover:shadow-primary/10">
+                <div key={`item-${i}`} className="flex-shrink-0 w-40 md:w-56 h-24 md:h-32 bg-white dark:bg-white/5 backdrop-blur-xl rounded-3xl p-6 md:p-8 flex items-center justify-center border border-gray-100 dark:border-white/5 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all shadow-xl hover:shadow-primary/10">
                   <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain" />
                 </div>
               ))
@@ -173,7 +173,7 @@ export default function Home() {
             {statsData.map((stat, i) => (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.5 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                key={stat.id} className="space-y-4"
+                key={stat?._id || stat?.id || stat?.slug || stat?.name || stat?.title?.en || stat?.title?.ar || JSON.stringify(stat).substring(0, 20)} className="space-y-4"
               >
                 <div className="w-16 h-16 md:w-24 md:h-24 rounded-[2rem] bg-white/20 border border-white/20 flex items-center justify-center text-3xl md:text-5xl mx-auto backdrop-blur-md shadow-2xl">
                   {stat.icon}

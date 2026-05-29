@@ -235,7 +235,7 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {paymentMethods.map((method) => (
                   <button
-                    key={method.id}
+                    key={method?._id || method?.id || method?.slug || method?.name || method?.title?.en || method?.title?.ar || JSON.stringify(method).substring(0, 20)}
                     type="button"
                     onClick={() => setPaymentMethod(method.id)}
                     className={`p-6 rounded-[2rem] border-2 transition-all flex items-center gap-5 group relative overflow-hidden ${
@@ -354,7 +354,7 @@ export default function CheckoutPage() {
                 
                 <div className="space-y-5 max-h-[350px] overflow-y-auto custom-scrollbar mb-8 pr-2">
                   {cart.map((item) => (
-                    <div key={item._id} className="flex gap-4 items-center group">
+                    <div key={item?._id || item?.id || item?.slug || item?.name || item?.title?.en || item?.title?.ar || JSON.stringify(item).substring(0, 20)} className="flex gap-4 items-center group">
                       <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-white/5 p-2 overflow-hidden shrink-0 border border-transparent group-hover:border-primary/20 transition-all">
                         <img src={item.images[0]} alt="" className="w-full h-full object-contain" />
                       </div>

@@ -212,7 +212,7 @@ export default function ProductDetails({ params }: { params: any }) {
             <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
               {product?.images?.map((img: string, i: number) => (
                 <button 
-                  key={i}
+                  key={`item-${i}`}
                   onClick={() => setSelectedImage(i)}
                   className={cn(
                     "w-24 h-24 rounded-3xl bg-gray-50 dark:bg-white/5 p-4 flex-shrink-0 transition-all border-2",
@@ -263,7 +263,7 @@ export default function ProductDetails({ params }: { params: any }) {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {Array.isArray(language === "ar" ? product.specifications?.ar : product.specifications?.en) && (language === "ar" ? product.specifications?.ar : product.specifications?.en)?.slice(0, 4).map((spec: any, i: number) => (
-                      <div key={i} className="flex flex-col gap-1">
+                      <div key={`item-${i}`} className="flex flex-col gap-1">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{spec.key}</span>
                         <span className="font-bold text-sm">{spec.value}</span>
                       </div>
@@ -311,7 +311,7 @@ export default function ProductDetails({ params }: { params: any }) {
                 { icon: <FiRefreshCw />, t: language === "ar" ? "إرجاع سهل" : "Easy Returns", d: "14 day policy" },
                 { icon: <FiTag />, t: language === "ar" ? "سعر تنافسي" : "Best Price", d: "Price matched" },
               ].map((badge, i) => (
-                <div key={i} className="flex items-center gap-4 p-5 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5">
+                <div key={`item-${i}`} className="flex items-center gap-4 p-5 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5">
                   <div className="text-2xl text-primary">{badge.icon}</div>
                   <div>
                     <h4 className="text-[10px] font-black uppercase tracking-widest">{badge.t}</h4>
@@ -334,7 +334,7 @@ export default function ProductDetails({ params }: { params: any }) {
                 { id: "features", label: language === "ar" ? "المميزات والاستخدام" : "Features & Usage", icon: <FiAward /> }
               ].map(tab => (
                 <button
-                  key={tab.id}
+                  key={tab?._id || tab?.id || tab?.slug || tab?.name || tab?.title?.en || tab?.title?.ar || JSON.stringify(tab).substring(0, 20)}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
                     "flex items-center gap-4 p-5 rounded-2xl font-black uppercase tracking-widest text-sm transition-all text-left rtl:text-right",
@@ -380,7 +380,7 @@ export default function ProductDetails({ params }: { params: any }) {
                     <h3 className="text-2xl font-black mb-10 italic uppercase tracking-widest">{language === "ar" ? "المواصفات التقنية" : "Technical Specifications"}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                       {Array.isArray(language === "ar" ? product.specifications?.ar : product.specifications?.en) && (language === "ar" ? product.specifications?.ar : product.specifications?.en)?.map((spec: any, i: number) => (
-                        <div key={i} className="group border-b border-gray-200 dark:border-white/10 pb-4 flex flex-col gap-2">
+                        <div key={`item-${i}`} className="group border-b border-gray-200 dark:border-white/10 pb-4 flex flex-col gap-2">
                           <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] italic">{spec.key}</span>
                           <span className="text-lg font-bold text-gray-900 dark:text-white group-hover:translate-x-2 rtl:group-hover:-translate-x-2 transition-transform inline-block">{spec.value}</span>
                         </div>
@@ -397,7 +397,7 @@ export default function ProductDetails({ params }: { params: any }) {
                       { icon: <FiAward />, title: language === "ar" ? "جودة ممتازة" : "Premium Quality", desc: language === "ar" ? "مصنوع من مواد عالية الجودة لضمان عمر افتراضي طويل." : "Made of high quality materials to ensure long lifespan." },
                       { icon: <FiRefreshCw />, title: language === "ar" ? "سهولة الاستخدام" : "Easy to Use", desc: language === "ar" ? "واجهة بسيطة وتصميم يسهل الاستخدام اليومي." : "Simple interface and design that facilitates daily use." }
                     ].map((feature, i) => (
-                      <div key={i} className="bg-gray-50 dark:bg-white/[0.02] p-8 rounded-[3rem] border border-gray-100 dark:border-white/5 hover:border-primary/50 transition-colors group">
+                      <div key={`item-${i}`} className="bg-gray-50 dark:bg-white/[0.02] p-8 rounded-[3rem] border border-gray-100 dark:border-white/5 hover:border-primary/50 transition-colors group">
                         <div className="w-14 h-14 bg-white dark:bg-white/5 rounded-2xl flex items-center justify-center text-primary text-2xl mb-6 shadow-md group-hover:scale-110 transition-transform">
                           {feature.icon}
                         </div>
@@ -423,7 +423,7 @@ export default function ProductDetails({ params }: { params: any }) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {relatedProducts.map((relProduct, i) => (
-                <motion.div key={relProduct._id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <motion.div key={relProduct?._id || relProduct?.id || relProduct?.slug || relProduct?.name || relProduct?.title?.en || relProduct?.title?.ar || JSON.stringify(relProduct).substring(0, 20)} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
                   <ProductCard product={relProduct as any} />
                 </motion.div>
               ))}
@@ -445,7 +445,7 @@ export default function ProductDetails({ params }: { params: any }) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {recentlyViewed.filter(p => p._id !== id).slice(0, 4).map((recentProduct, i) => (
-                <motion.div key={recentProduct._id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <motion.div key={recentProduct?._id || recentProduct?.id || recentProduct?.slug || recentProduct?.name || recentProduct?.title?.en || recentProduct?.title?.ar || JSON.stringify(recentProduct).substring(0, 20)} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
                   <ProductCard product={recentProduct as any} />
                 </motion.div>
               ))}

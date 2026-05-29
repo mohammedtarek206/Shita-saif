@@ -158,7 +158,7 @@ export default function AdminOrders() {
         ].map((stat, i) => (
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-            key={i} className="glass p-6 rounded-[2rem] border-white/5 flex flex-col gap-4 relative overflow-hidden group hover:scale-[1.02] transition-all"
+            key={`item-${i}`} className="glass p-6 rounded-[2rem] border-white/5 flex flex-col gap-4 relative overflow-hidden group hover:scale-[1.02] transition-all"
           >
             <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center text-white text-xl shadow-lg group-hover:rotate-6 transition-transform`}>
               {stat.icon}
@@ -185,7 +185,7 @@ export default function AdminOrders() {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
             {filteredOrders.map((order: any) => (
-              <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+              <tr key={order?._id || order?.id || order?.slug || order?.name || order?.title?.en || order?.title?.ar || JSON.stringify(order).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                 <td className="px-8 py-6">
                   <div className="font-black text-sm group-hover:text-primary transition-colors">{order.orderNumber || order.invoiceNumber}</div>
                   <div className="text-[10px] text-gray-500 font-bold mt-1">
@@ -257,7 +257,7 @@ export default function AdminOrders() {
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4">
         {filteredOrders.map((order: any) => (
-          <div key={order._id} className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-4">
+          <div key={order?._id || order?.id || order?.slug || order?.name || order?.title?.en || order?.title?.ar || JSON.stringify(order).substring(0, 20)} className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-black text-sm">{order.orderNumber || order.invoiceNumber}</p>
@@ -488,7 +488,7 @@ export default function AdminOrders() {
                 </thead>
                 <tbody>
                   {printingOrder.items?.map((item: any, i: number) => (
-                    <tr key={i} style={{ borderBottom: "1px solid #e5e7eb", backgroundColor: i % 2 === 0 ? "#fafafa" : "#ffffff" }}>
+                    <tr key={`item-${i}`} style={{ borderBottom: "1px solid #e5e7eb", backgroundColor: i % 2 === 0 ? "#fafafa" : "#ffffff" }}>
                       <td style={{ padding: "12px 15px", fontSize: "12px", fontWeight: "bold" }}>
                         {item.product?.title?.ar || item.product?.title?.en || "منتج منزل مميز"}
                       </td>
@@ -559,7 +559,7 @@ export default function AdminOrders() {
                 </thead>
                 <tbody>
                   {printingOrder.items?.map((item: any, i: number) => (
-                    <tr key={i} style={{ borderBottom: "1px dotted #ccc" }}>
+                    <tr key={`item-${i}`} style={{ borderBottom: "1px dotted #ccc" }}>
                       <td style={{ padding: "4px 0", fontSize: "10px" }}>{item.product?.title?.ar?.substring(0, 25) || "منتج منزل"}</td>
                       <td style={{ padding: "4px 0", textAlign: "center", fontSize: "10px" }}>{item.quantity}</td>
                       <td style={{ padding: "4px 0", textAlign: "left", fontSize: "10px" }}>{(item.price * item.quantity)?.toLocaleString()} ج</td>

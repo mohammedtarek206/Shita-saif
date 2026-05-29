@@ -188,7 +188,7 @@ export default function CategoriesAdmin() {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
             {filteredCategories.map((category) => (
-              <tr key={category._id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+              <tr key={category?._id || category?.id || category?.slug || category?.name || category?.title?.en || category?.title?.ar || JSON.stringify(category).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                 <td className="px-8 py-5">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 p-2 flex items-center justify-center overflow-hidden">
@@ -208,7 +208,7 @@ export default function CategoriesAdmin() {
                 <td className="px-8 py-5 font-black">
                   <div className="flex flex-wrap gap-2">
                     {category.subCategories?.map((s: any, i: number) => (
-                      <span key={i} className="px-2 py-1 bg-gray-100 dark:bg-white/10 rounded-lg text-[10px] font-bold text-gray-600 dark:text-gray-300">
+                      <span key={`item-${i}`} className="px-2 py-1 bg-gray-100 dark:bg-white/10 rounded-lg text-[10px] font-bold text-gray-600 dark:text-gray-300">
                         {s.name?.en}
                       </span>
                     ))}
@@ -303,7 +303,7 @@ export default function CategoriesAdmin() {
                     </button>
                   </div>
                   {newCategory.subCategories.map((sub, index) => (
-                    <div key={index} className="flex flex-col md:flex-row gap-4 bg-gray-50 dark:bg-white/5 p-4 rounded-3xl relative group">
+                    <div key={`item-${index}`} className="flex flex-col md:flex-row gap-4 bg-gray-50 dark:bg-white/5 p-4 rounded-3xl relative group">
                       <input type="text" placeholder="Arabic Name" className="flex-1 px-4 py-3 bg-white dark:bg-[#0A0A0A] border border-transparent focus:border-primary rounded-xl outline-none font-bold text-sm text-gray-900 dark:text-white"
                         value={sub.nameAr} onChange={(e) => {
                           const subs = [...newCategory.subCategories];

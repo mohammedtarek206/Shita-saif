@@ -42,7 +42,7 @@ const Footer = () => {
                 { Icon: FiYoutube, href: "https://youtube.com" },
               ].map(({ Icon, href }, i) => (
                 <a
-                  key={i}
+                  key={`item-${i}`}
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"

@@ -38,6 +38,26 @@ export default function StoreEffectsWrapper({ children }: { children: React.Reac
 
   // Flash sale countdown timer logic
   useEffect(() => {
+    // Console Validation for React Key Warnings
+    const originalConsoleError = console.error;
+    console.error = (...args: any[]) => {
+      const message = args.join(" ");
+      if (typeof message === "string" && message.includes("Encountered two children with the same key")) {
+        console.warn("🚨 [React Key Validator]: Duplicate Key Found!", ...args);
+        // Optional: show visual feedback in development
+        if (process.env.NODE_ENV === "development") {
+            console.trace("Duplicate Key Trace:");
+        }
+      }
+      originalConsoleError.apply(console, args);
+    };
+
+    return () => {
+      console.error = originalConsoleError;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!config?.flashSale?.active || !config?.flashSale?.expiresAt) return;
 
     const timer = setInterval(() => {
@@ -133,7 +153,7 @@ export default function StoreEffectsWrapper({ children }: { children: React.Reac
             const duration = Math.random() * 15 + 10;
             return (
               <div
-                key={i}
+                key={`item-${i}`}
                 className="absolute bg-white rounded-full opacity-60 filter blur-[0.5px]"
                 style={{
                   width: `${size}px`,

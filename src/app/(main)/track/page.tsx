@@ -145,7 +145,7 @@ export default function TrackOrderPage() {
                         const isCompleted = index <= getCurrentStepIndex(orderStatus.status);
                         const isCurrent = index === getCurrentStepIndex(orderStatus.status);
                         return (
-                          <div key={step.id} className="flex flex-col items-center gap-4 w-1/3 text-center">
+                          <div key={step?._id || step?.id || step?.slug || step?.name || step?.title?.en || step?.title?.ar || JSON.stringify(step).substring(0, 20)} className="flex flex-col items-center gap-4 w-1/3 text-center">
                             <motion.div 
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}

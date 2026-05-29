@@ -124,7 +124,7 @@ export default function ProfilePage() {
         <div className="flex gap-2 mb-12 overflow-x-auto pb-4 no-scrollbar mt-32 md:mt-0">
           {tabs.map((tab) => (
             <button
-              key={tab.id}
+              key={tab?._id || tab?.id || tab?.slug || tab?.name || tab?.title?.en || tab?.title?.ar || JSON.stringify(tab).substring(0, 20)}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest whitespace-nowrap transition-all ${
                 activeTab === tab.id
@@ -156,7 +156,7 @@ export default function ProfilePage() {
                     { icon: <FiShield />, label: language === "ar" ? "مستوى الوصول" : "Access Level", value: user?.role || "Verified Client" },
                     { icon: <FiCalendar />, label: language === "ar" ? "عضو منذ" : "Member Since", value: "May 2024" },
                   ].map((item, i) => (
-                    <div key={i} className="space-y-2 p-6 bg-gray-50 dark:bg-white/2 rounded-[2rem] group hover:bg-primary/5 transition-colors border border-transparent hover:border-primary/20">
+                    <div key={`item-${i}`} className="space-y-2 p-6 bg-gray-50 dark:bg-white/2 rounded-[2rem] group hover:bg-primary/5 transition-colors border border-transparent hover:border-primary/20">
                       <div className="flex items-center gap-2 text-primary">
                         <span className="text-lg">{item.icon}</span>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">{item.label}</span>
@@ -175,7 +175,7 @@ export default function ProfilePage() {
                 ].map((stat, i) => (
                   <motion.div 
                     initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-                    key={i} className={`bg-gradient-to-br ${stat.color} p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group`}
+                    key={`item-${i}`} className={`bg-gradient-to-br ${stat.color} p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group`}
                   >
                     <div className="relative z-10">
                       <div className="text-5xl font-black mb-1 italic">{stat.value}</div>
@@ -202,7 +202,7 @@ export default function ProfilePage() {
                   {orders.map((order, idx) => (
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
-                      key={order._id} className="bg-white dark:bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-gray-100 dark:border-white/10 shadow-2xl overflow-hidden group hover:border-primary/30 transition-all"
+                      key={order?._id || order?.id || order?.slug || order?.name || order?.title?.en || order?.title?.ar || JSON.stringify(order).substring(0, 20)} className="bg-white dark:bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-gray-100 dark:border-white/10 shadow-2xl overflow-hidden group hover:border-primary/30 transition-all"
                     >
                       <div className="p-8 md:p-10">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
@@ -242,7 +242,7 @@ export default function ProfilePage() {
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                           {order.products.map((item: any, i: number) => (
-                            <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/2 rounded-2xl border border-transparent hover:border-white/10 transition-all">
+                            <div key={`item-${i}`} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/2 rounded-2xl border border-transparent hover:border-white/10 transition-all">
                               <img src={item.product?.images?.[0] || item.image || "https://placehold.co/100"} className="w-14 h-14 rounded-xl object-cover shadow-lg" alt="" />
                               <div className="min-w-0">
                                 <h4 className="font-black text-xs truncate group-hover:text-primary transition-colors">{language === "ar" ? (item.product?.title?.ar || item.title?.ar) : (item.product?.title?.en || item.title?.en)}</h4>
@@ -300,7 +300,7 @@ export default function ProfilePage() {
                   { label: language === "ar" ? "البريد الإلكتروني" : "Email Address", type: "email", value: user?.email, icon: <FiMail /> },
                   { label: language === "ar" ? "كلمة المرور الجديدة" : "New Password", type: "password", placeholder: "••••••••", icon: <FiShield /> },
                 ].map((field, i) => (
-                  <div key={i} className="space-y-2">
+                  <div key={`item-${i}`} className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em] ml-4 italic">{field.label}</label>
                     <div className="relative group">
                       <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">

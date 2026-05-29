@@ -166,7 +166,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card, i) => (
           <motion.div
-            key={i}
+            key={`item-${i}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
@@ -291,7 +291,7 @@ export default function AdminDashboard() {
                 {recentOrders.map((order: any, i: number) => {
                   const st = (order.status || "pending").toLowerCase();
                   return (
-                    <tr key={i} className="group hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
+                    <tr key={`item-${i}`} className="group hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
                       <td className="py-5 font-black text-sm group-hover:text-primary transition-colors">
                         #{(order._id || "").toString().slice(-6).toUpperCase()}
                       </td>
@@ -322,7 +322,7 @@ export default function AdminDashboard() {
             </h4>
             <div className="space-y-4">
               {topProducts.map((p: any, i: number) => (
-                <div key={i} className="flex items-center gap-4">
+                <div key={`item-${i}`} className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-gray-50 dark:bg-white/5 rounded-2xl shrink-0 overflow-hidden p-1.5">
                     <img src={p.images?.[0] || "/placeholder.png"} alt="" className="w-full h-full object-contain" />
                   </div>

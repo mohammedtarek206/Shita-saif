@@ -64,7 +64,7 @@ export default function CategoriesPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                key={category._id}
+                key={category?._id || category?.id || category?.slug || category?.name || category?.title?.en || category?.title?.ar || JSON.stringify(category).substring(0, 20)}
               >
                 <Link href={`/products?category=${category._id}`} className="group block h-full">
                   <div className="bg-white dark:bg-white/[0.02] rounded-[2.5rem] overflow-hidden border border-gray-100 dark:border-white/5 hover:shadow-2xl hover:border-primary/50 transition-all duration-500 h-full flex flex-col relative">
@@ -95,7 +95,7 @@ export default function CategoriesPage() {
                         <div className="mt-auto pt-6 border-t border-gray-100 dark:border-white/5">
                           <div className="flex flex-wrap gap-2">
                             {category.subCategories.slice(0, 4).map((sub: any, idx: number) => (
-                              <span key={idx} className="px-3 py-1.5 bg-gray-50 dark:bg-white/5 rounded-xl text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer">
+                              <span key={`item-${idx}`} className="px-3 py-1.5 bg-gray-50 dark:bg-white/5 rounded-xl text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer">
                                 {language === "ar" ? sub.name?.ar : sub.name?.en}
                               </span>
                             ))}

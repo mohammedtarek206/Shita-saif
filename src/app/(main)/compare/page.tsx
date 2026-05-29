@@ -104,7 +104,7 @@ export default function ComparePage() {
                   ? product.price - (product.price * product.discount / 100)
                   : product.price;
                 return (
-                  <th key={product._id} className="pb-4 align-top">
+                  <th key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)} className="pb-4 align-top">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
                       className="bg-white dark:bg-white/[0.03] rounded-[2rem] p-6 border border-gray-100 dark:border-white/10 shadow-xl text-center relative group"
@@ -144,7 +144,7 @@ export default function ComparePage() {
             {/* Category row */}
             <CompareRow label={t.category}>
               {compareList.map(p => (
-                <td key={p._id} className="py-4 px-6 text-center">
+                <td key={p?._id || p?.id || p?.slug || p?.name || p?.title?.en || p?.title?.ar || JSON.stringify(p).substring(0, 20)} className="py-4 px-6 text-center">
                   <span className="px-3 py-1.5 bg-primary/10 text-primary rounded-xl text-xs font-black">{p.category}</span>
                 </td>
               ))}
@@ -153,7 +153,7 @@ export default function ComparePage() {
             {/* Warranty row */}
             <CompareRow label={t.warranty}>
               {compareList.map(p => (
-                <td key={p._id} className="py-4 px-6 text-center font-bold text-sm">
+                <td key={p?._id || p?.id || p?.slug || p?.name || p?.title?.en || p?.title?.ar || JSON.stringify(p).substring(0, 20)} className="py-4 px-6 text-center font-bold text-sm">
                   {p.warranty || <span className="text-gray-300 dark:text-gray-700">—</span>}
                 </td>
               ))}
@@ -165,7 +165,7 @@ export default function ComparePage() {
                 {compareList.map(p => {
                   const val = getSpec(p, key);
                   return (
-                    <td key={p._id} className="py-4 px-6 text-center font-bold text-sm">
+                    <td key={p?._id || p?.id || p?.slug || p?.name || p?.title?.en || p?.title?.ar || JSON.stringify(p).substring(0, 20)} className="py-4 px-6 text-center font-bold text-sm">
                       {val !== null ? (
                         <span>{val}</span>
                       ) : (
@@ -180,7 +180,7 @@ export default function ComparePage() {
             {allSpecKeys.length === 0 && (
               <CompareRow label={t.specs}>
                 {compareList.map(p => (
-                  <td key={p._id} className="py-4 px-6 text-center text-gray-400 text-xs font-bold">{t.notAvailable}</td>
+                  <td key={p?._id || p?.id || p?.slug || p?.name || p?.title?.en || p?.title?.ar || JSON.stringify(p).substring(0, 20)} className="py-4 px-6 text-center text-gray-400 text-xs font-bold">{t.notAvailable}</td>
                 ))}
               </CompareRow>
             )}

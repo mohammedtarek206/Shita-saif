@@ -110,7 +110,7 @@ function MiniImageCarousel() {
       <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
         {promoImages.map((_, i) => (
           <button
-            key={i}
+            key={`item-${i}`}
             onClick={() => { setPrev(current); setCurrent(i); }}
             aria-label={`صورة ${i + 1}`}
             className={cn(

@@ -100,7 +100,7 @@ export default function OffersPage() {
           ].map((feat, i) => (
             <motion.div 
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 + 0.3 }}
-              key={i} className="p-8 bg-gray-50 dark:bg-white/2 rounded-[2.5rem] flex items-center gap-6 group hover:bg-primary transition-all cursor-pointer"
+              key={`item-${i}`} className="p-8 bg-gray-50 dark:bg-white/2 rounded-[2.5rem] flex items-center gap-6 group hover:bg-primary transition-all cursor-pointer"
             >
               <div className="w-16 h-16 bg-white dark:bg-white/5 rounded-2xl flex items-center justify-center text-3xl text-primary group-hover:bg-white group-hover:scale-110 transition-all shadow-xl">
                 {feat.icon}
@@ -131,7 +131,7 @@ export default function OffersPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: i * 0.05 }}
-                    key={product._id}
+                    key={product?._id || product?.id || product?.slug || product?.name || product?.title?.en || product?.title?.ar || JSON.stringify(product).substring(0, 20)}
                   >
                     <ProductCard product={product} />
                   </motion.div>

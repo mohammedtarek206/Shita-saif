@@ -46,7 +46,7 @@ export default function PartnersPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8">
             {partners.length > 0 ? (
               partners.map((partner, i) => (
-                <div key={i} className="glass p-8 rounded-[3rem] text-center border-white/20 hover:scale-105 transition-transform">
+                <div key={`item-${i}`} className="glass p-8 rounded-[3rem] text-center border-white/20 hover:scale-105 transition-transform">
                   <div className="h-32 flex items-center justify-center mb-6">
                     <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain" />
                   </div>

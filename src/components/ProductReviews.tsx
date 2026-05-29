@@ -154,7 +154,7 @@ export default function ProductReviews({ productId }: { productId: string }) {
             <AnimatePresence>
               {reviews.map((review, i) => (
                 <motion.div
-                  key={review._id}
+                  key={review?._id || review?.id || review?.slug || review?.name || review?.title?.en || review?.title?.ar || JSON.stringify(review).substring(0, 20)}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}

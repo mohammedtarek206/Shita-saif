@@ -132,7 +132,7 @@ export default function AboutPage() {
                   { label: language === "ar" ? "تأسيس موثوق" : "Reliable Foundation", icon: <FiAward className="text-primary text-lg" /> },
                   { label: language === "ar" ? "دعم مستمر" : "Continuous Support", icon: <FiUsers className="text-secondary text-lg" /> }
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
+                  <div key={`item-${idx}`} className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center shrink-0">
                       {item.icon}
                     </div>
