@@ -18,7 +18,8 @@ interface ProductCardProps {
     price: number;
     discount?: number;
     images: string[];
-    category: string;
+    category: string | { _id: string; name: { ar: string; en: string } } | any;
+    subCategoryData?: { _id: string; name: { ar: string; en: string } } | any;
   };
 }
 
@@ -97,7 +98,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </span>
           )}
           <span className="bg-white/80 dark:bg-black/80 backdrop-blur-md text-gray-800 dark:text-gray-200 text-[10px] font-black px-3 py-1 rounded-full border border-gray-200 dark:border-white/10 uppercase">
-            {product.category}
+            {typeof product.category === "object" && product.category?.name
+              ? (language === "ar" ? product.category.name.ar : product.category.name.en)
+              : product.category}
           </span>
         </div>
 

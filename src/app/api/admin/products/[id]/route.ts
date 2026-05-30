@@ -11,9 +11,34 @@ export async function GET(
   try {
     const { id } = await params;
     await connectDB();
-    const product = await Product.findById(id);
+    const product = await Product.findById(id).lean() as any;
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    // Manual population
+    if (product.category) {
+      const Category = (await import("@/models/Category")).default;
+      const categories = await Category.find({}).lean();
+      const catMap = new Map();
+      categories.forEach((cat: any) => {
+        catMap.set(cat._id.toString(), cat);
+        if (cat.name?.en) catMap.set(cat.name.en, cat);
+        if (cat.name?.ar) catMap.set(cat.name.ar, cat);
+        if (cat.slug) catMap.set(cat.slug, cat);
+      });
+      product.category = catMap.get(product.category.toString()) || product.category;
+    }
+
+    // Resolve subCategory name from embedded subCategories
+    const cat = product.category as any;
+    if (cat && typeof cat === 'object' && product.subCategory && Array.isArray(cat.subCategories)) {
+      const sub = cat.subCategories.find(
+        (s: any) => s._id?.toString() === product.subCategory?.toString()
+      );
+      if (sub) {
+        (product as any).subCategoryData = { _id: sub._id, name: sub.name };
+      }
     }
     return NextResponse.json(product);
   } catch (error: any) {

@@ -159,7 +159,7 @@ export default function ProductsAdmin() {
       nameEn: product.title?.en || "",
       descAr: product.description?.ar || "",
       descEn: product.description?.en || "",
-      category: product.category || "",
+      category: (typeof product.category === "object" ? product.category?._id : product.category) || "",
       subCategory: product.subCategory || "",
       SKU: product.SKU || "",
       warranty: product.warranty || "",
@@ -220,7 +220,10 @@ export default function ProductsAdmin() {
   const exportToCSV = () => {
     const headers = ["Name(AR),Name(EN),Category,SKU,Price,Discount(%),Stock,Warranty\n"];
     const rows = products.map(p => {
-      return `"${p.title?.ar || ''}","${p.title?.en || ''}","${p.category || ''}","${p.SKU || ''}",${p.price},${p.discount || 0},${p.stock || 0},"${p.warranty || ''}"\n`;
+      const catName = typeof p.category === "object" && p.category?.name
+        ? (language === "ar" ? p.category.name.ar : p.category.name.en)
+        : (p.category || "");
+      return `"${p.title?.ar || ''}","${p.title?.en || ''}","${catName}","${p.SKU || ''}",${p.price},${p.discount || 0},${p.stock || 0},"${p.warranty || ''}"\n`;
     });
     const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + headers.concat(rows).join("");
     const encodedUri = encodeURI(csvContent);
@@ -235,7 +238,8 @@ export default function ProductsAdmin() {
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.title?.en?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           p.title?.ar?.includes(searchTerm);
-    const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
+    const catId = typeof p.category === "object" ? p.category?._id : p.category;
+    const matchesCategory = selectedCategory === "All" || catId === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -363,7 +367,9 @@ export default function ProductsAdmin() {
                 </td>
                 <td className="px-6 py-5">
                   <span className="px-4 py-1.5 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                    {product.category}
+                    {typeof product.category === "object" && product.category?.name
+                      ? (language === "ar" ? product.category.name.ar : product.category.name.en)
+                      : product.category}
                   </span>
                 </td>
                 <td className="px-6 py-5 font-black text-primary">
@@ -435,7 +441,9 @@ export default function ProductsAdmin() {
                 <h3 className="font-black text-sm truncate">{product.title?.en}</h3>
                 <p className="text-[10px] font-bold text-gray-500 truncate">{product.title?.ar}</p>
                 <span className="mt-1 inline-block px-2 py-0.5 bg-blue-500/10 text-blue-500 rounded-lg text-[8px] font-black uppercase tracking-widest">
-                  {product.category}
+                  {typeof product.category === "object" && product.category?.name
+                      ? (language === "ar" ? product.category.name.ar : product.category.name.en)
+                      : (categoriesData.find(c => c._id === product.category)?.name[language === "ar" ? "ar" : "en"] || product.category)}
                 </span>
               </div>
             </div>

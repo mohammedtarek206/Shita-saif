@@ -49,7 +49,8 @@ export default function ProductDetails({ params }: { params: any }) {
           });
           // Fetch related products from same category
           try {
-            const relRes = await fetch(`/api/admin/products?category=${data.category}`);
+            const catId = typeof data.category === "object" ? data.category._id : data.category;
+            const relRes = await fetch(`/api/admin/products?category=${catId}`);
             const relData = await relRes.json();
             if (Array.isArray(relData)) {
               setRelatedProducts(relData.filter((p: any) => p._id !== data._id).slice(0, 4));
@@ -104,6 +105,22 @@ export default function ProductDetails({ params }: { params: any }) {
     }
     setCartToast(true);
     setTimeout(() => setCartToast(false), 3000);
+  };
+
+  // Helper to get category name from populated object or string
+  const getCategoryName = (cat: any) => {
+    if (!cat) return "";
+    if (typeof cat === "object" && cat.name) {
+      return language === "ar" ? cat.name.ar : cat.name.en;
+    }
+    return cat;
+  };
+
+  const getSubCategoryName = (product: any) => {
+    if (product.subCategoryData?.name) {
+      return language === "ar" ? product.subCategoryData.name.ar : product.subCategoryData.name.en;
+    }
+    return product.subCategory || "";
   };
 
   const isProductInWishlist = isInWishlist(product._id);
@@ -194,7 +211,7 @@ export default function ProductDetails({ params }: { params: any }) {
                   </div>
                 )}
                 <div className="px-5 py-2 bg-white dark:bg-black rounded-full font-black text-[10px] uppercase tracking-widest shadow-xl">
-                  {product?.category}
+                  {getCategoryName(product?.category)}
                 </div>
               </div>
               
