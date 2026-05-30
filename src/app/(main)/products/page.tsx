@@ -54,7 +54,7 @@ function ProductsContent() {
         p.title?.en?.toLowerCase().includes(term) ||
         p.title?.ar?.includes(searchTerm) ||
         (typeof p.category === "string" && p.category.toLowerCase().includes(term)) ||
-        (typeof p.category === "object" && p.category?.name && (p.category.name.en?.toLowerCase().includes(term) || p.category.name.ar?.includes(searchTerm)));
+        (typeof p.category === "object" && (p.category as any)?.name && ((p.category as any).name.en?.toLowerCase().includes(term) || (p.category as any).name.ar?.includes(searchTerm)));
 
       // Category matching
       const matchesCategory = !selectedCategory || p.category === selectedCategory || p.category?._id === selectedCategory;

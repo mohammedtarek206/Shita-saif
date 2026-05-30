@@ -146,8 +146,8 @@ export default function ComparePage() {
               {compareList.map(p => (
                 <td key={(p as any)?._id || (p as any)?.id || (p as any)?.slug || (p as any)?.name || (p as any)?.title?.en || (p as any)?.title?.ar || JSON.stringify(p).substring(0, 20)} className="py-4 px-6 text-center">
                   <span className="px-3 py-1.5 bg-primary/10 text-primary rounded-xl text-xs font-black">
-                    {typeof p.category === "object" && p.category?.name
-                      ? (language === "ar" ? p.category.name.ar : p.category.name.en)
+                    {typeof p.category === "object" && (p.category as any)?.name
+                      ? (language === "ar" ? (p.category as any).name.ar : (p.category as any).name.en)
                       : p.category}
                   </span>
                 </td>

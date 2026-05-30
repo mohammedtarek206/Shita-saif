@@ -220,8 +220,8 @@ export default function ProductsAdmin() {
   const exportToCSV = () => {
     const headers = ["Name(AR),Name(EN),Category,SKU,Price,Discount(%),Stock,Warranty\n"];
     const rows = products.map(p => {
-      const catName = typeof p.category === "object" && p.category?.name
-        ? (language === "ar" ? p.category.name.ar : p.category.name.en)
+      const catName = typeof p.category === "object" && (p.category as any)?.name
+        ? (language === "ar" ? (p.category as any).name.ar : (p.category as any).name.en)
         : (p.category || "");
       return `"${p.title?.ar || ''}","${p.title?.en || ''}","${catName}","${p.SKU || ''}",${p.price},${p.discount || 0},${p.stock || 0},"${p.warranty || ''}"\n`;
     });
@@ -367,8 +367,8 @@ export default function ProductsAdmin() {
                 </td>
                 <td className="px-6 py-5">
                   <span className="px-4 py-1.5 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                    {typeof product.category === "object" && product.category?.name
-                      ? (language === "ar" ? product.category.name.ar : product.category.name.en)
+                    {typeof product.category === "object" && (product.category as any)?.name
+                      ? (language === "ar" ? (product.category as any).name.ar : (product.category as any).name.en)
                       : product.category}
                   </span>
                 </td>
@@ -441,8 +441,8 @@ export default function ProductsAdmin() {
                 <h3 className="font-black text-sm truncate">{product.title?.en}</h3>
                 <p className="text-[10px] font-bold text-gray-500 truncate">{product.title?.ar}</p>
                 <span className="mt-1 inline-block px-2 py-0.5 bg-blue-500/10 text-blue-500 rounded-lg text-[8px] font-black uppercase tracking-widest">
-                  {typeof product.category === "object" && product.category?.name
-                      ? (language === "ar" ? product.category.name.ar : product.category.name.en)
+                  {typeof product.category === "object" && (product.category as any)?.name
+                      ? (language === "ar" ? (product.category as any).name.ar : (product.category as any).name.en)
                       : (categoriesData.find(c => c._id === product.category)?.name[language === "ar" ? "ar" : "en"] || product.category)}
                 </span>
               </div>
