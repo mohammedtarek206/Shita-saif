@@ -91,24 +91,25 @@ export default function CartPage() {
         <h1 className="text-3xl md:text-5xl font-black mb-8 md:mb-12">
           {t.title} <span className="text-primary text-lg md:text-2xl ml-2">({totalItems} {t.items})</span>
         </h1>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
           {/* Cart Items List */}
           <div className="lg:col-span-2 space-y-4 md:space-y-6">
             {cart.map((item) => {
-              const itemPrice = item.discount ? item.price - (item.price * item.discount / 100) : item.price;
+              const parsedPrice = Number(item.price);
+              const itemPrice = item.discount ? parsedPrice - (parsedPrice * item.discount / 100) : parsedPrice;
               return (
                 <div key={(item as any)?._id || (item as any)?.id || (item as any)?.slug || (item as any)?.name || (item as any)?.title?.en || (item as any)?.title?.ar || JSON.stringify(item).substring(0, 20)} className="glass p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border-white/20 flex flex-col md:flex-row items-center gap-4 md:gap-8">
                   <div className="w-24 h-24 md:w-32 md:h-32 bg-white dark:bg-white/5 rounded-2xl md:rounded-3xl p-4 flex-shrink-0 flex items-center justify-center">
                     <img src={item.images[0]} alt={language === "ar" ? item.title.ar : item.title.en} className="w-full h-full object-contain" />
                   </div>
-                  
+
                   <div className="flex-1 flex flex-col gap-2 text-center md:text-start">
                     <h3 className="text-lg md:text-xl font-black line-clamp-1">{language === "ar" ? item.title.ar : item.title.en}</h3>
                     <div className="text-primary font-black text-base md:text-lg">
                       {itemPrice.toLocaleString()} {language === "ar" ? "ج.م" : "EGP"}
                     </div>
-                    
+
                     <div className="flex items-center justify-center md:justify-start gap-4 mt-2">
                       <div className="flex items-center gap-4 bg-gray-100 dark:bg-white/10 px-4 py-2 rounded-xl">
                         <button onClick={() => updateQuantity(item._id, item.quantity - 1)} className="p-1 hover:text-primary transition-colors"><FiMinus /></button>
@@ -120,7 +121,7 @@ export default function CartPage() {
                       </button>
                     </div>
                   </div>
-                  
+
                   <div className="text-xl md:text-2xl font-black text-gray-800 dark:text-white border-t md:border-t-0 md:border-r md:rtl:border-l border-gray-100 dark:border-white/10 pt-4 md:pt-0 md:px-8 w-full md:w-auto text-center md:text-end">
                     {(itemPrice * item.quantity).toLocaleString()} <span className="text-xs md:text-sm font-bold opacity-50">{language === "ar" ? "ج.م" : "EGP"}</span>
                   </div>
@@ -205,7 +206,7 @@ export default function CartPage() {
                   {t.checkout}
                   <FiArrowRight className={language === "ar" ? "rotate-180" : ""} />
                 </Link>
-                
+
                 <Link href="/products" className="block w-full py-4 text-center text-gray-500 font-black hover:text-primary transition-colors text-sm uppercase tracking-widest">
                   {t.continue}
                 </Link>

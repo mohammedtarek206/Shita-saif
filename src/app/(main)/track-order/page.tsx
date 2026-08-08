@@ -12,7 +12,7 @@ function TrackOrderContent() {
   const { language } = useLanguage();
   const searchParams = useSearchParams();
   const initialPhone = searchParams?.get("phone") || "";
-  
+
   const [phone, setPhone] = useState(initialPhone);
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -104,13 +104,13 @@ function TrackOrderContent() {
             >
               <FiTruck className="animate-bounce" /> {language === "ar" ? "نظام تتبع برقم الهاتف" : "Phone Number Tracking"}
             </motion.div>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
               className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter mb-6 leading-tight"
             >
               {t.title}
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="text-gray-500 dark:text-gray-400 text-lg font-bold"
             >
@@ -119,7 +119,7 @@ function TrackOrderContent() {
           </div>
 
           {/* Search Card */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
             className="bg-white dark:bg-white/[0.03] rounded-[3rem] p-8 md:p-12 border border-gray-100 dark:border-white/5 shadow-2xl backdrop-blur-3xl mb-12 max-w-3xl mx-auto"
           >
@@ -128,14 +128,14 @@ function TrackOrderContent() {
                 <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-2">{t.contactLabel}</label>
                 <div className="relative group">
                   <FiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-                  <input 
+                  <input
                     type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl px-14 py-4 font-bold outline-none transition-all"
                     placeholder="01234567890"
                   />
                 </div>
               </div>
-              <button 
+              <button
                 disabled={loading}
                 className="w-full md:w-48 h-[60px] bg-primary text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 shrink-0"
               >
@@ -145,7 +145,7 @@ function TrackOrderContent() {
 
             <AnimatePresence>
               {error && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                   className="mt-6 p-4 bg-rose-500/10 text-rose-500 rounded-2xl font-bold text-sm text-center border border-rose-500/20"
                 >
@@ -185,11 +185,11 @@ function TrackOrderContent() {
                   {/* Progress Bar / Stepper */}
                   <div className="relative pb-12">
                     <div className="absolute top-6 left-0 right-0 h-1 bg-gray-100 dark:bg-white/10" />
-                    <div 
-                      className="absolute top-6 left-0 h-1 bg-primary transition-all duration-1000 ease-out" 
+                    <div
+                      className="absolute top-6 left-0 h-1 bg-primary transition-all duration-1000 ease-out"
                       style={{ width: `${(getStatusInfo(order.status).step / 7) * 100}%` }}
                     />
-                    
+
                     <div className="relative flex justify-between">
                       {["pending", "confirmed", "preparing", "shipped", "delivered"].map((stepStatus, i) => {
                         const stepInfo = getStatusInfo(stepStatus);
@@ -284,10 +284,10 @@ function TrackOrderContent() {
                         </div>
                         <div className="flex-1">
                           <p className="font-black text-lg truncate">{language === "ar" ? (item.product?.title?.ar || item.title?.ar) : (item.product?.title?.en || item.title?.en)}</p>
-                          <p className="text-gray-500 font-bold text-sm">Qty: {item.quantity} × {item.price.toLocaleString()} EGP</p>
+                          <p className="text-gray-500 font-bold text-sm">Qty: {item.quantity} × {Number(item.price).toLocaleString()} EGP</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-black text-primary">{(item.quantity * item.price).toLocaleString()} <span className="text-[10px]">EGP</span></p>
+                          <p className="font-black text-primary">{(item.quantity * Number(item.price)).toLocaleString()} <span className="text-[10px]">EGP</span></p>
                         </div>
                       </div>
                     ))}

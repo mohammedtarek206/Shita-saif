@@ -5,8 +5,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
-import { 
-  FiMapPin, FiPhone, FiUser, FiMail, 
+import {
+  FiMapPin, FiPhone, FiUser, FiMail,
   FiCreditCard, FiTruck, FiCheckCircle, FiPercent,
   FiShoppingBag, FiInfo, FiArrowRight, FiLock, FiShield
 } from "react-icons/fi";
@@ -86,7 +86,7 @@ export default function CheckoutPage() {
         products: cart.map(item => ({
           product: item._id,
           quantity: item.quantity,
-          price: item.discount ? item.price - (item.price * item.discount / 100) : item.price
+          price: item.discount ? Number(item.price) - (Number(item.price) * item.discount / 100) : Number(item.price)
         })),
         subtotal: totalPrice,
         tax,
@@ -111,7 +111,7 @@ export default function CheckoutPage() {
           orderId: order._id,
           products: cart.map(item => ({
             title: item.title[language],
-            price: item.discount ? item.price - (item.price * item.discount / 100) : item.price,
+            price: item.discount ? Number(item.price) - (Number(item.price) * item.discount / 100) : Number(item.price),
             quantity: item.quantity
           })),
           totalPrice: finalTotal
@@ -164,7 +164,7 @@ export default function CheckoutPage() {
           {/* Main Content Area */}
           <div className="lg:col-span-7 xl:col-span-8 space-y-8">
             {/* Shipping Form */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
               className="bg-white dark:bg-white/5 backdrop-blur-3xl p-6 md:p-10 rounded-[3rem] border border-gray-100 dark:border-white/10 shadow-2xl"
             >
@@ -176,7 +176,7 @@ export default function CheckoutPage() {
                   {language === "ar" ? "بيانات التوصيل" : "Delivery Address"}
                 </h2>
               </div>
-              
+
               <form id="checkout-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 {[
                   { name: "name", label: language === "ar" ? "الاسم الكامل" : "Full Name", icon: <FiUser />, type: "text" },
@@ -190,12 +190,12 @@ export default function CheckoutPage() {
                       <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
                         {field.icon}
                       </div>
-                      <input 
+                      <input
                         required
                         type={field.type}
                         className="w-full pl-14 pr-6 py-4 bg-gray-50 dark:bg-white/2 border border-transparent focus:border-primary focus:bg-white dark:focus:bg-white/5 rounded-2xl outline-none transition-all font-bold"
                         value={(formData as any)[field.name]}
-                        onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
                       />
                     </div>
                   </div>
@@ -206,12 +206,12 @@ export default function CheckoutPage() {
                     <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
                       <FiMapPin />
                     </div>
-                    <input 
+                    <input
                       required
-                      type="text" 
+                      type="text"
                       className="w-full pl-14 pr-6 py-4 bg-gray-50 dark:bg-white/2 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all"
                       value={formData.address}
-                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     />
                   </div>
                 </div>
@@ -219,7 +219,7 @@ export default function CheckoutPage() {
             </motion.div>
 
             {/* Payment Section */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
               className="bg-white dark:bg-white/5 backdrop-blur-3xl p-6 md:p-10 rounded-[3rem] border border-gray-100 dark:border-white/10 shadow-2xl"
             >
@@ -231,18 +231,17 @@ export default function CheckoutPage() {
                   {language === "ar" ? "وسيلة الدفع" : "Payment Method"}
                 </h2>
               </div>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {paymentMethods.map((method) => (
                   <button
                     key={(method as any)?._id || (method as any)?.id || (method as any)?.slug || (method as any)?.name || (method as any)?.title?.en || (method as any)?.title?.ar || JSON.stringify(method).substring(0, 20)}
                     type="button"
                     onClick={() => setPaymentMethod(method.id)}
-                    className={`p-6 rounded-[2rem] border-2 transition-all flex items-center gap-5 group relative overflow-hidden ${
-                      paymentMethod === method.id 
-                        ? "border-primary bg-primary/5 shadow-2xl shadow-primary/10" 
+                    className={`p-6 rounded-[2rem] border-2 transition-all flex items-center gap-5 group relative overflow-hidden ${paymentMethod === method.id
+                        ? "border-primary bg-primary/5 shadow-2xl shadow-primary/10"
                         : "border-gray-100 dark:border-white/5 hover:border-primary/50"
-                    }`}
+                      }`}
                   >
                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl text-white shadow-lg ${method.color} group-hover:rotate-6 transition-transform`}>
                       {method.icon}
@@ -296,15 +295,14 @@ export default function CheckoutPage() {
                           </h4>
                         </div>
                         <div className="relative group cursor-pointer">
-                          <input 
-                            type="file" 
+                          <input
+                            type="file"
                             accept="image/*"
                             onChange={(e) => e.target.files?.[0] && handleScreenshotUpload(e.target.files[0])}
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                           />
-                          <div className={`w-full py-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 transition-all ${
-                            screenshotUrl ? "border-emerald-500 bg-emerald-500/5 text-emerald-500" : "border-gray-200 dark:border-white/10 group-hover:border-primary text-gray-400"
-                          }`}>
+                          <div className={`w-full py-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 transition-all ${screenshotUrl ? "border-emerald-500 bg-emerald-500/5 text-emerald-500" : "border-gray-200 dark:border-white/10 group-hover:border-primary text-gray-400"
+                            }`}>
                             {uploadingScreenshot ? (
                               <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
                             ) : screenshotUrl ? (
@@ -325,8 +323,8 @@ export default function CheckoutPage() {
                     <div className="flex gap-4 p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20">
                       <FiInfo className="text-amber-500 shrink-0 mt-0.5" />
                       <p className="text-[10px] font-bold text-amber-700 dark:text-amber-400 leading-relaxed italic">
-                        {language === "ar" 
-                          ? "برجاء رفع صورة إيصال التحويل لضمان سرعة تأكيد الطلب. سيتم البدء في التجهيز فور التحقق." 
+                        {language === "ar"
+                          ? "برجاء رفع صورة إيصال التحويل لضمان سرعة تأكيد الطلب. سيتم البدء في التجهيز فور التحقق."
                           : "Please provide a screenshot of your successful transaction to expedite order confirmation."}
                       </p>
                     </div>
@@ -340,18 +338,18 @@ export default function CheckoutPage() {
           <div className="lg:col-span-5 xl:col-span-4">
             <div className="sticky top-24 md:top-32 space-y-6">
               {/* Order Summary */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
                 className="bg-white dark:bg-white/5 backdrop-blur-3xl p-8 rounded-[3rem] border border-gray-100 dark:border-white/10 shadow-2xl relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 p-6 opacity-[0.03] dark:opacity-[0.07] pointer-events-none">
                   <FiShoppingBag size={120} />
                 </div>
-                
+
                 <h2 className="text-2xl font-black uppercase italic tracking-tight mb-8">
                   {language === "ar" ? "ملخص الحقيبة" : "Order Summary"}
                 </h2>
-                
+
                 <div className="space-y-5 max-h-[350px] overflow-y-auto custom-scrollbar mb-8 pr-2">
                   {cart.map((item) => (
                     <div key={(item as any)?._id || (item as any)?.id || (item as any)?.slug || (item as any)?.name || (item as any)?.title?.en || (item as any)?.title?.ar || JSON.stringify(item).substring(0, 20)} className="flex gap-4 items-center group">
@@ -362,7 +360,7 @@ export default function CheckoutPage() {
                         <h4 className="font-black text-xs md:text-sm line-clamp-1 group-hover:text-primary transition-colors">{item.title[language]}</h4>
                         <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">Quantity: {item.quantity}</p>
                       </div>
-                      <span className="font-black text-sm whitespace-nowrap">{(item.discount ? item.price * (1 - item.discount / 100) : item.price) * item.quantity} <span className="text-[10px] text-gray-400">EGP</span></span>
+                      <span className="font-black text-sm whitespace-nowrap">{(item.discount ? Number(item.price) * (1 - item.discount / 100) : Number(item.price)) * item.quantity} <span className="text-[10px] text-gray-400">EGP</span></span>
                     </div>
                   ))}
                 </div>
@@ -382,7 +380,7 @@ export default function CheckoutPage() {
                     <span>{language === "ar" ? "الضريبة المقدرة" : "Estimated Tax"}</span>
                     <span className="text-gray-900 dark:text-white">{tax.toFixed(0)} EGP</span>
                   </div>
-                  
+
                   <AnimatePresence>
                     {discount > 0 && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="flex justify-between items-center text-[10px] font-black uppercase text-emerald-500 tracking-[0.2em]">
@@ -413,14 +411,14 @@ export default function CheckoutPage() {
                   <FiPercent /> {language === "ar" ? "كوبون الخصم" : "Promo Code"}
                 </h4>
                 <div className="flex gap-2">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder={language === "ar" ? "كود الخصم..." : "Enter code..."}
                     className="flex-1 px-5 py-3.5 bg-gray-50 dark:bg-black/20 rounded-xl outline-none border border-transparent focus:border-primary transition-all font-black text-xs"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                   />
-                  <button 
+                  <button
                     onClick={handleApplyCoupon}
                     className="px-6 py-3.5 bg-black dark:bg-white text-white dark:text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg"
                   >
@@ -432,7 +430,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* Checkout Button */}
-              <button 
+              <button
                 type="submit"
                 form="checkout-form"
                 disabled={loading || cart.length === 0}

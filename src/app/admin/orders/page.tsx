@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  FiPackage, FiCheckCircle, FiXCircle, 
+import {
+  FiPackage, FiCheckCircle, FiXCircle,
   FiClock, FiEye, FiDownload, FiDollarSign,
   FiPhone, FiChevronDown, FiTrash2, FiCalendar, FiUser, FiSearch, FiTruck, FiEdit3, FiPrinter, FiX
 } from "react-icons/fi";
@@ -49,7 +49,7 @@ export default function AdminOrders() {
         headers: { "Content-Type": "application/json" },
       });
       if (res.ok) {
-        setOrders((prev: any) => 
+        setOrders((prev: any) =>
           prev.map((o: any) => o._id === id ? { ...o, ...updates } : o)
         );
         if (editingOrder?._id === id) {
@@ -94,7 +94,7 @@ export default function AdminOrders() {
     }
   };
 
-  const filteredOrders = orders.filter(o => 
+  const filteredOrders = orders.filter(o =>
     o.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     o.invoiceNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     o.shippingAddress?.phone?.includes(searchTerm) ||
@@ -138,7 +138,7 @@ export default function AdminOrders() {
         </div>
         <div className="relative group w-full md:w-96">
           <FiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-          <input 
+          <input
             type="text"
             placeholder="Search by ID, Phone, Email..."
             className="w-full bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl px-14 py-4 font-bold outline-none focus:border-primary transition-all shadow-xl"
@@ -156,7 +156,7 @@ export default function AdminOrders() {
           { label: "Pending", value: orders.filter((o: any) => o.status === "pending").length, icon: <FiClock />, color: "from-amber-500 to-amber-600" },
           { label: "Out for Delivery", value: orders.filter((o: any) => o.status === "out_for_delivery").length, icon: <FiTruck />, color: "from-cyan-500 to-cyan-600" },
         ].map((stat, i) => (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
             key={`item-${i}`} className="glass p-6 rounded-[2rem] border-white/5 flex flex-col gap-4 relative overflow-hidden group hover:scale-[1.02] transition-all"
           >
@@ -220,27 +220,27 @@ export default function AdminOrders() {
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-2">
-                    <button 
+                    <button
                       onClick={() => handlePrint(order, "invoice")}
                       title="طباعة فاتورة A4 / Print A4 Invoice"
                       className="w-9 h-9 flex items-center justify-center bg-emerald-500/10 text-emerald-500 rounded-xl hover:bg-emerald-500 hover:text-white transition-all"
                     >
                       <FiPrinter size={14} />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handlePrint(order, "receipt")}
                       title="طباعة إيصال حراري / Print Thermal Receipt"
                       className="w-9 h-9 flex items-center justify-center bg-indigo-500/10 text-indigo-500 rounded-xl hover:bg-indigo-500 hover:text-white transition-all"
                     >
                       <FiPrinter size={14} className="scale-x-[-1]" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => setEditingOrder(order)}
                       className="w-10 h-10 flex items-center justify-center bg-primary/10 text-primary rounded-xl hover:bg-primary hover:text-white transition-all"
                     >
                       <FiEdit3 />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(order._id)}
                       className="w-10 h-10 flex items-center justify-center bg-rose-500/10 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all"
                     >
@@ -276,21 +276,21 @@ export default function AdminOrders() {
             <div className="flex items-center justify-between border-t border-gray-100 dark:border-white/5 pt-3">
               <p className="font-black text-primary">{order.totalPrice.toLocaleString()} EGP</p>
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   onClick={() => handlePrint(order, "invoice")}
                   title="A4 Invoice"
                   className="p-2.5 bg-emerald-500/10 text-emerald-500 rounded-xl"
                 >
                   <FiPrinter size={16} />
                 </button>
-                <button 
+                <button
                   onClick={() => handlePrint(order, "receipt")}
                   title="Thermal Receipt"
                   className="p-2.5 bg-indigo-500/10 text-indigo-500 rounded-xl"
                 >
                   <FiPrinter size={16} className="scale-x-[-1]" />
                 </button>
-                <button 
+                <button
                   onClick={() => setEditingOrder(order)}
                   className="p-2.5 bg-primary/10 text-primary rounded-xl"
                 >
@@ -306,12 +306,12 @@ export default function AdminOrders() {
       <AnimatePresence>
         {editingOrder && (
           <div className="fixed inset-0 z-[200] flex items-center justify-end p-4 md:p-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setEditingOrder(null)}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
             />
-            <motion.div 
+            <motion.div
               initial={{ x: 500, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 500, opacity: 0 }}
               className="relative w-full max-w-xl h-full bg-white dark:bg-[#0A0A0A] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col"
             >
@@ -338,8 +338,8 @@ export default function AdminOrders() {
                         onClick={() => handleUpdateOrder(editingOrder._id, { status: s })}
                         className={cn(
                           "px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all",
-                          editingOrder.status === s 
-                            ? "bg-primary border-primary text-white shadow-xl shadow-primary/30" 
+                          editingOrder.status === s
+                            ? "bg-primary border-primary text-white shadow-xl shadow-primary/30"
                             : "bg-gray-50 dark:bg-white/5 border-transparent hover:border-primary/50"
                         )}
                       >
@@ -357,7 +357,7 @@ export default function AdminOrders() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <p className="text-[10px] font-bold text-gray-400 uppercase ml-2">Estimated Delivery Date</p>
-                      <input 
+                      <input
                         type="text"
                         placeholder="e.g. Wednesday, 20 May"
                         className="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl px-6 py-4 font-bold outline-none transition-all"
@@ -367,7 +367,7 @@ export default function AdminOrders() {
                     </div>
                     <div className="space-y-2">
                       <p className="text-[10px] font-bold text-gray-400 uppercase ml-2">Internal Delivery Notes</p>
-                      <textarea 
+                      <textarea
                         placeholder="Add notes for the customer or courier..."
                         className="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl px-6 py-4 font-bold outline-none transition-all h-32 resize-none"
                         value={editingOrder.deliveryNotes || ""}
@@ -426,7 +426,7 @@ export default function AdminOrders() {
                     هاتف: 01223366046 | البريد: whaba78@gmail.com
                   </p>
                 </div>
-                
+
                 <div style={{ textAlign: "left", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                   <div style={{ backgroundColor: "#f3f4f6", padding: "8px 15px", borderRadius: "10px", marginBottom: "10px", borderRight: "4px solid #db2777" }}>
                     <h2 style={{ margin: 0, color: "#db2777", fontWeight: "900", fontSize: "18px" }}>فاتورة مبيعات رقمية</h2>
@@ -435,7 +435,7 @@ export default function AdminOrders() {
                     </p>
                   </div>
                   {/* Retail Code128 Barcode Generator API */}
-                  <img 
+                  <img
                     src={`https://bwipjs-api.metafloor.com/?bcid=code128&text=${printingOrder.orderNumber || printingOrder.invoiceNumber || 'INV-123'}&scale=1.5&rotate=N&includeText=true`}
                     alt="Barcode"
                     style={{ height: "40px", width: "150px", objectFit: "contain", marginBottom: "5px" }}
@@ -445,7 +445,7 @@ export default function AdminOrders() {
 
               {/* QR and Order Tracking Details card */}
               <div style={{ display: "grid", gridTemplateColumns: "2.5fr 1fr", gap: "20px", marginBottom: "25px" }}>
-                
+
                 {/* Details Grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
                   <div style={{ border: "1px solid #e5e7eb", padding: "15px", borderRadius: "15px", backgroundColor: "#fafafa" }}>
@@ -454,7 +454,7 @@ export default function AdminOrders() {
                     <p style={{ margin: "4px 0", fontSize: "12px" }}><b>الهاتف:</b> {printingOrder.shippingAddress?.phone}</p>
                     <p style={{ margin: "4px 0", fontSize: "12px" }}><b>العنوان:</b> {printingOrder.shippingAddress?.street}, {printingOrder.shippingAddress?.city}</p>
                   </div>
-                  
+
                   <div style={{ border: "1px solid #e5e7eb", padding: "15px", borderRadius: "15px", backgroundColor: "#fafafa" }}>
                     <h4 style={{ margin: "0 0 8px 0", color: "#4f46e5", fontWeight: "900", borderBottom: "1px solid #e5e7eb", paddingBottom: "4px", fontSize: "13px" }}>📦 تفاصيل الشحنة والتتبع</h4>
                     <p style={{ margin: "4px 0", fontSize: "12px" }}><b>التاريخ:</b> {new Date(printingOrder.createdAt).toLocaleDateString("ar-EG")}</p>
@@ -466,7 +466,7 @@ export default function AdminOrders() {
 
                 {/* QR Code tracking container */}
                 <div style={{ border: "1px solid #e5e7eb", borderRadius: "15px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px", backgroundColor: "#fff" }}>
-                  <img 
+                  <img
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=https://wintersummer.com/orders/track/${printingOrder._id}`}
                     alt="Tracking QR Code"
                     style={{ width: "90px", height: "90px", objectFit: "contain", marginBottom: "5px" }}
@@ -496,10 +496,10 @@ export default function AdminOrders() {
                         {item.quantity}
                       </td>
                       <td style={{ padding: "12px 15px", textAlign: "center", fontSize: "12px", fontWeight: "bold" }}>
-                        {item.price?.toLocaleString()} ج.م
+                        {Number(item.price)?.toLocaleString()} ج.م
                       </td>
                       <td style={{ padding: "12px 15px", textAlign: "left", fontSize: "12px", fontWeight: "bold" }}>
-                        {(item.price * item.quantity)?.toLocaleString()} ج.م
+                        {(Number(item.price) * item.quantity)?.toLocaleString()} ج.م
                       </td>
                     </tr>
                   ))}
@@ -562,7 +562,7 @@ export default function AdminOrders() {
                     <tr key={`item-${i}`} style={{ borderBottom: "1px dotted #ccc" }}>
                       <td style={{ padding: "4px 0", fontSize: "10px" }}>{item.product?.title?.ar?.substring(0, 25) || "منتج منزل"}</td>
                       <td style={{ padding: "4px 0", textAlign: "center", fontSize: "10px" }}>{item.quantity}</td>
-                      <td style={{ padding: "4px 0", textAlign: "left", fontSize: "10px" }}>{(item.price * item.quantity)?.toLocaleString()} ج</td>
+                      <td style={{ padding: "4px 0", textAlign: "left", fontSize: "10px" }}>{(Number(item.price) * item.quantity)?.toLocaleString()} ج</td>
                     </tr>
                   ))}
                 </tbody>
@@ -585,7 +585,7 @@ export default function AdminOrders() {
 
               {/* Barcode inside thermal receipt */}
               <div style={{ textAlign: "center", margin: "10px 0" }}>
-                <img 
+                <img
                   src={`https://bwipjs-api.metafloor.com/?bcid=code128&text=${printingOrder.orderNumber || printingOrder.invoiceNumber || 'INV-123'}&scale=1.2&rotate=N&includeText=true`}
                   alt="Barcode"
                   style={{ height: "30px", width: "120px", objectFit: "contain" }}

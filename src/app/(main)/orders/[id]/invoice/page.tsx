@@ -16,7 +16,7 @@ export default function InvoicePage() {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`/api/orders/track?identifier=${id}&orderId=${id}`); 
+        const res = await fetch(`/api/orders/track?identifier=${id}&orderId=${id}`);
         // Note: In a real scenario, this should be a protected API for the specific user
         const res2 = await fetch(`/api/orders`); // Fallback for testing or use a specific API
         const data = await res2.json();
@@ -43,7 +43,7 @@ export default function InvoicePage() {
             <FiArrowLeft /> {language === "ar" ? "رجوع" : "Back"}
           </button>
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => window.print()}
               className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all"
             >
@@ -74,9 +74,9 @@ export default function InvoicePage() {
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{new Date(order.createdAt).toLocaleDateString()}</p>
               </div>
               <div className="hidden md:block p-2 bg-white rounded-xl shadow-lg border border-gray-100 print:shadow-none print:border-black">
-                <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/track-order?phone=${order.shippingAddress?.phone}` : order.shippingAddress?.phone)}`} 
-                  alt="QR Code" 
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/track-order?phone=${order.shippingAddress?.phone}` : order.shippingAddress?.phone)}`}
+                  alt="QR Code"
                   className="w-20 h-20"
                 />
               </div>
@@ -123,8 +123,8 @@ export default function InvoicePage() {
                       <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">{item.product?.brand}</p>
                     </td>
                     <td className="py-6 text-center">{item.quantity}</td>
-                    <td className="py-6 text-right">{item.price.toLocaleString()} EGP</td>
-                    <td className="py-6 text-right font-black">{ (item.quantity * item.price).toLocaleString() } EGP</td>
+                    <td className="py-6 text-right">{Number(item.price).toLocaleString()} EGP</td>
+                    <td className="py-6 text-right font-black">{(item.quantity * Number(item.price)).toLocaleString()} EGP</td>
                   </tr>
                 ))}
               </tbody>
