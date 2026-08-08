@@ -154,7 +154,7 @@ export default function ProductDetails({ params }: { params: any }) {
                 "@type": "Offer",
                 "url": `https://wintersummer.com/products/${product.title?.en?.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${product._id}`,
                 "priceCurrency": "EGP",
-                "price": product.price - (product.discount || 0),
+                "price": product.discount ? Number(product.price) - (Number(product.price) * product.discount / 100) : Number(product.price),
                 "priceValidUntil": "2030-12-31",
                 "itemCondition": "https://schema.org/NewCondition",
                 "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",

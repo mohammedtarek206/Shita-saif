@@ -100,9 +100,10 @@ export default function ComparePage() {
               <th className="w-40 text-start pb-4" />
               {/* Product columns */}
               {compareList.map((product, i) => {
+                const parsedPrice = Number(product.price);
                 const discounted = product.discount
-                  ? product.price - (product.price * product.discount / 100)
-                  : product.price;
+                  ? parsedPrice - (parsedPrice * product.discount / 100)
+                  : parsedPrice;
                 return (
                   <th key={(product as any)?._id || (product as any)?.id || (product as any)?.slug || (product as any)?.name || (product as any)?.title?.en || (product as any)?.title?.ar || JSON.stringify(product).substring(0, 20)} className="pb-4 align-top">
                     <motion.div
@@ -125,7 +126,7 @@ export default function ComparePage() {
                         {discounted.toLocaleString()} <span className="text-xs">{t.currency}</span>
                       </div>
                       {product.discount! > 0 && (
-                        <div className="text-xs text-gray-400 line-through mb-3">{product.price.toLocaleString()}</div>
+                        <div className="text-xs text-gray-400 line-through mb-3">{parsedPrice.toLocaleString()}</div>
                       )}
                       <button
                         onClick={() => addToCart({ ...product, discount: product.discount })}
