@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter, FiX, FiLink, 
-  FiPackage, FiActivity, FiTag, FiPercent, FiDownload, FiCheck 
+import {
+  FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter, FiX, FiLink,
+  FiPackage, FiActivity, FiTag, FiPercent, FiDownload, FiCheck
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
@@ -106,7 +106,7 @@ export default function ProductsAdmin() {
     try {
       setError("");
       setSuccess("");
-      
+
       if (!newProduct.nameAr || !newProduct.nameEn || !newProduct.category || !newProduct.subCategory || !newProduct.price) {
         setError(language === "ar" ? "الرجاء تعبئة جميع الحقول المطلوبة (الاسم، القسم، القسم الفرعي، السعر)" : "Please fill all required fields (Name, Category, Sub Category, Price)");
         return;
@@ -115,14 +115,14 @@ export default function ProductsAdmin() {
       const finalImages = newProduct.images.map(convertDriveLink).filter(url => url.trim() !== "");
       const url = editingProduct ? `/api/admin/products/${editingProduct._id}` : "/api/admin/products";
       const method = editingProduct ? "PATCH" : "POST";
-      
+
       const res = await fetch(url, {
         method,
-        body: JSON.stringify({ 
-          ...newProduct, 
+        body: JSON.stringify({
+          ...newProduct,
           title: { ar: newProduct.nameAr, en: newProduct.nameEn },
           description: { ar: newProduct.descAr, en: newProduct.descEn },
-          price: Number(newProduct.price),
+          price: newProduct.price,
           discount: Number(newProduct.discount),
           stock: Number(newProduct.stock),
           images: finalImages,
@@ -223,7 +223,7 @@ export default function ProductsAdmin() {
       const catName = typeof p.category === "object" && (p.category as any)?.name
         ? (language === "ar" ? (p.category as any).name.ar : (p.category as any).name.en)
         : (p.category || "");
-      return `"${p.title?.ar || ''}","${p.title?.en || ''}","${catName}","${p.SKU || ''}",${p.price},${p.discount || 0},${p.stock || 0},"${p.warranty || ''}"\n`;
+      return `"${p.title?.ar || ''}","${p.title?.en || ''}","${catName}","${p.SKU || ''}","${String(p.price || '').replace(/"/g, '""')}",${p.discount || 0},${p.stock || 0},"${p.warranty || ''}"\n`;
     });
     const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + headers.concat(rows).join("");
     const encodedUri = encodeURI(csvContent);
@@ -236,8 +236,8 @@ export default function ProductsAdmin() {
   };
 
   const filteredProducts = products.filter(p => {
-    const matchesSearch = p.title?.en?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          p.title?.ar?.includes(searchTerm);
+    const matchesSearch = p.title?.en?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.title?.ar?.includes(searchTerm);
     const catId = typeof p.category === "object" ? p.category?._id : p.category;
     const matchesCategory = selectedCategory === "All" || catId === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -269,8 +269,8 @@ export default function ProductsAdmin() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder={t.searchPlaceholder}
             className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/10 rounded-2xl focus:ring-2 focus:ring-primary outline-none transition-all font-bold text-sm"
             value={searchTerm}
@@ -284,7 +284,7 @@ export default function ProductsAdmin() {
           >
             <FiDownload /> {t.exportBtn}
           </button>
-          <select 
+          <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-6 py-3.5 bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/10 rounded-2xl font-black outline-none focus:ring-2 focus:ring-primary cursor-pointer text-sm"
@@ -296,7 +296,7 @@ export default function ProductsAdmin() {
               </option>
             ))}
           </select>
-          <button 
+          <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 px-8 py-3.5 bg-primary text-white rounded-2xl font-black shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all text-sm"
           >
@@ -312,7 +312,7 @@ export default function ProductsAdmin() {
             <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 border-b border-gray-100 dark:border-white/5">
               {/* Checkbox Header */}
               <th className="py-6 px-6 w-12 text-center">
-                <input 
+                <input
                   type="checkbox"
                   checked={selectedIds.length === filteredProducts.length && filteredProducts.length > 0}
                   onChange={(e) => {
@@ -337,7 +337,7 @@ export default function ProductsAdmin() {
               <tr key={(product as any)?._id || (product as any)?.id || (product as any)?.slug || (product as any)?.name || (product as any)?.title?.en || (product as any)?.title?.ar || JSON.stringify(product).substring(0, 20)} className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors group">
                 {/* Checkbox */}
                 <td className="py-5 px-6 text-center">
-                  <input 
+                  <input
                     type="checkbox"
                     checked={selectedIds.includes(product._id)}
                     onChange={(e) => {
@@ -353,9 +353,9 @@ export default function ProductsAdmin() {
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 p-2 flex items-center justify-center overflow-hidden">
-                      <img 
-                        src={product.images?.[0] || "/placeholder.png"} 
-                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" 
+                      <img
+                        src={product.images?.[0] || "/placeholder.png"}
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                         alt=""
                       />
                     </div>
@@ -374,14 +374,25 @@ export default function ProductsAdmin() {
                 </td>
                 <td className="px-6 py-5 font-black text-primary">
                   <div className="flex flex-col">
-                    {product.discount > 0 && (
-                      <span className="text-[10px] text-gray-400 line-through opacity-50">
-                        {product.price.toLocaleString()} EGP
-                      </span>
-                    )}
-                    <span className="text-lg">
-                      {(product.discount > 0 ? product.price * (1 - product.discount / 100) : product.price).toLocaleString()} <span className="text-[10px]">EGP</span>
-                    </span>
+                    {(() => {
+                      const rawPrice = String(product.price || "");
+                      const isNumericPrice = !isNaN(Number(rawPrice)) && rawPrice.trim() !== "";
+                      const parsedPrice = isNumericPrice ? Number(rawPrice) : 0;
+                      if (!isNumericPrice) return <span className="text-lg line-clamp-2">{rawPrice}</span>;
+
+                      return (
+                        <>
+                          {product.discount > 0 && (
+                            <span className="text-[10px] text-gray-400 line-through opacity-50">
+                              {parsedPrice.toLocaleString()} EGP
+                            </span>
+                          )}
+                          <span className="text-lg">
+                            {(product.discount > 0 ? parsedPrice * (1 - product.discount / 100) : parsedPrice).toLocaleString()} <span className="text-[10px]">EGP</span>
+                          </span>
+                        </>
+                      );
+                    })()}
                   </div>
                 </td>
                 <td className="px-6 py-5">
@@ -391,8 +402,8 @@ export default function ProductsAdmin() {
                       <span className="font-black text-sm">{product.stock} {t.units}</span>
                     </div>
                     <div className="w-24 h-1 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${product.stock > 10 ? 'bg-emerald-500' : 'bg-amber-500'}`} 
+                      <div
+                        className={`h-full ${product.stock > 10 ? 'bg-emerald-500' : 'bg-amber-500'}`}
                         style={{ width: `${Math.min(product.stock * 5, 100)}%` }}
                       />
                     </div>
@@ -420,7 +431,7 @@ export default function ProductsAdmin() {
           <div key={(product as any)?._id || (product as any)?.id || (product as any)?.slug || (product as any)?.name || (product as any)?.title?.en || (product as any)?.title?.ar || JSON.stringify(product).substring(0, 20)} className="bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] space-y-6 relative shadow-md">
             {/* Mobile Checkbox */}
             <div className="absolute top-4 right-4 rtl:left-4 rtl:right-auto">
-              <input 
+              <input
                 type="checkbox"
                 checked={selectedIds.includes(product._id)}
                 onChange={(e) => {
@@ -442,8 +453,8 @@ export default function ProductsAdmin() {
                 <p className="text-[10px] font-bold text-gray-500 truncate">{product.title?.ar}</p>
                 <span className="mt-1 inline-block px-2 py-0.5 bg-blue-500/10 text-blue-500 rounded-lg text-[8px] font-black uppercase tracking-widest">
                   {typeof product.category === "object" && (product.category as any)?.name
-                      ? (language === "ar" ? (product.category as any).name.ar : (product.category as any).name.en)
-                      : (categoriesData.find(c => c._id === product.category)?.name[language === "ar" ? "ar" : "en"] || product.category)}
+                    ? (language === "ar" ? (product.category as any).name.ar : (product.category as any).name.en)
+                    : (categoriesData.find(c => c._id === product.category)?.name[language === "ar" ? "ar" : "en"] || product.category)}
                 </span>
               </div>
             </div>
@@ -451,7 +462,15 @@ export default function ProductsAdmin() {
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-white/5">
               <div>
                 <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest mb-1">{t.pricing}</p>
-                <p className="font-black text-primary">{(product.discount > 0 ? product.price * (1 - product.discount / 100) : product.price).toLocaleString()} EGP</p>
+                <p className="font-black text-primary line-clamp-1">
+                  {(() => {
+                    const rawPrice = String(product.price || "");
+                    const isNumericPrice = !isNaN(Number(rawPrice)) && rawPrice.trim() !== "";
+                    const parsedPrice = isNumericPrice ? Number(rawPrice) : 0;
+                    if (!isNumericPrice) return rawPrice;
+                    return `${(product.discount > 0 ? parsedPrice * (1 - product.discount / 100) : parsedPrice).toLocaleString()} EGP`;
+                  })()}
+                </p>
               </div>
               <div>
                 <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest mb-1">{t.inventory}</p>
@@ -494,7 +513,7 @@ export default function ProductsAdmin() {
 
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.bulkActions}</span>
-              
+
               <select
                 value={bulkAction}
                 onChange={(e) => setBulkAction(e.target.value)}
@@ -508,7 +527,7 @@ export default function ProductsAdmin() {
               </select>
 
               {bulkAction && bulkAction !== "delete" && (
-                <input 
+                <input
                   type="number"
                   placeholder={bulkAction === "set_discount" ? "Discount %" : "Quantity"}
                   value={bulkValue}
@@ -540,12 +559,12 @@ export default function ProductsAdmin() {
       <AnimatePresence>
         {showAddModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={closeModal}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md" 
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
             />
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="relative bg-white dark:bg-[#0F0F0F] w-full max-w-2xl rounded-[3rem] p-6 md:p-10 shadow-2xl space-y-8 border border-gray-100 dark:border-white/10 overflow-y-auto max-h-[90vh] custom-scrollbar"
             >
@@ -575,30 +594,30 @@ export default function ProductsAdmin() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "الاسم (بالعربية)" : "Name (Arabic)"}</label>
                   <input type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.nameAr} onChange={(e) => setNewProduct({...newProduct, nameAr: e.target.value})} />
+                    value={newProduct.nameAr} onChange={(e) => setNewProduct({ ...newProduct, nameAr: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "الاسم (بالإنجليزية)" : "Name (English)"}</label>
                   <input type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.nameEn} onChange={(e) => setNewProduct({...newProduct, nameEn: e.target.value})} />
+                    value={newProduct.nameEn} onChange={(e) => setNewProduct({ ...newProduct, nameEn: e.target.value })} />
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "الوصف (بالعربية)" : "Description (Arabic)"}</label>
                   <textarea rows={3} className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm resize-none"
-                    value={newProduct.descAr} onChange={(e) => setNewProduct({...newProduct, descAr: e.target.value})} />
+                    value={newProduct.descAr} onChange={(e) => setNewProduct({ ...newProduct, descAr: e.target.value })} />
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "الوصف (بالإنجليزية)" : "Description (English)"}</label>
                   <textarea rows={3} className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm resize-none"
-                    value={newProduct.descEn} onChange={(e) => setNewProduct({...newProduct, descEn: e.target.value})} />
+                    value={newProduct.descEn} onChange={(e) => setNewProduct({ ...newProduct, descEn: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "القسم الرئيسي" : "Category"}</label>
                   <select className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary hover:border-primary/30 rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm cursor-pointer shadow-sm"
-                    value={newProduct.category} 
+                    value={newProduct.category}
                     onChange={(e) => {
                       console.log("Category changed, resetting subCategory. New Category:", e.target.value);
-                      setNewProduct({...newProduct, category: e.target.value, subCategory: ""});
+                      setNewProduct({ ...newProduct, category: e.target.value, subCategory: "" });
                     }}>
                     <option value="">{language === "ar" ? "اختر القسم الرئيسي" : "Select Category"}</option>
                     {categoriesData.map(cat => (
@@ -609,10 +628,10 @@ export default function ProductsAdmin() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "القسم الفرعي" : "Sub Category"}</label>
                   <select className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary hover:border-primary/30 rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm cursor-pointer shadow-sm"
-                    value={newProduct.subCategory} 
+                    value={newProduct.subCategory}
                     onChange={(e) => {
                       console.log("SubCategory selected:", e.target.value);
-                      setNewProduct({...newProduct, subCategory: e.target.value});
+                      setNewProduct({ ...newProduct, subCategory: e.target.value });
                     }}>
                     <option value="">{language === "ar" ? "اختر القسم الفرعي" : "Select Sub Category"}</option>
                     {newProduct.category && categoriesData.find(c => c._id === newProduct.category)?.subCategories?.map((sub: any) => (
@@ -628,35 +647,35 @@ export default function ProductsAdmin() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">SKU</label>
                   <input type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.SKU} onChange={(e) => setNewProduct({...newProduct, SKU: e.target.value})} />
+                    value={newProduct.SKU} onChange={(e) => setNewProduct({ ...newProduct, SKU: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "الضمان" : "Warranty"}</label>
                   <input type="text" placeholder="e.g. 2 Years" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.warranty} onChange={(e) => setNewProduct({...newProduct, warranty: e.target.value})} />
+                    value={newProduct.warranty} onChange={(e) => setNewProduct({ ...newProduct, warranty: e.target.value })} />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "السعر الأساسي (ج.م)" : "Price (EGP)"}</label>
-                  <input type="number" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.price} onChange={(e) => setNewProduct({...newProduct, price: e.target.value})} />
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "السعر (نقدي أو نص)" : "Price (Cash or Text)"}</label>
+                  <input type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
+                    value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "نسبة الخصم (%)" : "Discount (%)"}</label>
                   <input type="number" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.discount} onChange={(e) => setNewProduct({...newProduct, discount: e.target.value})} />
+                    value={newProduct.discount} onChange={(e) => setNewProduct({ ...newProduct, discount: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "الكمية المتاحة بالمخزن" : "Stock Inventory"}</label>
                   <input type="number" className="w-full px-6 py-4 bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary rounded-2xl outline-none font-bold transition-all text-gray-900 dark:text-white text-sm"
-                    value={newProduct.stock} onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})} />
+                    value={newProduct.stock} onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })} />
                 </div>
 
                 <div className="md:col-span-2 space-y-4">
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">{language === "ar" ? "روابط الصور (تدعم جوجل درايف)" : "Image Links (Supports Google Drive)"}</label>
-                    <button 
+                    <button
                       type="button"
-                      onClick={() => setNewProduct({...newProduct, images: [...newProduct.images, ""]})}
+                      onClick={() => setNewProduct({ ...newProduct, images: [...newProduct.images, ""] })}
                       className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1 hover:text-primary/80 transition-colors"
                     >
                       <FiPlus /> Add Image
@@ -670,16 +689,16 @@ export default function ProductsAdmin() {
                           value={img} onChange={(e) => {
                             const newImages = [...newProduct.images];
                             newImages[index] = e.target.value;
-                            setNewProduct({...newProduct, images: newImages});
+                            setNewProduct({ ...newProduct, images: newImages });
                           }} />
                       </div>
                       {newProduct.images.length > 1 && (
-                        <button 
+                        <button
                           type="button"
                           onClick={() => {
                             const newImages = [...newProduct.images];
                             newImages.splice(index, 1);
-                            setNewProduct({...newProduct, images: newImages});
+                            setNewProduct({ ...newProduct, images: newImages });
                           }}
                           className="w-14 h-14 bg-rose-500/10 text-rose-500 rounded-3xl flex items-center justify-center shrink-0 hover:bg-rose-500 hover:text-white transition-all"
                         >

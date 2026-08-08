@@ -68,7 +68,7 @@ export default function ProductDetails({ params }: { params: any }) {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#0A0A0A]">
-      <motion.div 
+      <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
         transition={{ repeat: Infinity, duration: 1.5 }}
         className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center"
@@ -90,9 +90,16 @@ export default function ProductDetails({ params }: { params: any }) {
     </div>
   );
 
-  const discountedPrice = product.discount ? product.price - (product.price * product.discount / 100) : product.price;
+  const rawPriceStr = String(product?.price || "");
+  const isNumericPrice = !isNaN(Number(rawPriceStr)) && rawPriceStr.trim() !== "";
+  const parsedPrice = isNumericPrice ? Number(rawPriceStr) : 0;
+  const discountedPrice = (isNumericPrice && product?.discount > 0) ? parsedPrice - (parsedPrice * product.discount / 100) : parsedPrice;
 
   const handleAddToCart = () => {
+    if (!isNumericPrice) {
+      alert(language === "ar" ? "يرجى التواصل معنا لمعرفة السعر" : "Please contact us for the price");
+      return false;
+    }
     for (let i = 0; i < quantity; i++) {
       addToCart({
         _id: product._id,
@@ -105,6 +112,7 @@ export default function ProductDetails({ params }: { params: any }) {
     }
     setCartToast(true);
     setTimeout(() => setCartToast(false), 3000);
+    return true;
   };
 
   // Helper to get category name from populated object or string
@@ -185,24 +193,24 @@ export default function ProductDetails({ params }: { params: any }) {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       <div className="container mx-auto px-4 md:px-8 pt-32 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          
+
           {/* Visual Showcase */}
           <div className="space-y-8 sticky top-32">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
               className="aspect-square relative bg-gray-50 dark:bg-white/[0.03] rounded-[4rem] overflow-hidden group border border-gray-100 dark:border-white/5"
             >
               {product?.images?.[selectedImage] && (
-                <img 
-                  src={product.images[selectedImage]} 
-                  alt="Product" 
+                <img
+                  src={product.images[selectedImage]}
+                  alt="Product"
                   className="w-full h-full object-contain p-12 transition-transform duration-700 group-hover:scale-110"
                 />
               )}
-              
+
               {/* Floating Badges */}
               <div className="absolute top-10 left-10 flex flex-col gap-3">
                 {product?.discount > 0 && (
@@ -214,8 +222,8 @@ export default function ProductDetails({ params }: { params: any }) {
                   {getCategoryName(product?.category)}
                 </div>
               </div>
-              
-              <button 
+
+              <button
                 onClick={() => isProductInWishlist ? removeFromWishlist(product._id) : addToWishlist(product)}
                 className={cn(
                   "absolute top-10 right-10 p-5 rounded-full shadow-2xl transition-all hover:scale-110",
@@ -225,10 +233,10 @@ export default function ProductDetails({ params }: { params: any }) {
                 <FiHeart className={cn("text-2xl", isProductInWishlist && "fill-current")} />
               </button>
             </motion.div>
-            
+
             <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
               {product?.images?.map((img: string, i: number) => (
-                <button 
+                <button
                   key={`item-${i}`}
                   onClick={() => setSelectedImage(i)}
                   className={cn(
@@ -257,15 +265,23 @@ export default function ProductDetails({ params }: { params: any }) {
                 </div>
                 <span className="text-gray-400 font-bold text-sm uppercase tracking-widest">5.0 | {product?.brand}</span>
               </div>
-              
+
               <div className="flex flex-col gap-2 mb-10">
                 <div className="flex items-end gap-6">
-                  <span className="text-5xl md:text-7xl font-black tracking-tighter text-gray-900 dark:text-white">
-                    {discountedPrice?.toLocaleString()} <span className="text-2xl italic font-bold text-primary">{language === "ar" ? "ج.م" : "EGP"}</span>
-                  </span>
-                  {product?.discount > 0 && (
-                    <span className="text-2xl md:text-3xl text-gray-400 line-through font-bold italic mb-2">
-                      {product.price?.toLocaleString()}
+                  {isNumericPrice ? (
+                    <>
+                      <span className="text-5xl md:text-7xl font-black tracking-tighter text-gray-900 dark:text-white">
+                        {discountedPrice?.toLocaleString()} <span className="text-2xl italic font-bold text-primary">{language === "ar" ? "ج.م" : "EGP"}</span>
+                      </span>
+                      {product?.discount > 0 && (
+                        <span className="text-2xl md:text-3xl text-gray-400 line-through font-bold italic mb-2">
+                          {parsedPrice?.toLocaleString()}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className="text-3xl md:text-5xl font-black tracking-tighter text-primary break-words leading-snug">
+                      {rawPriceStr}
                     </span>
                   )}
                 </div>
@@ -294,17 +310,17 @@ export default function ProductDetails({ params }: { params: any }) {
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row items-stretch gap-4">
                 <div className="flex items-center gap-6 px-6 py-4 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5">
-                  <button 
+                  <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="text-2xl font-black hover:text-primary transition-colors"
                   >-</button>
                   <span className="text-2xl font-black tabular-nums min-w-[2ch] text-center">{quantity}</span>
-                  <button 
+                  <button
                     onClick={() => setQuantity(quantity + 1)}
                     className="text-2xl font-black hover:text-primary transition-colors"
                   >+</button>
                 </div>
-                <button 
+                <button
                   onClick={handleAddToCart}
                   className="flex-1 py-6 bg-gray-900 dark:bg-white text-white dark:text-black rounded-3xl font-black uppercase tracking-widest hover:bg-primary dark:hover:bg-primary dark:hover:text-white transition-all shadow-2xl flex items-center justify-center gap-4 group"
                 >
@@ -312,8 +328,8 @@ export default function ProductDetails({ params }: { params: any }) {
                   {language === "ar" ? "أضف للسلة" : "Acquire Now"}
                 </button>
               </div>
-              <button 
-                onClick={() => { handleAddToCart(); router.push("/checkout"); }}
+              <button
+                onClick={() => { if (handleAddToCart()) router.push("/checkout"); }}
                 className="w-full py-6 bg-primary text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-primary/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 italic"
               >
                 <FiZap /> {language === "ar" ? "شراء سريع" : "Express Checkout"}
@@ -339,7 +355,7 @@ export default function ProductDetails({ params }: { params: any }) {
             </div>
           </div>
         </div>
-        
+
         {/* Product Details Tabs */}
         <section className="mt-32 pt-20 border-t border-gray-100 dark:border-white/10">
           <div className="flex flex-col md:flex-row gap-12">
@@ -355,8 +371,8 @@ export default function ProductDetails({ params }: { params: any }) {
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
                     "flex items-center gap-4 p-5 rounded-2xl font-black uppercase tracking-widest text-sm transition-all text-left rtl:text-right",
-                    activeTab === tab.id 
-                      ? "bg-primary text-white shadow-xl shadow-primary/20 scale-105" 
+                    activeTab === tab.id
+                      ? "bg-primary text-white shadow-xl shadow-primary/20 scale-105"
                       : "bg-gray-50 dark:bg-white/5 text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10"
                   )}
                 >
@@ -383,7 +399,7 @@ export default function ProductDetails({ params }: { params: any }) {
                         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-50 dark:from-[#111] to-transparent" />
                       )}
                     </div>
-                    <button 
+                    <button
                       onClick={() => setShowFullDesc(!showFullDesc)}
                       className="mt-6 text-primary font-black uppercase tracking-widest text-sm hover:underline"
                     >

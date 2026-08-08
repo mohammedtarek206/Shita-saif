@@ -15,7 +15,7 @@ interface ProductCardProps {
   product: {
     _id: string;
     title: { ar: string; en: string };
-    price: number;
+    price: string | number;
     discount?: number;
     images: string[];
     category: string | { _id: string; name: { ar: string; en: string } } | any;
@@ -30,13 +30,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCompare, removeFromCompare, isInCompare, compareList } = useCompare();
   const router = useRouter();
   const hasDiscount = product.discount && product.discount > 0;
-  const discountedPrice = hasDiscount ? product.price - (product.price * product.discount! / 100) : product.price;
+  const rawPrice = String(product.price || "");
+  const isNumericPrice = !isNaN(Number(rawPrice)) && rawPrice.trim() !== "";
+  const parsedPrice = isNumericPrice ? Number(rawPrice) : 0;
+  const discountedPrice = hasDiscount ? parsedPrice - (parsedPrice * product.discount! / 100) : parsedPrice;
   const isFavorite = isInWishlist(product._id);
   const inCompare = isInCompare(product._id);
   const compareMaxed = compareList.length >= 3 && !inCompare;
 
   // Calculate lowest possible installment (assuming 36 months)
-  const lowestInstallment = Math.ceil((discountedPrice * 1.15) / 36);
+  const lowestInstallment = isNumericPrice ? Math.ceil((discountedPrice * 1.15) / 36) : null;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -86,7 +89,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             loading="lazy"
           />
         </Link>
-        
+
         {/* Badges */}
         <div className={cn(
           "absolute top-4 flex flex-col gap-2 z-10",
@@ -106,18 +109,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Action Buttons */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-300 z-30">
-          <button 
+          <button
             onClick={handleAddToWishlist}
             className={cn(
               "w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-all shadow-xl backdrop-blur-md",
-              isFavorite 
-                ? "bg-primary text-white" 
+              isFavorite
+                ? "bg-primary text-white"
                 : "bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white hover:bg-primary hover:text-white"
             )}
           >
             <FiHeart className={isFavorite ? 'fill-current' : ''} size={18} />
           </button>
-          <button 
+          <button
             onClick={handleViewDetails}
             className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white/90 dark:bg-black/90 text-gray-800 dark:text-white flex items-center justify-center hover:bg-secondary hover:text-white transition-all shadow-xl backdrop-blur-md"
           >
@@ -150,39 +153,49 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {language === "ar" ? product.title.ar : product.title.en}
           </h3>
         </Link>
-        
+
         {/* Short Description */}
         <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-2 mb-3 leading-relaxed">
           {language === "ar" ? (product as any).description?.ar || product.title.ar : (product as any).description?.en || product.title.en}
         </p>
-        
-        <div className="mb-3">
-          <div className="inline-flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-2 py-1 rounded-lg">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-primary">
-              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M8 12L11 15L16 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span className="text-[10px] md:text-xs font-bold text-gray-600 dark:text-gray-300">
-              {language === "ar" ? "قسط بـ " : "Install from "}
-              <span className="text-primary font-black">{lowestInstallment} {language === "ar" ? "ج.م" : "EGP"}</span>
-              {language === "ar" ? " / شهر" : " / mo"}
-            </span>
+
+        {isNumericPrice && lowestInstallment && (
+          <div className="mb-3">
+            <div className="inline-flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-2 py-1 rounded-lg">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-primary">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M8 12L11 15L16 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="text-[10px] md:text-xs font-bold text-gray-600 dark:text-gray-300">
+                {language === "ar" ? "قسط بـ " : "Install from "}
+                <span className="text-primary font-black">{lowestInstallment} {language === "ar" ? "ج.م" : "EGP"}</span>
+                {language === "ar" ? " / شهر" : " / mo"}
+              </span>
+            </div>
           </div>
-        </div>
-        
+        )}
+
         <div className="mt-auto flex flex-col gap-4">
           <div className="flex items-baseline gap-2">
-            <span className="text-base sm:text-lg md:text-2xl font-black text-primary">
-              {discountedPrice.toLocaleString()} <span className="text-[10px] md:text-xs">{language === "ar" ? "ج.م" : "EGP"}</span>
-            </span>
-            {hasDiscount && (
-              <span className="text-gray-400 text-xs md:text-sm line-through decoration-primary/50">
-                {product.price.toLocaleString()}
+            {isNumericPrice ? (
+              <>
+                <span className="text-base sm:text-lg md:text-2xl font-black text-primary">
+                  {discountedPrice.toLocaleString()} <span className="text-[10px] md:text-xs">{language === "ar" ? "ج.م" : "EGP"}</span>
+                </span>
+                {hasDiscount && (
+                  <span className="text-gray-400 text-xs md:text-sm line-through decoration-primary/50">
+                    {parsedPrice.toLocaleString()}
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="text-base sm:text-lg md:text-xl font-black text-primary break-words line-clamp-2 leading-snug">
+                {rawPrice}
               </span>
             )}
           </div>
-          
-          <button 
+
+          <button
             onClick={handleAddToCart}
             className="w-full py-2.5 sm:py-3 bg-secondary text-white rounded-xl sm:rounded-2xl font-black flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-primary transition-all shadow-lg shadow-secondary/20 hover:shadow-primary/40 active:scale-95 group/btn text-xs sm:text-sm"
           >

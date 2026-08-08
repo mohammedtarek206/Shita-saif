@@ -5,7 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 export interface CartItem {
   _id: string;
   title: { ar: string; en: string };
-  price: number;
+  price: string | number;
   discount?: number;
   images: string[];
   quantity: number;
@@ -42,6 +42,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [cart, mounted]);
 
   const addToCart = (product: any) => {
+    const rawPrice = String(product.price || "");
+    const isNumericPrice = !isNaN(Number(rawPrice)) && rawPrice.trim() !== "";
+
+    if (!isNumericPrice) {
+      alert("يرجى التواصل معنا لمعرفة السعر / Please contact us for the price");
+      return;
+    }
+
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item._id === product._id);
       if (existingItem) {
@@ -69,9 +77,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const clearCart = () => setCart([]);
 
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-  
+
   const totalPrice = cart.reduce((total, item) => {
-    const price = item.discount ? item.price - (item.price * item.discount / 100) : item.price;
+    const rawPrice = String(item.price || "");
+    const isNumericPrice = !isNaN(Number(rawPrice)) && rawPrice.trim() !== "";
+
+    if (!isNumericPrice) return total;
+
+    const priceNum = Number(rawPrice);
+    const price = item.discount ? priceNum - (priceNum * item.discount / 100) : priceNum;
     return total + price * item.quantity;
   }, 0);
 

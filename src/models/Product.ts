@@ -16,7 +16,7 @@ export interface IProduct extends Document {
   colors: string[];
   warranty: string;
   shippingStatus: string;
-  price: number;
+  price: string;
   discount: number;
   stock: number;
   images: string[];
@@ -48,7 +48,7 @@ const ProductSchema: Schema = new Schema(
     colors: [{ type: String }],
     warranty: { type: String },
     shippingStatus: { type: String, default: "In Stock" },
-    price: { type: Number, required: true },
+    price: { type: String, required: true },
     discount: { type: Number, default: 0 },
     stock: { type: Number, required: true, default: 0 },
     images: [{ type: String, required: true }],

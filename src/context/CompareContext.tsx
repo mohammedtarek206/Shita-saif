@@ -5,10 +5,10 @@ import React, { createContext, useContext, useState } from "react";
 interface CompareProduct {
   _id: string;
   title: { ar: string; en: string };
-  price: number;
+  price: string | number;
   discount?: number;
   images: string[];
-  category: string;
+  category: any;
   specifications?: any;
   warranty?: string;
 }
