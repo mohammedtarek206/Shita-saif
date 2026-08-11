@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme inline {
@@ -5,9 +6,9 @@
   --color-secondary: #1E4FA3;
   --color-accent: #4F86D9;
   --color-dark: #0A0A0A;
-  
-  --font-cairo: var(--font-cairo);
-  --font-poppins: var(--font-poppins);
+
+  --font-cairo: 'Cairo', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
 
   --breakpoint-3xl: 1920px;
   --breakpoint-4xl: 2560px;
@@ -70,7 +71,12 @@ body {
   font-family: var(--font-poppins), sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   @apply tracking-tight font-black;
 }
 
@@ -78,6 +84,7 @@ h1, h2, h3, h4, h5, h6 {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -87,12 +94,15 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   @apply bg-gray-300 dark:bg-white/10 rounded-full;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-primary/80;
 }
@@ -118,7 +128,8 @@ select option {
   color: #ffffff !important;
 }
 
-html, body {
+html,
+body {
   @apply overflow-x-hidden w-[100vw] max-w-[100vw];
 }
 
@@ -195,11 +206,25 @@ html, body {
 
 /* Mini Image Carousel — fade animations */
 @keyframes miniCarouselFadeIn {
-  from { opacity: 0; transform: scale(1.03); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes miniCarouselFadeOut {
-  from { opacity: 1; transform: scale(1); }
-  to   { opacity: 0; transform: scale(0.97); }
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
 }

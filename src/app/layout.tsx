@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cairo, Poppins } from "next/font/google";
+
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
@@ -11,17 +11,7 @@ import { RecentlyViewedProvider } from "@/context/RecentlyViewedContext";
 import { CompareProvider } from "@/context/CompareContext";
 import CompareBar from "@/components/CompareBar";
 
-const cairo = Cairo({
-  variable: "--font-cairo",
-  subsets: ["arabic"],
-  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
-});
 
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
 
 export const metadata: Metadata = {
   title: "معرض الشتاء والصيف | أفضل معرض أجهزة كهربائية وأدوات منزلية",
@@ -105,7 +95,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body
-        className={`${cairo.variable} ${poppins.variable} min-h-screen font-cairo max-w-[100vw] overflow-x-hidden`}
+        className="min-h-screen font-cairo max-w-[100vw] overflow-x-hidden"
       >
         <script
           type="application/ld+json"
