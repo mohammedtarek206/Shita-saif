@@ -30,7 +30,7 @@ export async function GET() {
         catObj = catMap.get(p.category.toString()) || p.category;
         p.category = catObj;
       }
-      
+
       const cat = p.category;
       if (cat && typeof cat === 'object' && p.subCategory && Array.isArray(cat.subCategories)) {
         const sub = cat.subCategories.find(
@@ -58,13 +58,13 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     await connectDB();
-    
+
     // Transform flat data from UI to nested model structure
     const productData = {
       title: { ar: body.nameAr, en: body.nameEn },
-      description: { 
-        ar: body.description?.ar || body.nameAr, 
-        en: body.description?.en || body.nameEn 
+      description: {
+        ar: body.description?.ar || body.nameAr,
+        en: body.description?.en || body.nameEn
       },
       category: body.category,
       subCategory: body.subCategory,
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       colors: body.colors || [],
       warranty: body.warranty,
       shippingStatus: body.shippingStatus || "In Stock",
-      price: Number(body.price),
+      price: body.price,
       discount: Number(body.discount || 0),
       stock: Number(body.stock || 0),
       images: body.images && body.images.length > 0 ? body.images : (body.imageUrl ? [body.imageUrl] : []),
